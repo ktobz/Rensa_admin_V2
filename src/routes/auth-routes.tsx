@@ -1,0 +1,63 @@
+import * as React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+
+import { OrdersView } from "@/modules/orders/views/OrdersView";
+import { OrderDetails } from "@/modules/orders";
+import { PartnersView } from "@/modules/products/views/PartnersView";
+import { SettlementsView } from "@/modules/settlements/views/SettlementsView";
+import { DashboardView } from "@/modules/dashboard/views/DashboardView";
+import CustomersView, {
+  CustomerDetailsView,
+  CustomerOrdersView,
+} from "@/modules/branches";
+import { RidersView } from "@/modules/branch-manager/views/RidersView";
+import { TransactionsView } from "@/modules/branches copy/views/TransactionsView";
+import { CustomerTransactionsView } from "@/modules/branches/views/CustomerTransactionsView";
+import { IncomeView } from "@/modules/orders copy/views/IncomeView";
+import { PartnerDetailsView } from "@/modules/products/views/PartnerDetailsView";
+import NotificationCenterView from "@/modules/branch-manager copy";
+import ConfigurationView from "@/modules/branch-manager copy 2";
+
+import { RiderOrders } from "@/modules/branch-manager/views/RiderOrders";
+import { BranchDetailsView } from "@/modules/products/views/branches";
+
+export default function MergedModuleRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<Navigate to="dashboard" />} />
+      <Route path="dashboard" element={<DashboardView />} />
+      <Route path="/orders" element={<OrdersView />} />
+      <Route path="/orders/:orderId" element={<OrderDetails />} />
+
+      <Route path="/settlements" element={<SettlementsView />} />
+      <Route path="/transactions" element={<TransactionsView />} />
+      <Route path="/revenue" element={<IncomeView />} />
+      <Route path="/users" element={<CustomersView />} />
+      <Route path="/users/:c_id" element={<CustomerDetailsView />} />
+
+      <Route path="/notification-center" element={<NotificationCenterView />} />
+      <Route path="/configurations" element={<ConfigurationView />} />
+
+      <Route path="/partners" element={<PartnersView />} />
+      <Route path="/partners/:p_id" element={<PartnerDetailsView />} />
+      <Route path="/partners/:p_id/:b_id" element={<BranchDetailsView />} />
+      <Route path="/partners/:p_id/:b_id/:orderId" element={<OrderDetails />} />
+
+      <Route path="/customers/:id/orders" element={<CustomerOrdersView />} />
+      <Route
+        path="/customers/:c_id/transactions"
+        element={<CustomerTransactionsView />}
+      />
+      <Route
+        path="/customers/:c_id/orders/:orderId"
+        element={<OrderDetails />}
+      />
+
+      <Route path="/riders" element={<RidersView />} />
+      <Route path="/riders/:r_id" element={<RiderOrders />} />
+      <Route path="/riders/:r_id/orders" element={<RiderOrders />} />
+      <Route path="/riders/:r_id/orders/:orderId" element={<OrderDetails />} />
+      {/* <Route path="*" element={<NotFound />} /> */}
+    </Routes>
+  );
+}
