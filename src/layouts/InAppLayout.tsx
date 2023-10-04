@@ -1,6 +1,5 @@
 import * as React from "react";
 import SimpleBar from "simplebar-react";
-import { useIdleTimer } from "react-idle-timer";
 import { SwipeableDrawer } from "@mui/material";
 
 import { MuiBox, styled } from "@/lib/index";
@@ -9,59 +8,16 @@ import DesktopMenu from "@/components/nav/DesktopMenu";
 import CustomMenu from "@/components/nav/CustomMenu";
 import { Logo } from "@/components/logo";
 import AppContext from "@/providers/appContext";
-import { CustomActionCard } from "@/components/card/CustomActionCard";
 import VendgramCustomModal from "@/components/modal/Modal";
 import { useUserStore } from "@/config/store-config/store.config";
 import BreadCrumbs from "@/components/other/Breadcrumb";
 import InAppRoutes from "@/routes/auth-routes";
-
-const timeout = 600_000; // 10 minutes Idle Time
-const promptBeforeIdle = 60_000; // 1 Minute logout prompt;
+import NotAuthorized from "@/components/other/401";
+import UserIdlenessFeedback from "@/components/feedback/UserIdlenessFeedback";
 
 export default function AppContentLayout() {
-  const { logout, user } = useUserStore((state) => state);
+  const { isAuthorized } = useUserStore((state) => state);
   const [open, setOpen] = React.useState(false);
-  const [remaining, setRemaining] = React.useState<number>(timeout);
-  const [showModal, setShowModal] = React.useState<boolean>(false);
-
-  const onIdle = () => {
-    setShowModal(false);
-  };
-
-  const onActive = () => {
-    setShowModal(false);
-  };
-
-  const onPrompt = () => {
-    setShowModal(true);
-  };
-
-  const { getRemainingTime, activate } = useIdleTimer({
-    onIdle,
-    onActive,
-    onPrompt,
-    timeout,
-    promptBeforeIdle,
-    throttle: 500,
-  });
-
-  // React.useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setRemaining(Math.ceil(getRemainingTime() / 1000));
-  //   }, 500);
-
-  //   return () => {
-  //     clearInterval(interval);
-  //   };
-  // });
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-  };
-
-  const handleStillHere = () => {
-    activate();
-  };
 
   const toggleDrawer =
     (state: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -76,11 +32,6 @@ export default function AppContentLayout() {
 
       setOpen(() => state);
     };
-
-  if (remaining === 0) {
-    //  Logout User
-    logout();
-  }
 
   const year = new Date().getFullYear();
 
@@ -145,30 +96,16 @@ export default function AppContentLayout() {
               </Footer>
             </PageContent>
           </SimpleBar>
-
           <VendgramCustomModal
-            handleClose={handleCloseModal}
-            open={showModal}
+            handleClose={() => null}
+            open={!isAuthorized}
+            closeOnOutsideClick={false}
             alignTitle="left"
             showClose={false}
             title={""}>
-            <CustomActionCard
-              buttonAction={handleStillHere}
-              showIcon={false}
-              buttonText="Keep me Logged in"
-              message={
-                <LogoutInfo>
-                  <span>
-                    We discovered you have been inactive for over 10 minutes
-                    now. You will now be logged out in
-                  </span>
-                  <span className="timer">{remaining}s</span>
-                </LogoutInfo>
-              }
-              title="Are you still here?"
-              // isSubmitting={isSubmitting}
-            />
+            <NotAuthorized />
           </VendgramCustomModal>
+          <UserIdlenessFeedback />
         </div>
       </Layout>
     </AppContext.Provider>

@@ -43,7 +43,7 @@ const PageLayout = styled.section`
   background-color: #fff;
 
   & .logo {
-    width: 220px !important;
+    width: 160px !important;
   }
 
   & .form-wrapper {

@@ -1,6 +1,5 @@
 import { TabsProps } from "@mui/material";
 import { styled, MuiTabs } from "@/lib/index";
-import * as React from "react";
 
 interface ITabsProp extends TabsProps {}
 
@@ -29,19 +28,6 @@ const StyledTab = styled.div`
   width: 100%;
   display: flex;
 
-  & .mobile-tabs {
-    display: none;
-    width: 100%;
-    padding: 10px;
-    background: #f3f3f3;
-    border-radius: 6px;
-  }
-
-  & .desktop-tabs {
-    width: 100%;
-    display: flex;
-  }
-
   & .MuiTabs-indicator {
     display: none;
   }
@@ -49,14 +35,4 @@ const StyledTab = styled.div`
   & .MuiTabs-flexContainer {
     gap: 10px;
   }
-
-  /* @media screen and (max-width: 768px) {
-    & .mobile-tabs {
-      display: flex;
-    }
-
-    & .desktop-tabs {
-      display: none;
-    }
-  } */
 `;

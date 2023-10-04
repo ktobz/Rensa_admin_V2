@@ -38,6 +38,8 @@ type State = {
   setUser: (data: IUserData) => void;
   setUserCardBalance: (balance: number) => void;
   logout: () => void;
+  isAuthorized: boolean;
+  setIsAuthorized: (status: boolean) => void;
 };
 
 const defaultUser: IUserData = {
@@ -50,8 +52,11 @@ export const useUserStore = create(
   persist<State>(
     (set) => ({
       user: defaultUser,
+      isAuthorized: false,
+      setIsAuthorized: (status: boolean) =>
+        set((prevState) => ({ ...prevState, isAuthorized: status })),
       setUser: (data: IUserData) =>
-        set((prevState) => ({ ...prevState, user: data })),
+        set((prevState) => ({ ...prevState, user: data, isAuthorized: true })),
       logout: () => {
         sessionStorage.removeItem(TOKEN_NAME);
         sessionStorage.removeItem(REFRESH_TOKEN_NAME);
@@ -74,7 +79,7 @@ export const useUserStore = create(
     {
       name: APP_LOCAL_STATE_NAME,
       getStorage: () => localStorage,
-      version: 4,
+      version: 5,
       // merge: (persisted: any, current) => merge(current, persisted),
     }
   )

@@ -81,13 +81,14 @@ export function AutomatedMessagesView() {
         </div>
       </div>
       <div className="tab-section">
-        <CustomTabs variant="fullWidth" value={current || 0} className="tabs">
+        <CustomTabs variant="fullWidth" value={current || 0}>
           <CustomTab
             onClick={handleChangeIndex(0)}
             value={0}
             label="General"
             current={current}
             hideIcon
+            variant="primary"
           />
           <CustomTab
             onClick={handleChangeIndex(1)}
@@ -95,6 +96,7 @@ export function AutomatedMessagesView() {
             label="Seller"
             current={current}
             hideIcon
+            variant="primary"
           />
           <CustomTab
             onClick={handleChangeIndex(2)}
@@ -102,6 +104,7 @@ export function AutomatedMessagesView() {
             label="Buyer"
             current={current}
             hideIcon
+            variant="primary"
           />
         </CustomTabs>
       </div>

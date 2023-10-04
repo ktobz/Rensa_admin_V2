@@ -1,6 +1,8 @@
+import { useUserStore } from "@/config/store-config/store.config";
 import APP_VARS from "@/utils/env";
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { getToken } from "utils/helper-funcs";
+const userStore = useUserStore.getState();
 const URL = APP_VARS.baseApi;
 
 const instance = axios.create({
@@ -23,6 +25,19 @@ instance.interceptors.request.use(
     return config;
   },
   (error) => {
+    return Promise.reject(error);
+  }
+);
+
+instance.interceptors.response.use(
+  (res: AxiosResponse<any>) => {
+    return res;
+  },
+  (error: AxiosError) => {
+    if (error?.response?.status === 401) {
+      userStore.setIsAuthorized(false);
+    }
+
     return Promise.reject(error);
   }
 );

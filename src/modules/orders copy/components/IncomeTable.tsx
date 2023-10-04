@@ -179,22 +179,14 @@ export function IncomeTable() {
         />
       </div>
       <div className="tab-section">
-        <CustomTabs variant="fullWidth" value={current || 0} className="tabs">
-          <CustomTab
-            onClick={handleChangeIndex(0)}
-            value={0}
-            label="Earnings"
-            current={current}
-          />
-          <CustomTab
-            onClick={handleChangeIndex(1)}
-            value={1}
-            label="Partner Payouts"
-            current={current}
-          />
-        </CustomTabs>
-
-        <CustomSearch placeholder="Search order ID" />
+        <div className="top-section">
+          <MuiTypography variant="body2" className="heading">
+            All Sales
+          </MuiTypography>
+        </div>
+        <div className="action-section">
+          <CustomSearch placeholder="Search order ID" />
+        </div>
       </div>
 
       {/* 
@@ -271,7 +263,9 @@ export function IncomeTable() {
                   <MuiTableCell align="left">
                     ₦{formatCurrency({ amount: row?.amount, style: "decimal" })}
                   </MuiTableCell>
-                  <MuiTableCell align="left" style={{ color: "#45B26B" }}>
+                  <MuiTableCell
+                    align="left"
+                    style={{ color: "#45B26B", fontWeight: "700" }}>
                     ₦{formatCurrency({ amount: row?.amount, style: "decimal" })}
                   </MuiTableCell>
                   <MuiTableCell align="left">
@@ -346,16 +340,10 @@ const StyledPage = styled.section`
     align-items: center;
     margin-bottom: 10px;
 
-    & .view-all {
-      height: fit-content;
-      min-height: fit-content;
-      font-family: "Helvetica";
-    }
-
-    & .card-name {
+    & .heading {
       font-weight: 600;
       color: #000;
-      font-size: 14px;
+      font-size: 18px;
       font-family: "Helvetica";
     }
   }
