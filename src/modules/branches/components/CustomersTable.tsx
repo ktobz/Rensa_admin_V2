@@ -306,7 +306,8 @@ const StyledPage = styled.section`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin: 20px 0 25px 0;
+    margin: 30px 0 15px 0;
+
     flex-wrap: wrap;
     gap: 20px;
 

@@ -311,6 +311,11 @@ export function SettlementTable({
                   </MuiTableCell>
                   <MuiTableCell align="left">
                     <SettlementStatus
+                      style={{
+                        display: "inline-block",
+                        width: "100%",
+                        border: "none",
+                      }}
                       type={row?.settlement?.toLowerCase() as ISettlementStatus}
                     />
                   </MuiTableCell>

@@ -67,19 +67,43 @@ const settleStatusData: {
   },
 };
 
-export const SettlementStatus = ({ type }: { type: ISettlementStatus }) => {
+export const SettlementStatus = ({
+  type,
+  variant = "primary",
+  size = "large",
+  style,
+}: {
+  type: ISettlementStatus;
+  rounded?: boolean;
+  style?: React.HTMLAttributes<HTMLDivElement>["style"];
+  variant?: "secondary" | "primary";
+  size?: "large" | "small";
+}) => {
   return (
     <span
       style={{
-        color: settleStatusData[type]?.color || "",
-        background: settleStatusData[type]?.bg || "",
-        padding: "10px 15px",
+        color:
+          variant === "primary"
+            ? settleStatusData[type]?.color || ""
+            : settleStatusData[type]?.color || "",
+        background:
+          variant === "primary"
+            ? settleStatusData[type]?.bg || ""
+            : "transparent",
+        padding: size === "large" ? "10px 15px" : "5px 8px",
+        fontSize: size === "large" ? "13px" : "10px",
         borderRadius: "10px",
         fontWeight: "bold",
-        minWidth: "100%",
-        display: "inline-block",
+        borderWidth: "1px",
+        borderStyle: "solid",
+        borderColor:
+          variant === "primary"
+            ? settleStatusData[type]?.bg || ""
+            : settleStatusData[type]?.color || "",
+        display: "inline",
         whiteSpace: "nowrap",
         textAlign: "center",
+        ...style,
       }}>
       {settleStatusData[type]?.text || ""}
     </span>

@@ -1,10 +1,18 @@
 import * as React from "react";
 import { format } from "date-fns";
 
-import { MuiButton, MuiCardMedia, MuiTypography, styled } from "@/lib/index";
+import {
+  MuiButton,
+  MuiCardMedia,
+  MuiIconButton,
+  MuiTypography,
+  styled,
+} from "@/lib/index";
 import { useLocation, useParams } from "react-router-dom";
 import {
+  IconBike,
   IconBranches,
+  IconCopyFilled,
   IconCreditCard,
   IconEarning,
   IconLocation,
@@ -19,6 +27,7 @@ import { UserDetailCard } from "@/components/card/UserCard";
 import VendgramCustomModal from "@/components/modal/Modal";
 import { AssignRiderForm } from "../components/AssignRiderForm";
 import { OrderStatus } from "@/components/feedback/OrderStatus";
+import { SettlementStatus } from "@/modules/settlements/components/OrderStatus";
 
 export function OrderDetails() {
   const queryClient = useQueryClient();
@@ -84,11 +93,10 @@ export function OrderDetails() {
             </MuiTypography>
             <MuiTypography variant="body2" className="body">
               <IconShipping style={{ color: "#F05B2A" }} />
-              {data?.delivery_pickup_date} <span>⚫</span>
-              {data?.delivery_pickup_time}
+              {data?.delivery_pickup_date}
             </MuiTypography>
           </div>
-          <div className="group">
+          {/* <div className="group">
             <MuiTypography variant="body1" className="header">
               Payment Method
             </MuiTypography>
@@ -99,37 +107,96 @@ export function OrderDetails() {
               <IconCreditCard style={{ color: "#1E75BB" }} />{" "}
               {data?.payment_option?.name?.toLowerCase()} Payment
             </MuiTypography>
-          </div>
+          </div> */}
         </div>
 
-        <div className="order-section">
-          <MuiTypography variant="h4" className="group-heading">
-            Customer Info
-          </MuiTypography>
+        <div className="order-info">
+          <div className="order-section">
+            <div className="group-heading">
+              <MuiTypography variant="h4" className="heading">
+                Buyer Info
+              </MuiTypography>
+              <MuiButton variant="text" color="primary" className="view-btn">
+                View details
+              </MuiButton>
+            </div>
 
-          <div className="group">
-            <MuiTypography variant="body1" className="header">
-              Full name
-            </MuiTypography>
-            <MuiTypography variant="body2" className="body">
-              {data?.user?.full_name}
-            </MuiTypography>
+            <div className="group">
+              <MuiTypography variant="body1" className="header">
+                Full name
+              </MuiTypography>
+              <MuiTypography variant="body2" className="body">
+                Timothy Obrik
+              </MuiTypography>
+            </div>
+            <div className="group">
+              <MuiTypography variant="body1" className="header">
+                Email
+              </MuiTypography>
+              <MuiTypography variant="body2" className="body">
+                janecooper@gmail.com
+              </MuiTypography>
+            </div>
+            <div className="group">
+              <MuiTypography variant="body1" className="header">
+                Username
+              </MuiTypography>
+              <MuiTypography variant="body2" className="body">
+                udkio
+              </MuiTypography>
+            </div>
+            <div className="group">
+              <MuiTypography variant="body1" className="header">
+                Phone number
+              </MuiTypography>
+              <MuiTypography variant="body2" className="body">
+                08131889558
+              </MuiTypography>
+            </div>
           </div>
-          <div className="group">
-            <MuiTypography variant="body1" className="header">
-              Email
-            </MuiTypography>
-            <MuiTypography variant="body2" className="body">
-              {data?.user?.email}
-            </MuiTypography>
-          </div>
-          <div className="group">
-            <MuiTypography variant="body1" className="header">
-              Phone number
-            </MuiTypography>
-            <MuiTypography variant="body2" className="body">
-              {data?.user?.phone}
-            </MuiTypography>
+          <div className="order-section">
+            <div className="group-heading">
+              <MuiTypography variant="h4" className="heading">
+                Seller Info
+              </MuiTypography>
+              <MuiButton variant="text" className="view-btn" color="primary">
+                {" "}
+                View details{" "}
+              </MuiButton>
+            </div>
+
+            <div className="group">
+              <MuiTypography variant="body1" className="header">
+                Full name
+              </MuiTypography>
+              <MuiTypography variant="body2" className="body">
+                Timothy Obrik
+              </MuiTypography>
+            </div>
+            <div className="group">
+              <MuiTypography variant="body1" className="header">
+                Email
+              </MuiTypography>
+              <MuiTypography variant="body2" className="body">
+                janecooper@gmail.com
+              </MuiTypography>
+            </div>
+            <div className="group">
+              <MuiTypography variant="body1" className="header">
+                Username
+              </MuiTypography>
+              <MuiTypography variant="body2" className="body">
+                Udokay
+              </MuiTypography>
+            </div>
+            <div className="group">
+              <MuiTypography variant="body1" className="header">
+                Phone number
+              </MuiTypography>
+              <MuiTypography variant="body2" className="body">
+                08131889558
+              </MuiTypography>
+            </div>
           </div>
         </div>
 
@@ -138,111 +205,96 @@ export function OrderDetails() {
             Delivery Info
           </MuiTypography>
 
-          <div className="group">
-            <MuiTypography variant="body1" className="header">
-              Delivery Address
-            </MuiTypography>
-            <MuiTypography variant="body2" className="body">
-              {data?.address?.map_location}
-            </MuiTypography>
-          </div>
-          <div className="group">
-            <MuiTypography variant="body1" className="header">
-              Delivery Note
-            </MuiTypography>
-            <MuiTypography variant="body2" className="body">
-              {data?.delivery_pickup_note}
-            </MuiTypography>
+          <div className="delivery-data">
+            <div className="timeline">
+              <div className="pos-x"></div>
+              <div className="line"></div>
+              <div className="pos-y"></div>
+            </div>
+
+            <div className="delivery-content">
+              <div className="address-data">
+                <div className="group">
+                  <MuiTypography variant="body1" className="header">
+                    Pickup location
+                  </MuiTypography>
+                  <MuiTypography variant="body2" className="body">
+                    11 Adekunle Sule, Majek First gate
+                  </MuiTypography>
+                </div>
+                <MuiIconButton>
+                  <IconCopyFilled />
+                </MuiIconButton>
+              </div>
+              <div className="delivery-data">
+                <div className="group">
+                  <MuiTypography variant="body1" className="header">
+                    Drop-off location
+                  </MuiTypography>
+                  <MuiTypography variant="body2" className="body">
+                    11 Adekunle Sule, Majek Firsy gate
+                  </MuiTypography>
+                </div>
+                <MuiIconButton>
+                  <IconCopyFilled />
+                </MuiIconButton>
+              </div>
+            </div>
+            <MuiIconButton>
+              <IconBike />
+            </MuiIconButton>
           </div>
         </div>
       </div>
       <div className="column-right">
         <div className="right">
-          <MuiTypography variant="h3" className="title">
-            Order Items
-          </MuiTypography>
+          <div className="heading">
+            <MuiTypography variant="h3" className="title">
+              Order Items
+            </MuiTypography>
+            <div className="status">
+              <MuiButton variant="text" className="view-btn" color="primary">
+                {" "}
+                View listing details{" "}
+              </MuiButton>
+            </div>
+          </div>
 
           <div className="details">
-            <div className="content">
-              <IconBranches />{" "}
-              <div className="data">
-                <MuiTypography variant="body1" className="header">
+            <div className="product">
+              <div className="img-wrapper">
+                <MuiCardMedia
+                  component="img"
+                  src={data?.rider?.profile_image}
+                  className="product-img"
+                />
+              </div>
+
+              <div className="product-content">
+                <SettlementStatus
+                  type="pending"
+                  size="small"
+                  variant="secondary"
+                />
+                <MuiTypography variant="body1" className="name">
                   {data?.branch?.name}
                 </MuiTypography>
-                <MuiTypography variant="body1" className="address">
-                  <IconLocation />
-                  {data?.branch?.location}
+                <MuiTypography variant="body1" className="price">
+                  Final bid: <span>₦{data?.total_product_price}</span>
                 </MuiTypography>
               </div>
             </div>
 
-            <div className="order-list">
-              {data?.order_items?.map((item, index) => (
-                <div className="item" key={item?.product?.id}>
-                  <p className="number">{index + 1}</p>
-                  <div className="content">
-                    <div className="price-section">
-                      <MuiTypography variant="body1" className="name">
-                        {item?.quantity} LTRS
-                      </MuiTypography>
-                      <MuiTypography variant="body2" className="body">
-                        <MuiCardMedia
-                          component="img"
-                          width={25}
-                          height={25}
-                          src={item?.product?.product_category?.image}
-                        />
-                        {item?.product?.product_category?.name} <span>⚫</span>₦
-                        {item?.unit_price}
-                        /unit
-                      </MuiTypography>
-                    </div>
-                    <MuiTypography variant="body2" className="body sub-amount">
-                      ₦{item?.total_price}
-                    </MuiTypography>
-                  </div>
-                </div>
-              ))}
-            </div>
             <div className="price-summary">
-              <div className="price-line">
-                <MuiTypography variant="body1" className="entry">
-                  Order Amount:
-                </MuiTypography>
-                <MuiTypography variant="body1" className="entry">
-                  ₦{data?.total_product_price}
-                </MuiTypography>
-              </div>
-              <div className="price-line">
-                <MuiTypography variant="body1" className="entry">
-                  Delivery fee:
-                </MuiTypography>
-                <MuiTypography variant="body1" className="entry">
-                  ₦{data?.delivery_fee}
-                </MuiTypography>
-              </div>
-              <div className="price-line">
-                <MuiTypography variant="body1" className="entry">
-                  Customer Service fee:
-                </MuiTypography>
-                <MuiTypography variant="body1" className="entry">
-                  ₦-
-                </MuiTypography>
-              </div>
-              <div className="price-line">
-                <MuiTypography variant="body1" className="entry">
-                  Vendor Service fee:
-                </MuiTypography>
-                <MuiTypography variant="body1" className="entry">
-                  ₦{data?.service_fee}
-                </MuiTypography>
-              </div>
-
               <div className="line" />
               <div className="price-line">
                 <MuiTypography variant="body1" className="entry">
-                  <IconTicket /> Vendor Settlement{" "}
-                  <OrderStatus type="pending" style={{ marginLeft: "10px" }} />
+                  <IconTicket /> Buyer's Settlement{" "}
+                  <SettlementStatus
+                    type="active"
+                    size="small"
+                    style={{ marginLeft: "10px" }}
+                  />
                 </MuiTypography>
                 <MuiTypography variant="body1" className="vendor-total">
                   ₦{data ? data?.total_product_price - data?.service_fee : 0}
@@ -250,40 +302,79 @@ export function OrderDetails() {
               </div>
               <div className="price-line">
                 <MuiTypography variant="body1" className="entry">
+                  Item Amount:
+                </MuiTypography>
+                <MuiTypography variant="body1" className="entry">
+                  ₦{data?.total_product_price}
+                </MuiTypography>
+              </div>
+              <div className="price-line">
+                <MuiTypography variant="body1" className="entry">
+                  Service fee (2%):
+                </MuiTypography>
+                <MuiTypography variant="body1" className="entry">
+                  ₦{data?.delivery_fee}
+                </MuiTypography>
+              </div>
+              <div className="price-line">
+                <MuiTypography variant="body1" className="entry">
+                  delivery fee (10%):
+                </MuiTypography>
+                <MuiTypography variant="body1" className="entry">
+                  ₦-
+                </MuiTypography>
+              </div>
+
+              <div className="line" />
+              <div className="price-line">
+                <MuiTypography variant="body1" className="entry">
+                  <IconTicket /> Seller's Settlement{" "}
+                  <SettlementStatus
+                    type="closed"
+                    size="small"
+                    style={{ marginLeft: "10px" }}
+                  />
+                </MuiTypography>
+                <MuiTypography variant="body1" className="vendor-total">
+                  ₦{data ? data?.total_product_price - data?.service_fee : 0}
+                </MuiTypography>
+              </div>
+              <div className="price-line">
+                <MuiTypography variant="body1" className="entry">
+                  Item Amount:
+                </MuiTypography>
+                <MuiTypography variant="body1" className="entry">
+                  ₦{data?.total_product_price}
+                </MuiTypography>
+              </div>
+              <div className="price-line">
+                <MuiTypography variant="body1" className="entry">
+                  Service fee:
+                </MuiTypography>
+                <MuiTypography variant="body1" className="entry">
+                  ₦{data?.delivery_fee}
+                </MuiTypography>
+              </div>
+
+              <div className="line" />
+              <div className="price-line earnings">
+                <MuiTypography variant="body1" className="entry">
                   <IconEarning /> Earnings
                 </MuiTypography>
                 <MuiTypography variant="body1" className="grand-total">
                   ₦{data ? data?.delivery_fee + data?.service_fee : 0}
                 </MuiTypography>
               </div>
+              <div className="price-line">
+                <MuiTypography variant="body1" className="entry">
+                  Refunded with delivery
+                </MuiTypography>
+                <MuiTypography variant="body1" className="entry">
+                  Yes
+                </MuiTypography>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="right">
-          <MuiTypography variant="h3" className="title">
-            Assigned Rider
-          </MuiTypography>
-          {data?.rider ? (
-            <UserDetailCard data={data?.rider} />
-          ) : (
-            <>
-              <MuiTypography variant="body1" className="no-data">
-                No rider assigned
-              </MuiTypography>
-            </>
-          )}
-
-          {(data?.status?.toLowerCase() === "new" ||
-            data?.status?.toLowerCase() === "pending" ||
-            data?.status?.toLowerCase() === "confirmed") && (
-            <MuiButton
-              variant="contained"
-              color="primary"
-              className="btn"
-              onClick={handleToggleShow}>
-              {data?.rider ? "Re-assign" : "Assign"} Rider
-            </MuiButton>
-          )}
         </div>
       </div>
 
@@ -312,12 +403,110 @@ const PageContent = styled.section`
   gap: 20px;
   height: auto;
 
-  & .no-data {
+  .delivery-data {
+    display: grid;
+    grid-template-columns: 20px 1fr 120px;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+
+    & .delivery-data,
+    & .address-data {
+      display: flex;
+    }
+    & .group {
+      flex: 1;
+    }
+
+    & .delivery-content {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    & .timeline {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-self: center;
+
+      height: 60%;
+
+      & .pos-x,
+      & .pos-y {
+        width: 10px;
+        height: 10px;
+        background: #f7992b;
+        border-radius: 50%;
+      }
+
+      & .pos-y {
+        background: #45b26b;
+      }
+
+      & .line {
+        width: 0px;
+        border-left: 2px dashed #78849e4a;
+        flex: 1;
+        stroke-dashoffset: 80;
+        line-cap: round;
+        /* background-color: #78849e4a; */
+      }
+    }
+  }
+
+  & .product {
+    display: flex;
     width: 100%;
-    padding: 50px 20px;
-    text-align: center;
-    background: #fbfbfb;
-    border-radius: 6px;
+    min-height: 100px;
+    height: 130px;
+
+    border-radius: 10px;
+    overflow: hidden;
+    align-items: center;
+    border: 1px solid #f0f0f066;
+
+    & .img-wrapper {
+      width: 100px;
+      height: 200px;
+      object-fit: cover;
+      background-color: #f0f0f066;
+      /* flex: 1; */
+      /* max-width: 100px; */
+
+      & .product-img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    & .product-content {
+      flex: 1;
+      padding: 20px;
+      & .name {
+        color: #380719;
+        font-weight: 600;
+        margin: 8px 0 15px;
+      }
+
+      & .price {
+        color: #b1b5c3;
+        font-size: 12px;
+
+        span {
+          font-size: 14px;
+          color: #380719;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  & .order-info {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 30px;
   }
 
   & .details {
@@ -353,52 +542,12 @@ const PageContent = styled.section`
       }
     }
 
-    & .order-list {
-      flex: 1;
-      display: flex;
-      gap: 5px;
-      flex-direction: column;
-
-      & .item {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-
-        & .number {
-          background: #1e75bb;
-          color: #fff;
-          width: 30px;
-          height: 30px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        & .name {
-          font-weight: 700;
-        }
-      }
-
-      & .body {
-        display: flex;
-        gap: 5px;
-        align-items: center;
-        color: #64748b;
-        font-weight: 500;
-
-        & span {
-          font-size: 5px;
-        }
-      }
-      & .content {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-    }
-
     & .price-summary {
+      & .earnings {
+        background-color: #f1fff8;
+        padding: 8px 10px;
+        border-radius: 10px;
+      }
       & .price-line {
         display: flex;
         gap: 20px;
@@ -449,13 +598,6 @@ const PageContent = styled.section`
     }
   }
 
-  & .column-right {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
   & .left {
     display: flex;
     flex-direction: column;
@@ -472,11 +614,20 @@ const PageContent = styled.section`
     display: flex;
     flex-direction: column;
     gap: 10px;
+    flex: 1;
 
     & .group-heading {
       font-weight: 700;
       border-bottom: 1px solid #e8e8e8;
       padding-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      & .heading {
+        font-weight: 600;
+        font-size: 16px;
+      }
     }
     & .group {
       & .header {
@@ -498,7 +649,18 @@ const PageContent = styled.section`
     }
   }
 
-  & .left {
+  & .view-btn {
+    padding: 0;
+    min-height: fit-content;
+    height: fit-content;
+  }
+
+  & .column-right {
+    flex: 1;
+  }
+
+  & .left,
+  & .right {
     & .heading,
     & .status {
       display: flex;

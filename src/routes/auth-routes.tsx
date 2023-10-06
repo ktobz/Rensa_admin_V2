@@ -33,6 +33,10 @@ export default function MergedModuleRoutes() {
         path="/orders/scheduled-orders"
         element={<ScheduledOrdersView />}
       />
+      <Route
+        path="/orders/scheduled-orders/:orderId"
+        element={<OrderDetails />}
+      />
       <Route path="/orders/:orderId" element={<OrderDetails />} />
 
       <Route path="/marketplace" element={<SettlementsView />} />
