@@ -20,6 +20,8 @@ import ConfigurationView from "@/modules/branch-manager copy 2";
 
 import { RiderOrders } from "@/modules/branch-manager/views/RiderOrders";
 import { BranchDetailsView } from "@/modules/products/views/branches";
+import { MarketPlaceListingsView } from "@/modules/settlements/views/MarketPlaceListingsView";
+import { ScheduledOrdersView } from "@/modules/orders/views/ScheduledOrdersView";
 
 export default function MergedModuleRoutes() {
   return (
@@ -27,9 +29,18 @@ export default function MergedModuleRoutes() {
       <Route path="/" element={<Navigate to="dashboard" />} />
       <Route path="dashboard" element={<DashboardView />} />
       <Route path="/orders" element={<OrdersView />} />
+      <Route
+        path="/orders/scheduled-orders"
+        element={<ScheduledOrdersView />}
+      />
       <Route path="/orders/:orderId" element={<OrderDetails />} />
 
-      <Route path="/settlements" element={<SettlementsView />} />
+      <Route path="/marketplace" element={<SettlementsView />} />
+      <Route
+        path="/marketplace/listings"
+        element={<MarketPlaceListingsView />}
+      />
+
       <Route path="/transactions" element={<TransactionsView />} />
       <Route path="/revenue" element={<IncomeView />} />
       <Route path="/users" element={<CustomersView />} />

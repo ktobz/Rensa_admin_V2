@@ -5,6 +5,7 @@ import { useQuery } from "react-query";
 import { NoData } from "@/components/feedback/NoData";
 import {
   MuiButton,
+  MuiCardMedia,
   MuiIconButton,
   MuiPagination,
   MuiTable,
@@ -18,22 +19,19 @@ import {
 } from "@/lib/index";
 
 import { IPagination } from "@/types/globalTypes";
-import CardService from "@/services/branches.service";
-
-import CustomTableSkeleton from "components/skeleton/CustomTableSkeleton";
+import CustomTableSkeleton from "@/components/skeleton/CustomTableSkeleton";
 import { createPaginationData, formatCurrency } from "utils/helper-funcs";
-import { format } from "date-fns";
 import TableWrapper from "@/components/table/TableWrapper";
-import { IconOrder, IconVisibility } from "@/lib/mui.lib.icons";
-import CustomTabs from "@/components/other/CustomTabs";
-import CustomTab from "@/components/other/CustomTab";
-import CustomSearch from "@/components/input/CustomSearch";
-import { OrderIcon, OrderStatus } from "./OrderStatus";
-import { IStatus } from "../types";
+import { IconVisibility } from "@/lib/mui.lib.icons";
 
-type IProps = {
-  variant?: "page" | "section" | "home" | "cards";
-};
+import {
+  ActionTimeStatus,
+  IStatus,
+  SettlementStatus,
+  ISettlementStatus,
+} from "./OrderStatus";
+import CustomSearch from "@/components/input/CustomSearch";
+import StatusFilter from "@/components/select/StatusFillter";
 
 const data = [
   {
@@ -45,7 +43,10 @@ const data = [
     amount: 23000,
     amount_settled: 2000,
     service_fee: 2300,
-    status: "settled",
+    status: "hold",
+    settlement: "active",
+
+    time: 0,
   },
   {
     id: "4358",
@@ -56,7 +57,10 @@ const data = [
     amount: 33000,
     amount_settled: 1000,
     service_fee: 2200,
-    status: "pending",
+    status: "sold",
+    settlement: "delivered",
+
+    time: 0,
   },
   {
     id: "43577",
@@ -67,7 +71,10 @@ const data = [
     amount: 23000,
     amount_settled: 2000,
     service_fee: 2300,
-    status: "pending",
+    status: "closed",
+    settlement: "closed",
+
+    time: 0,
   },
   {
     id: "43570",
@@ -78,7 +85,10 @@ const data = [
     amount: 2300,
     amount_settled: 2000,
     service_fee: 2300,
-    status: "settled",
+    status: "error",
+    settlement: "closed",
+
+    time: 20,
   },
   {
     id: "43589",
@@ -89,7 +99,9 @@ const data = [
     amount: 23000,
     amount_settled: 2000,
     service_fee: 2300,
-    status: "settled",
+    status: "warning",
+    settlement: "pending",
+    time: 220,
   },
 ];
 
@@ -102,7 +114,17 @@ const defaultQuery: IPagination = {
   totalPages: 1,
 };
 
-export function SettlementTable() {
+type IProps = {
+  showPagination?: boolean;
+  showFilter?: boolean;
+  showMoreText?: boolean;
+};
+
+export function SettlementTable({
+  showMoreText = true,
+  showFilter = false,
+  showPagination = false,
+}: IProps) {
   const navigate = useNavigate();
   const [pagination, setPagination] = React.useState<IPagination>(defaultQuery);
 
@@ -110,12 +132,10 @@ export function SettlementTable() {
     navigate(path);
   };
 
-  const [current, setCurrent] = React.useState(() => {
-    return 0;
-  });
+  const [filter, setFilter] = React.useState<number[]>([]);
 
-  const handleChangeIndex = (index: number) => () => {
-    setCurrent(index);
+  const handleSetFilter = (values: number[]) => {
+    setFilter(values);
   };
 
   // const { data, isLoading, isError } = useQuery(
@@ -152,6 +172,10 @@ export function SettlementTable() {
     setPagination((prev) => ({ ...prev, page }));
   };
 
+  const handleViewMore = () => {
+    navigate("listings");
+  };
+
   const handleViewDetails = (id: string) => () => {
     navigate(`/app/orders/${id}`);
   };
@@ -159,35 +183,43 @@ export function SettlementTable() {
   return (
     <StyledPage>
       <div className="tab-section">
-        <CustomTabs variant="fullWidth" value={current || 0} className="tabs">
-          <CustomTab
-            onClick={handleChangeIndex(0)}
-            value={0}
-            label="All"
-            current={current}
-          />
-          <CustomTab
-            onClick={handleChangeIndex(1)}
-            value={1}
-            label="Pending"
-            current={current}
-          />
-          <CustomTab
-            onClick={handleChangeIndex(2)}
-            value={2}
-            label="Settled"
-            current={current}
-          />
-        </CustomTabs>
-
-        <CustomSearch placeholder="Search order ID" />
+        <div className="top-section">
+          <MuiTypography variant="body2" className="heading">
+            Listings
+          </MuiTypography>
+          <MuiTypography
+            className="total"
+            fontWeight="600"
+            color="secondary"
+            variant="body2">
+            {data?.length || 0}
+          </MuiTypography>
+          {showMoreText && (
+            <MuiButton
+              onClick={handleViewMore}
+              className="view-all"
+              variant="text">
+              View all
+            </MuiButton>
+          )}
+        </div>
+        {showFilter && (
+          <div className="action-section">
+            <StatusFilter
+              selectedValue={filter}
+              handleSetValue={handleSetFilter}
+            />
+            <CustomSearch placeholder="Search order ID" />
+          </div>
+        )}
       </div>
 
-      <TableWrapper showPagination>
+      <TableWrapper showPagination={showPagination}>
         <MuiTableContainer
           sx={{
             maxWidth: "100%",
             minHeight: data?.length === 0 ? "inherit" : "unset",
+            flex: 1,
           }}>
           <MuiTable
             sx={{
@@ -200,23 +232,35 @@ export function SettlementTable() {
                 <MuiTableCell
                   className="heading"
                   align="left"
-                  style={{ minWidth: "150px" }}>
-                  Order Id
+                  style={{ minWidth: "250px" }}>
+                  Listing
                 </MuiTableCell>
                 <MuiTableCell className="heading" align="left">
-                  Date Created
+                  Category
                 </MuiTableCell>
                 <MuiTableCell className="heading" align="left">
-                  Order Amount
+                  Bids
                 </MuiTableCell>
                 <MuiTableCell className="heading" align="left">
-                  Service fee
+                  Bidders
                 </MuiTableCell>
                 <MuiTableCell className="heading" align="left">
-                  Amount settled
+                  Offers
                 </MuiTableCell>
                 <MuiTableCell className="heading" align="left">
-                  Settlement status
+                  Location
+                </MuiTableCell>
+                <MuiTableCell className="heading" align="left">
+                  Auction
+                </MuiTableCell>
+                <MuiTableCell
+                  className="heading"
+                  align="left"
+                  style={{ minWidth: "120px" }}>
+                  Price
+                </MuiTableCell>
+                <MuiTableCell className="heading" align="left">
+                  Status
                 </MuiTableCell>
                 <MuiTableCell className="heading" align="center"></MuiTableCell>
               </MuiTableRow>
@@ -231,32 +275,44 @@ export function SettlementTable() {
                   }}>
                   {" "}
                   <MuiTableCell className="order-id" align="left">
-                    Order <b>#{row?.id}</b>
+                    <div className="info">
+                      <MuiCardMedia
+                        component="img"
+                        src="https://images.unsplash.com/photo-1580048915913-4f8f5cb481c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y3VycmVuY3l8ZW58MHwxfDB8fHww&auto=format&fit=crop&w=400&q=60"
+                        className="img"
+                        width="50px"
+                        height="50px"
+                      />
+                      <div className="details">
+                        <MuiTypography variant="body2" className="product-name">
+                          {row?.branch}
+                        </MuiTypography>
+                        <MuiTypography variant="body2" className="list-id">
+                          {" "}
+                          Listing ID: #{row?.id}{" "}
+                        </MuiTypography>
+                      </div>
+                    </div>
                   </MuiTableCell>
+                  <MuiTableCell align="left">Appliances</MuiTableCell>
+                  <MuiTableCell align="left">24</MuiTableCell>
+                  <MuiTableCell align="left">10</MuiTableCell>
+                  <MuiTableCell align="left">12</MuiTableCell>
+                  <MuiTableCell align="left">{row?.branch}</MuiTableCell>
                   <MuiTableCell align="left">
-                    {format(new Date(row?.created_at || ""), "LL MMMM, yyyy")}
+                    <ActionTimeStatus
+                      type={row?.status?.toLowerCase() as IStatus}
+                      time={row?.time}
+                    />
                   </MuiTableCell>
                   <MuiTableCell align="left">
                     ₦{" "}
                     {formatCurrency({ amount: row?.amount, style: "decimal" })}
                   </MuiTableCell>
                   <MuiTableCell align="left">
-                    {" "}
-                    ₦{" "}
-                    {formatCurrency({
-                      amount: row?.service_fee,
-                      style: "decimal",
-                    })}
-                  </MuiTableCell>
-                  <MuiTableCell align="left">
-                    ₦{" "}
-                    {formatCurrency({
-                      amount: row?.amount_settled,
-                      style: "decimal",
-                    })}
-                  </MuiTableCell>
-                  <MuiTableCell align="left">
-                    <OrderStatus type={row?.status?.toLowerCase() as IStatus} />
+                    <SettlementStatus
+                      type={row?.settlement?.toLowerCase() as ISettlementStatus}
+                    />
                   </MuiTableCell>
                   <MuiTableCell align="left">
                     <MuiIconButton
@@ -313,12 +369,42 @@ export function SettlementTable() {
 const StyledPage = styled.section`
   width: 100%;
 
+  & .info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    & .img {
+      width: 50px;
+      height: 50px;
+      border-radius: 6px;
+      background: #f2f2f2;
+      border: none;
+    }
+
+    & .product-name {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    & .list-id {
+      color: #5d6c87;
+      font-size: 12px;
+    }
+  }
+
+  & .action-section {
+    flex: 1;
+    display: flex;
+    /* gap: 20px; */
+    justify-content: end;
+    align-items: center;
+    max-width: 700px;
+  }
+
   & .top-section {
     display: flex;
-    gap: 20px;
+    gap: 10px;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
 
     & .view-all {
       height: fit-content;
@@ -326,11 +412,9 @@ const StyledPage = styled.section`
       font-family: "Helvetica";
     }
 
-    & .card-name {
+    & .heading {
       font-weight: 600;
-      color: #000;
-      font-size: 14px;
-      font-family: "Helvetica";
+      font-size: 18px;
     }
   }
 
@@ -338,7 +422,7 @@ const StyledPage = styled.section`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin: 20px 0 25px 0;
+    margin: 30px 0 15px 0;
   }
 
   & .visible-btn {

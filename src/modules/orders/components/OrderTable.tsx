@@ -6,6 +6,7 @@ import { format } from "date-fns";
 
 import { NoData } from "@/components/feedback/NoData";
 import {
+  MuiButton,
   MuiIconButton,
   MuiTable,
   MuiTableBody,
@@ -20,7 +21,15 @@ import {
 import CustomTableSkeleton from "@/components/skeleton/CustomTableSkeleton";
 import { formatCurrency } from "@/utils/helper-funcs";
 import TableWrapper from "@/components/table/TableWrapper";
-import { IconVisibility } from "@/lib/mui.lib.icons";
+import {
+  IconVisibility,
+  IconGridActive,
+  IconGridInactive,
+  IconListActive,
+  IconListInactive,
+  IconChevronLeft,
+  IconChevronRight,
+} from "@/lib/mui.lib.icons";
 import CustomTabs from "@/components/other/CustomTabs";
 import CustomTab from "@/components/other/CustomTab";
 import CustomSearch from "@/components/input/CustomSearch";
@@ -36,6 +45,22 @@ import {
 } from "@/types/globalTypes";
 import { OrderIcon, OrderStatus } from "@/components/feedback/OrderStatus";
 import StatusFilter from "@/components/select/StatusFillter";
+import Calendar from "react-calendar";
+
+const DATE_LIST = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 
 type IProps = {
   variant?: "page" | "section" | "home" | "cards";
@@ -46,6 +71,12 @@ type IProps = {
   ) => Promise<AxiosResponse<any, any>>;
   id?: string;
   queryKey?: string;
+  viewMode?: "grid" | "list";
+  title?: string;
+  showPagination?: boolean;
+  showFilter?: boolean;
+  showViewMore?: boolean;
+  showMetrics?: boolean;
 };
 
 const defaultQuery: IPagination = {
@@ -56,6 +87,14 @@ const defaultQuery: IPagination = {
   hasPrevPage: false,
   totalPages: 1,
 };
+const ONE_DAY_TIME = 1000 * 60 * 60 * 24;
+
+const constructOrderKey = (date: Date | string) => {
+  const _date = new Date(date || "");
+  const constructedKey = `${_date?.getDate()}_${_date?.getMonth()}_${_date?.getFullYear()}`;
+
+  return constructedKey;
+};
 
 export function OrderTable({
   variant = "page",
@@ -63,13 +102,29 @@ export function OrderTable({
   apiFunc = OrderService.getAll,
   id = "",
   queryKey = "all-orders",
+  viewMode = "grid",
+  title = "Recent Orders",
+  showFilter = false,
+  showPagination = false,
+  showViewMore = false,
+  showMetrics = false,
 }: IProps) {
   const navigate = useNavigate();
   const [pagination, setPagination] = React.useState<IPagination>(defaultQuery);
 
   const { pathname } = useLocation();
 
+  const calendarRef = React.useRef<any>();
   const [filter, setFilter] = React.useState<number[]>([]);
+  const [view, setView] = React.useState(viewMode);
+  const [currentDate, setCurrentDate] = React.useState(() => {
+    const today = new Date();
+    const defaultDate = `${
+      DATE_LIST[today.getMonth()]
+    } ${new Date()?.getFullYear()}`;
+
+    return { date: today, dateString: defaultDate };
+  });
 
   const handleSetFilter = (values: number[]) => {
     setFilter(values);
@@ -82,7 +137,17 @@ export function OrderTable({
         currentPage: pagination.page,
         status: filter,
       }).then((res) => {
-        const data = res.data?.data;
+        const data = res.data?.data as IOrderDetails[];
+
+        const orderSortedByDate = data?.reduce((acc, val) => {
+          const constructedKey = constructOrderKey(val?.created_at);
+          if (constructedKey in acc) {
+            acc[constructedKey] += 1;
+          } else {
+            acc[constructedKey] = 1;
+          }
+          return acc;
+        }, {} as { [key: string]: number });
 
         // const { hasNextPage, hasPrevPage, total, totalPages } =
         //   createPaginationData(data, pagination);
@@ -95,7 +160,10 @@ export function OrderTable({
         //   hasPrevPage,
         // }));
 
-        return data as IOrderDetails[];
+        return {
+          orderList: data,
+          orderSortedByDate,
+        };
       }),
     {
       retry: 0,
@@ -114,7 +182,7 @@ export function OrderTable({
     {
       retry: 0,
       refetchOnWindowFocus: false,
-      enabled: variant === "page" && page !== "branch-order",
+      enabled: showFilter,
     }
   );
 
@@ -142,197 +210,314 @@ export function OrderTable({
     }
   };
 
+  const handleToggleView = (view: "grid" | "list") => () => {
+    setView(view);
+  };
+  const handleNavigateToSchedule = (value: Date, event: any) => {
+    const date = value?.toJSON();
+    navigate(`scheduled-orders/?date=${date}`);
+  };
+
+  const handleChangeMonth = (dir: "next" | "prev") => () => {
+    const current = { ...currentDate };
+    const currentMonth = current?.date?.getMonth();
+    const currentYear = current?.date?.getFullYear();
+    let selectedMonth = 0;
+    let selectedYear = 2023;
+    if (dir === "prev") {
+      selectedMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+      selectedYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+    } else {
+      selectedMonth = currentMonth === 11 ? 0 : currentMonth + 1;
+      selectedYear = currentMonth === 11 ? currentYear + 1 : currentYear;
+    }
+
+    setCurrentDate((prev) => ({
+      ...prev,
+      date: new Date(selectedYear, selectedMonth, 1),
+      dateString: `${DATE_LIST[selectedMonth]} ${selectedYear}`,
+    }));
+  };
+
+  const handleViewMore = () => {
+    navigate("/app/orders");
+  };
+
   return (
     <StyledPage>
-      {variant === "page" && page !== "branch-order" && (
-        <>
-          <div className="cards">
-            <TotalCard
-              className="card"
-              title="New Orders"
-              variant="order"
-              // showFilter={false}
-              defaultValue={orderStatsData?.new_orders}
-              filterType="status"
-              statusType="new"
-            />
-            <TotalCard
-              className="card"
-              title="Cancelled Orders"
-              variant="order"
-              // showFilter={false}
-              defaultValue={orderStatsData?.confirmed_orders}
-              filterType="status"
-              statusType="cancelled"
-            />
-            <TotalCard
-              className="card"
-              title="Delivered Orders"
-              variant="order"
-              // showFilter={false}
-              defaultValue={orderStatsData?.pickup_orders}
-              filterType="status"
-              statusType="delivered"
-            />
-          </div>
-
-          <div className="tab-section">
-            <div className="top-section">
-              <MuiTypography variant="body2" className="heading">
-                Recent Orders
-              </MuiTypography>
-            </div>
-            <div className="action-section">
-              <StatusFilter
-                selectedValue={filter}
-                handleSetValue={handleSetFilter}
-              />
-              <CustomSearch placeholder="Search order ID, customer name, vendor name" />
-            </div>
-          </div>
-        </>
+      {showMetrics && (
+        <div className="cards">
+          <TotalCard
+            className="card"
+            title="New Orders"
+            variant="order"
+            // showFilter={false}
+            defaultValue={orderStatsData?.new_orders}
+            filterType="status"
+            statusType="new"
+          />
+          <TotalCard
+            className="card"
+            title="Cancelled Orders"
+            variant="order"
+            // showFilter={false}
+            defaultValue={orderStatsData?.confirmed_orders}
+            filterType="status"
+            statusType="cancelled"
+          />
+          <TotalCard
+            className="card"
+            title="Delivered Orders"
+            variant="order"
+            // showFilter={false}
+            defaultValue={orderStatsData?.pickup_orders}
+            filterType="status"
+            statusType="delivered"
+          />
+        </div>
       )}
 
-      <TableWrapper showPagination={variant === "page"}>
-        <MuiTableContainer
-          sx={{
-            maxWidth: "100%",
-            minHeight: data?.length === 0 ? "inherit" : "unset",
-            flex: 1,
-          }}>
-          <MuiTable
-            sx={{
-              minWidth: 750,
-              minHeight: data?.length === 0 ? "inherit" : "unset",
+      <div className="tab-section">
+        <div className="top-section">
+          <MuiTypography variant="body2" className="heading">
+            {title}
+          </MuiTypography>
+          {showViewMore && (
+            <MuiButton
+              onClick={handleViewMore}
+              className="view-all"
+              variant="text">
+              View all
+            </MuiButton>
+          )}
+        </div>
+        {showFilter && (
+          <div className="action-section">
+            <StatusFilter
+              selectedValue={filter}
+              handleSetValue={handleSetFilter}
+            />
+            <CustomSearch placeholder="Search order ID, customer name, vendor name" />
+
+            <div className="toggle-mode">
+              <MuiIconButton
+                className="mode-btn"
+                onClick={handleToggleView("grid")}>
+                {view === "grid" ? <IconGridActive /> : <IconGridInactive />}
+              </MuiIconButton>
+              <MuiIconButton
+                className="mode-btn"
+                onClick={handleToggleView("list")}>
+                {view === "list" ? <IconListActive /> : <IconListInactive />}
+              </MuiIconButton>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {view == "grid" && showFilter ? (
+        <>
+          <div className="calendar-nav">
+            <MuiIconButton
+              className="nav-btn"
+              onClick={handleChangeMonth("prev")}>
+              <IconChevronLeft />
+            </MuiIconButton>
+            <MuiTypography variant="body2" className="nav-date">
+              {currentDate?.dateString}
+            </MuiTypography>
+            <MuiIconButton
+              className="nav-btn"
+              onClick={handleChangeMonth("next")}>
+              <IconChevronRight />
+            </MuiIconButton>
+          </div>
+          <Calendar
+            ref={calendarRef}
+            className="calendar"
+            showNavigation={false}
+            view="month"
+            formatShortWeekday={(locale: any, date: Date) =>
+              format(date, "EEEE")
+            }
+            activeStartDate={currentDate?.date}
+            onClickDay={handleNavigateToSchedule}
+            // showNeighboringMonth={false}
+            tileContent={(v) => {
+              const orderKey = constructOrderKey(v.date);
+              const numberOfOrders = data
+                ? data?.orderSortedByDate?.[orderKey]
+                : 0;
+              if (!!numberOfOrders) {
+                return (
+                  <MuiTypography
+                    variant="body2"
+                    className={`orders ${
+                      v?.date?.getTime() + ONE_DAY_TIME < new Date()?.getTime()
+                        ? "old"
+                        : ""
+                    }`}>
+                    {numberOfOrders}
+                  </MuiTypography>
+                );
+              }
+
+              return null;
             }}
-            aria-label="simple table">
-            <MuiTableHead>
-              <MuiTableRow>
-                <MuiTableCell className="heading" align="left"></MuiTableCell>
-                <MuiTableCell
-                  className="heading"
-                  align="left"
-                  style={{ minWidth: "150px" }}>
-                  Order Id
-                </MuiTableCell>
+          />
+        </>
+      ) : (
+        <TableWrapper showPagination={showPagination}>
+          <MuiTableContainer
+            sx={{
+              maxWidth: "100%",
+              minHeight: data?.orderList?.length === 0 ? "inherit" : "unset",
+              flex: 1,
+            }}>
+            <MuiTable
+              sx={{
+                minWidth: 750,
+                minHeight: data?.orderList?.length === 0 ? "inherit" : "unset",
+              }}
+              aria-label="simple table">
+              <MuiTableHead>
+                <MuiTableRow>
+                  <MuiTableCell className="heading" align="left"></MuiTableCell>
+                  <MuiTableCell
+                    className="heading"
+                    align="left"
+                    style={{ minWidth: "150px" }}>
+                    Order Id
+                  </MuiTableCell>
 
-                <MuiTableCell
-                  className="heading"
-                  style={{ minWidth: "100px" }}
-                  align="left">
-                  Item name
-                </MuiTableCell>
-                <MuiTableCell
-                  className="heading"
-                  style={{ minWidth: "100px" }}
-                  align="left">
-                  Buyer
-                </MuiTableCell>
-                <MuiTableCell className="heading" align="left">
-                  Date Created
-                </MuiTableCell>
+                  <MuiTableCell
+                    className="heading"
+                    style={{ minWidth: "100px" }}
+                    align="left">
+                    Item name
+                  </MuiTableCell>
+                  <MuiTableCell
+                    className="heading"
+                    style={{ minWidth: "100px" }}
+                    align="left">
+                    Buyer
+                  </MuiTableCell>
+                  <MuiTableCell className="heading" align="left">
+                    Date Created
+                  </MuiTableCell>
 
-                <MuiTableCell className="heading" align="left">
-                  Schedule Date
-                </MuiTableCell>
-                <MuiTableCell className="heading" align="left">
-                  Amount
-                </MuiTableCell>
-                <MuiTableCell className="heading" align="left">
-                  Status
-                </MuiTableCell>
-                <MuiTableCell className="heading" align="center"></MuiTableCell>
-              </MuiTableRow>
-            </MuiTableHead>
+                  <MuiTableCell className="heading" align="left">
+                    Schedule Date
+                  </MuiTableCell>
+                  <MuiTableCell className="heading" align="left">
+                    Amount
+                  </MuiTableCell>
+                  <MuiTableCell className="heading" align="left">
+                    Status
+                  </MuiTableCell>
+                  <MuiTableCell
+                    className="heading"
+                    align="center"></MuiTableCell>
+                </MuiTableRow>
+              </MuiTableHead>
 
-            <MuiTableBody>
-              {!isLoading &&
-                data &&
-                data?.map((row) => (
-                  <MuiTableRow
-                    key={row?.id}
-                    sx={{
-                      "&:last-child td, &:last-child th": { border: 0 },
-                    }}>
-                    <MuiTableCell align="left">
-                      <OrderIcon type={row?.status as IStatus} />
-                    </MuiTableCell>
-                    <MuiTableCell className="order-id" align="left">
-                      Order <b>#{row?.order_id}</b>
-                    </MuiTableCell>
-                    <MuiTableCell>{row?.user?.first_name || "-"}</MuiTableCell>
-                    <MuiTableCell align="left">
-                      {row?.user?.full_name || "-"}
-                    </MuiTableCell>
-                    <MuiTableCell align="left">
+              <MuiTableBody>
+                {!isLoading &&
+                  data &&
+                  data?.orderList?.map((row) => (
+                    <MuiTableRow
+                      key={row?.id}
+                      sx={{
+                        "&:last-child td, &:last-child th": { border: 0 },
+                      }}>
+                      <MuiTableCell align="left">
+                        <OrderIcon type={row?.status as IStatus} />
+                      </MuiTableCell>
+                      <MuiTableCell className="order-id" align="left">
+                        Order <b>#{row?.order_id}</b>
+                      </MuiTableCell>
+                      <MuiTableCell>
+                        {row?.user?.first_name || "-"}
+                      </MuiTableCell>
+                      <MuiTableCell align="left">
+                        {row?.user?.full_name || "-"}
+                      </MuiTableCell>
+                      <MuiTableCell align="left">
+                        {" "}
+                        {format(
+                          new Date(row?.created_at || ""),
+                          "LL MMMM, yyyy"
+                        )}
+                      </MuiTableCell>
+                      <MuiTableCell align="left">
+                        {row?.delivery_pickup_date}
+                      </MuiTableCell>
+                      <MuiTableCell align="left">
+                        ₦
+                        {formatCurrency({
+                          amount: row?.total_product_price,
+                          style: "decimal",
+                        })}
+                      </MuiTableCell>
+
+                      <MuiTableCell align="left">
+                        <OrderStatus
+                          type={row?.status?.toLowerCase() as IStatus}
+                        />
+                      </MuiTableCell>
+                      <MuiTableCell align="left">
+                        <MuiIconButton
+                          onClick={handleViewDetails(row)}
+                          className="visible-btn">
+                          <IconVisibility />
+                        </MuiIconButton>
+                      </MuiTableCell>
+                    </MuiTableRow>
+                  ))}
+
+                {!isLoading &&
+                  data &&
+                  data?.orderList?.length === 0 &&
+                  !isError && (
+                    <MuiTableRow>
                       {" "}
-                      {format(new Date(row?.created_at || ""), "LL MMMM, yyyy")}
-                    </MuiTableCell>
-                    <MuiTableCell align="left">
-                      {row?.delivery_pickup_date}
-                    </MuiTableCell>
-                    <MuiTableCell align="left">
-                      ₦
-                      {formatCurrency({
-                        amount: row?.total_product_price,
-                        style: "decimal",
-                      })}
-                    </MuiTableCell>
+                      <MuiTableCell
+                        colSpan={9}
+                        align="center"
+                        className="no-data-cell"
+                        rowSpan={15}>
+                        <NoData
+                          title="No order yet"
+                          message="Recent orders will appear here"
+                        />
+                      </MuiTableCell>
+                    </MuiTableRow>
+                  )}
 
-                    <MuiTableCell align="left">
-                      <OrderStatus
-                        type={row?.status?.toLowerCase() as IStatus}
+                {isError && !data && (
+                  <MuiTableRow>
+                    {" "}
+                    <MuiTableCell
+                      colSpan={9}
+                      className="no-data-cell"
+                      rowSpan={15}
+                      align="center">
+                      <NoData
+                        title="An Error Occurred"
+                        message="Sorry, we couldn't fetch your orders. Try again later or contact Rensa support."
                       />
                     </MuiTableCell>
-                    <MuiTableCell align="left">
-                      <MuiIconButton
-                        onClick={handleViewDetails(row)}
-                        className="visible-btn">
-                        <IconVisibility />
-                      </MuiIconButton>
-                    </MuiTableCell>
                   </MuiTableRow>
-                ))}
+                )}
 
-              {!isLoading && data && data?.length === 0 && !isError && (
-                <MuiTableRow>
-                  {" "}
-                  <MuiTableCell
-                    colSpan={9}
-                    align="center"
-                    className="no-data-cell"
-                    rowSpan={15}>
-                    <NoData
-                      title="No order yet"
-                      message="Recent orders will appear here"
-                    />
-                  </MuiTableCell>
-                </MuiTableRow>
-              )}
-
-              {isError && !data && (
-                <MuiTableRow>
-                  {" "}
-                  <MuiTableCell
-                    colSpan={9}
-                    className="no-data-cell"
-                    rowSpan={15}
-                    align="center">
-                    <NoData
-                      title="An Error Occurred"
-                      message="Sorry, we couldn't fetch your orders. Try again later or contact Rensa support."
-                    />
-                  </MuiTableCell>
-                </MuiTableRow>
-              )}
-
-              {!data && isLoading && (
-                <CustomTableSkeleton columns={9} rows={10} />
-              )}
-            </MuiTableBody>
-          </MuiTable>
-        </MuiTableContainer>
-      </TableWrapper>
+                {!data && isLoading && (
+                  <CustomTableSkeleton columns={9} rows={10} />
+                )}
+              </MuiTableBody>
+            </MuiTable>
+          </MuiTableContainer>
+        </TableWrapper>
+      )}
     </StyledPage>
   );
 }
@@ -348,6 +533,79 @@ const StyledPage = styled.section`
 
     & .card {
       width: calc((100% - 40px) / 3);
+    }
+  }
+
+  & .toggle-mode {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    margin-left: 10px;
+
+    & .mode-btn {
+      background: #fbfbfb;
+      border-radius: 10px;
+      padding: 6px 8px;
+
+      & svg {
+        width: 25px;
+        height: 25px;
+      }
+    }
+  }
+
+  & .calendar-nav {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: end;
+
+    & .nav-btn {
+      background-color: #fb651e;
+      border-radius: 10px;
+      color: #fff;
+      height: 30px;
+      width: 32px;
+      padding: 0;
+    }
+
+    & .nav-date {
+      background-color: #fbfbfb;
+      padding: 5px 10px;
+      font-weight: 600;
+      border-radius: 10px;
+    }
+  }
+
+  & .calendar {
+    width: 100%;
+    padding: 20px;
+    margin: 30px auto;
+    border-radius: 10px;
+    border: 1px solid #f4f4f4;
+
+    & abbr {
+      text-decoration: none;
+    }
+
+    & .orders {
+      align-self: end;
+      padding: 4px 10px;
+      border-radius: 30px;
+      background-color: #fb651e;
+      color: #fff;
+      font-size: 12px;
+      min-width: 35px;
+    }
+
+    & .old {
+      background-color: #777e90;
+    }
+
+    & .react-calendar > button {
+      display: flex;
+      flex-direction: column !important;
+      justify-content: space-between !important;
     }
   }
 

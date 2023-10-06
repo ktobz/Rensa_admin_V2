@@ -1,18 +1,20 @@
 import { styled } from "@/lib/index";
 import { OrderTable } from "@/modules/orders";
+import { useURLQuery } from "@/utils/query";
 
-import "./calendar.css";
-
-export function OrdersView() {
+export function ScheduledOrdersView() {
+  const urlQuery = useURLQuery();
+  const date = useURLQuery()?.get("date") || "";
+  const convertedDate = new Date(date).toDateString();
   return (
     <PageContent>
       <OrderTable
         variant="page"
         page="orders"
-        showFilter
-        viewMode="grid"
-        showMetrics
+        queryKey={`scheduled-query`}
+        title={convertedDate}
         showPagination
+        viewMode="list"
       />
     </PageContent>
   );

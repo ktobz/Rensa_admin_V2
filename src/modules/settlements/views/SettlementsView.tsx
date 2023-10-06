@@ -15,15 +15,18 @@ export function SettlementsView() {
   return (
     <PageContent>
       <div className="cards">
+        <TotalCard title="Active listing" variant="order" showFilter={false} />
+        <TotalCard title="Pending Payment" variant="order" showFilter={false} />
         <TotalCard
-          title="Pending Settlement"
-          variant="sales"
+          title="Pending Delivery"
+          variant="order"
           showFilter={false}
         />
-        <TotalCard title="Total Settlement" variant="sales" />
+        <TotalCard title="Closed Listing" variant="order" showFilter={false} />
+        <TotalCard title="Total Listing" variant="order" showFilter={false} />
       </div>
       <div className="activities">
-        <SettlementTable />
+        <SettlementTable showMoreText />
       </div>
     </PageContent>
   );
@@ -50,30 +53,6 @@ const PageContent = styled.section`
   & .cards {
     display: flex;
     gap: 20px;
-  }
-
-  & .activities {
-    /* max-width: 1160px; */
-    width: 100%;
-    margin-top: 45px;
-
-    & .top-section {
-      display: flex;
-      gap: 20px;
-      /* justify-content: space-between; */
-      align-items: center;
-      margin-bottom: 10px;
-
-      & .heading {
-        font-weight: 600;
-        font-size: 18px;
-      }
-
-      & .view-all {
-        height: fit-content;
-        min-height: fit-content;
-      }
-    }
   }
 
   @media screen and (max-width: 768px) {

@@ -1,5 +1,8 @@
 import { IconOrder } from "@/lib/mui.lib.icons";
-import { IStatus } from "../types";
+import { useTimer } from "react-timer-hook";
+
+export type IStatus = "warning" | "closed" | "sold" | "error" | "hold";
+export type ISettlementStatus = "active" | "pending" | "delivered" | "closed";
 
 const statusData: {
   [key in IStatus]: {
@@ -8,29 +11,120 @@ const statusData: {
     text: string;
   };
 } = {
-  pending: {
-    bg: "#FFF9E6",
-    color: "#FFC502",
-    text: "Pending",
+  closed: {
+    bg: "#F0F0F0",
+    color: "#777E90",
+    text: "Closed",
   },
-  settled: {
-    bg: "05A3571A",
-    color: "#05A357",
-    text: "Settled",
+  hold: {
+    bg: "#F0F0F0",
+    color: "#777E90",
+    text: "On-hold",
+  },
+  sold: {
+    bg: "#05A357",
+    color: "#fff",
+    text: "Sold",
+  },
+  warning: {
+    bg: "#FFF9F6",
+    color: "#FB651E",
+    text: "",
+  },
+  error: {
+    bg: "#FFF5F8",
+    color: "#F53139",
+    text: "",
   },
 };
 
-export const OrderStatus = ({ type }: { type: IStatus }) => {
+const settleStatusData: {
+  [key in ISettlementStatus]: {
+    bg: React.CSSProperties["backgroundColor"];
+    color: React.CSSProperties["color"];
+    text: string;
+  };
+} = {
+  pending: {
+    bg: "#FFF8DD",
+    color: "#F7992B",
+    text: "Pending delivery",
+  },
+  closed: {
+    bg: "#F0F0F0",
+    color: "#777E90",
+    text: "Closed",
+  },
+  delivered: {
+    bg: "#05A357",
+    color: "#fff",
+    text: "Delivered",
+  },
+  active: {
+    bg: "#E8FFF3",
+    color: "#45B26B",
+    text: "Active",
+  },
+};
+
+export const SettlementStatus = ({ type }: { type: ISettlementStatus }) => {
   return (
     <span
       style={{
-        color: statusData[type]?.color || "",
-        background: statusData[type]?.bg || "",
+        color: settleStatusData[type]?.color || "",
+        background: settleStatusData[type]?.bg || "",
         padding: "10px 15px",
         borderRadius: "10px",
         fontWeight: "bold",
+        minWidth: "100%",
+        display: "inline-block",
+        whiteSpace: "nowrap",
+        textAlign: "center",
       }}>
-      {statusData[type]?.text || ""}
+      {settleStatusData[type]?.text || ""}
+    </span>
+  );
+};
+
+export const ActionTimeStatus = ({
+  type,
+  time = 0,
+}: {
+  type: IStatus;
+  time?: number;
+}) => {
+  const currentTime = new Date();
+  currentTime.setSeconds(currentTime.getSeconds() + time);
+
+  const { seconds, minutes, hours, restart } = useTimer({
+    expiryTimestamp: currentTime,
+    onExpire: () => {
+      // restart(currentTime);
+    },
+  });
+  const statusType =
+    type !== "error" && type !== "warning"
+      ? type
+      : minutes >= 3
+      ? "warning"
+      : "error";
+
+  return (
+    <span
+      style={{
+        color: statusData[statusType]?.color || "",
+        background: statusData[statusType]?.bg || "",
+        padding: "10px 15px",
+        borderRadius: "10px",
+        fontWeight: "bold",
+        minWidth: "90px",
+        display: "inline-block",
+        textAlign: "center",
+      }}>
+      {statusData[statusType]?.text ||
+        `${hours > 9 ? hours : `0${hours}`}:${
+          minutes > 9 ? minutes : `0${minutes}`
+        }:${seconds > 9 ? seconds : `0${seconds}`}`}
     </span>
   );
 };

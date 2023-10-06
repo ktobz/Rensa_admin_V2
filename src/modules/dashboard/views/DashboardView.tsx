@@ -85,21 +85,13 @@ export function DashboardView() {
           }}
         />
       </div>
-      <div className="activities">
-        <div className="top-section">
-          <MuiTypography variant="body2" className="heading">
-            Recent Orders
-          </MuiTypography>
-          <MuiButton
-            onClick={handleViewMore}
-            className="view-all"
-            variant="text">
-            View all
-          </MuiButton>
-        </div>
 
-        <OrderTable variant="section" page="dashboard" />
-      </div>
+      <OrderTable
+        variant="section"
+        page="dashboard"
+        showViewMore
+        viewMode="list"
+      />
     </PageContent>
   );
 }

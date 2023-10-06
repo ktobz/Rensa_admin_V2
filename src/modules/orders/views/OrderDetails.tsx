@@ -73,7 +73,9 @@ export function OrderDetails() {
               Date Created
             </MuiTypography>
             <MuiTypography variant="body2" className="body">
-              {format(new Date(data?.created_at || ""), "LL MMMM, yyyy")}
+              {data
+                ? format(new Date(data?.created_at || ""), "LL MMMM, yyyy")
+                : ""}
             </MuiTypography>
           </div>
           <div className="group">

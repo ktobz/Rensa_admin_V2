@@ -26,6 +26,7 @@
     "material-ui-phone-number": "^3.0.0",
     "process": "^0.11.10",
     "react": "^18.0.0",
+    "react-calendar": "^4.6.0",
     "react-country-flag": "^3.0.2",
     "react-dom": "^18.1.0",
     "react-drag-drop-files": "^2.3.8",

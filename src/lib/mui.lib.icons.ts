@@ -2,6 +2,9 @@
 import IconVisibility from "@mui/icons-material/VisibilityOutlined";
 import IconVisibilityOff from "@mui/icons-material/VisibilityOffOutlined";
 import IconArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import IconChevronRight from "@mui/icons-material/ChevronRight";
+import IconChevronLeft from "@mui/icons-material/ChevronLeft";
+
 import IconBell from "@mui/icons-material/NotificationsNoneRounded";
 import IconQuestionMark from "@mui/icons-material/QuestionMarkRounded";
 import IconCreditCard from "@mui/icons-material/CreditCard";
@@ -89,8 +92,18 @@ import { ReactComponent as IconCopyFilled } from "assets/icon/copy_main.svg";
 import { ReactComponent as IconBlock } from "assets/icon/block.svg";
 import { ReactComponent as IconUnblock } from "assets/icon/unblock.svg";
 import { ReactComponent as IconClock } from "assets/icon/clock.svg";
+import { ReactComponent as IconGridActive } from "assets/icon/grid_active.svg";
+import { ReactComponent as IconGridInactive } from "assets/icon/grid_inactive.svg";
+import { ReactComponent as IconListActive } from "assets/icon/list_active.svg";
+import { ReactComponent as IconListInactive } from "assets/icon/list_inactive.svg";
 
 export {
+  IconChevronLeft,
+  IconChevronRight,
+  IconGridActive,
+  IconGridInactive,
+  IconListActive,
+  IconListInactive,
   IconClock,
   IconBlock,
   IconUnblock,
