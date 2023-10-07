@@ -182,6 +182,7 @@ const StyledWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  gap: 20px;
 
   @media screen and (max-width: 450px) {
     & .top-section {
@@ -199,6 +200,7 @@ const StyledWrapper = styled.div`
 
   & .duration {
     font-size: 10px;
+    white-space: nowrap;
   }
 
   & .branch {
@@ -238,6 +240,7 @@ const StyledWrapper = styled.div`
     line-height: 34px;
     color: #000000;
     margin: 20px 0 10px 0;
+    line-height: 19px;
   }
 
   & .top-section {
