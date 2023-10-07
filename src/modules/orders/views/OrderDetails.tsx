@@ -232,7 +232,7 @@ export function OrderDetails() {
                     Drop-off location
                   </MuiTypography>
                   <MuiTypography variant="body2" className="body">
-                    11 Adekunle Sule, Majek Firsy gate
+                    11 Adekunle Sule, Majek First gate
                   </MuiTypography>
                 </div>
                 <MuiIconButton>
@@ -240,9 +240,7 @@ export function OrderDetails() {
                 </MuiIconButton>
               </div>
             </div>
-            <MuiIconButton>
-              <IconBike />
-            </MuiIconButton>
+            <IconBike className="delivery-method" />
           </div>
         </div>
       </div>
@@ -318,7 +316,7 @@ export function OrderDetails() {
               </div>
               <div className="price-line">
                 <MuiTypography variant="body1" className="entry">
-                  delivery fee (10%):
+                  Delivery fee (10%):
                 </MuiTypography>
                 <MuiTypography variant="body1" className="entry">
                   ₦-
@@ -409,6 +407,10 @@ const PageContent = styled.section`
     justify-content: center;
     align-items: center;
     gap: 15px;
+
+    & .delivery-method {
+      justify-self: center;
+    }
 
     & .delivery-data,
     & .address-data {
