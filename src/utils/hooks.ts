@@ -40,12 +40,13 @@ export const useLoginSession = (): [
 };
 
 export const useIds = () => {
-  const { id, p_id, b_id, c_id, r_id } = useParams<{
+  const { id, p_id, b_id, c_id, r_id, rp_id } = useParams<{
     id: string;
     p_id: string;
     b_id: string;
     c_id: string;
     r_id: string;
+    rp_id: string;
   }>();
   const customerId = c_id?.split("__")?.[1] || "";
 
@@ -54,5 +55,6 @@ export const useIds = () => {
     riderId: r_id || "",
     partnerId: p_id || "",
     branchId: b_id ? +b_id : 0,
+    reportId: rp_id || "",
   };
 };

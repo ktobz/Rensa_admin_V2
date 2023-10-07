@@ -22,6 +22,8 @@ import { RiderOrders } from "@/modules/branch-manager/views/RiderOrders";
 import { BranchDetailsView } from "@/modules/products/views/branches";
 import { MarketPlaceListingsView } from "@/modules/settlements/views/MarketPlaceListingsView";
 import { ScheduledOrdersView } from "@/modules/orders/views/ScheduledOrdersView";
+import ReportedListingPageView from "@/modules/settlements copy";
+import { ListingDetails } from "@/modules/settlements copy/views/ListingDetails";
 
 export default function MergedModuleRoutes() {
   return (
@@ -40,13 +42,15 @@ export default function MergedModuleRoutes() {
       <Route path="/orders/:orderId" element={<OrderDetails />} />
 
       <Route path="/marketplace" element={<SettlementsView />} />
+      <Route path="/reported-listing" element={<ReportedListingPageView />} />
+      <Route path="/reported-listing/:rp_id" element={<ListingDetails />} />
       <Route
         path="/marketplace/listings"
         element={<MarketPlaceListingsView />}
       />
 
       <Route path="/transactions" element={<TransactionsView />} />
-      <Route path="/revenue" element={<IncomeView />} />
+      <Route path="/sales-revenue" element={<IncomeView />} />
       <Route path="/users" element={<CustomersView />} />
       <Route path="/users/:c_id" element={<CustomerDetailsView />} />
 

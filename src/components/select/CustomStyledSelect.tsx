@@ -30,7 +30,6 @@ const StyledSelect = muiStyled(Select)(({ theme }) => ({
   position: "relative",
   backgroundColor: theme.palette.mode === "light" ? "#fff" : "#2b2b2b",
   fontSize: 13,
-  // width: "100%",
   transition: theme.transitions.create([
     "border-color",
     "background-color",
@@ -44,12 +43,11 @@ const LabelStyle = muiStyled(MuiInputLabel)(({ theme }) => ({
   color: "#000",
   fontWeight: "500",
   fontSize: 13,
-  width: "100%",
-  top: "-15px",
-  marginTop: "15px",
-  marginBottom: "8px",
-  left: "-15px",
   textTransform: "initial",
+  transform: "none",
+  width: "fit-content",
+  maxWidth: "fit-content",
+  overflow: "unset",
 
   "& .Mui-focused": {
     borderColor: theme.palette.primary.main,
@@ -91,6 +89,11 @@ export default function CustomStyledSelect({
       fullWidth
       id={id}
       sx={{
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "start",
+        gap: "20px",
         "& .grey-out": {
           color: "#b1b1b1",
           fontSize: "13px",
@@ -177,7 +180,7 @@ export default function CustomStyledSelect({
             </MenuItem>
           ))}
       </StyledSelect>
-      <MuiHelperText error={error}>{helperText}</MuiHelperText>
+      {/* <MuiHelperText error={error}>{helperText}</MuiHelperText> */}
     </MuiFormControl>
   );
 }

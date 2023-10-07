@@ -1,0 +1,296 @@
+import * as React from "react";
+import { format } from "date-fns";
+
+import {
+  MuiButton,
+  MuiCardMedia,
+  MuiIconButton,
+  MuiSelectChangeEvent,
+  MuiTypography,
+  styled,
+} from "@/lib/index";
+import { useLocation, useParams } from "react-router-dom";
+import {
+  IconBike,
+  IconBranches,
+  IconCopyFilled,
+  IconCreditCard,
+  IconEarning,
+  IconLocation,
+  IconPetrol,
+  IconShipping,
+  IconTicket,
+} from "@/lib/mui.lib.icons";
+import { useQuery, useQueryClient } from "react-query";
+import OrderService from "@/services/order-service";
+import { IOrderDetails, IStatus } from "@/types/globalTypes";
+import { UserDetailCard } from "@/components/card/UserCard";
+import VendgramCustomModal from "@/components/modal/Modal";
+import { OrderStatus } from "@/components/feedback/OrderStatus";
+import { SettlementStatus } from "@/modules/settlements/components/OrderStatus";
+import { useIds } from "@/utils/hooks";
+import CustomStyledSelect from "@/components/select/CustomStyledSelect";
+import { ActionTimeStatus } from "../components/OrderStatus";
+import SimpleBar from "simplebar-react";
+
+export function ListingDetails() {
+  const queryClient = useQueryClient();
+  const { state } = useLocation();
+  const { reportId } = useIds();
+  const [show, setShow] = React.useState(false);
+
+  const { data } = useQuery(
+    ["order-details", reportId],
+    () =>
+      OrderService.getOrderDetails(reportId || "").then((res) => {
+        const data = res.data?.data;
+        return data as IOrderDetails;
+      }),
+    {
+      retry: 0,
+      refetchOnWindowFocus: false,
+      enabled: !!reportId,
+      initialData: state as IOrderDetails,
+    }
+  );
+
+  const handleToggleShow = () => {
+    setShow((prev) => !prev);
+  };
+  const handleRefresh = () => {
+    queryClient.invalidateQueries(["order-details"]);
+    setShow(false);
+  };
+
+  const handleChangeStandard = (
+    e: MuiSelectChangeEvent<any>,
+    newValue: React.ReactNode
+  ) => {
+    const { value } = e.target;
+    // setValues?.((prev: any) => ({ ...prev, [name || ""]: value }));
+  };
+
+  const options =
+    ["active", "Place On-hold", "Un-flag listing", "Close listing"]?.map(
+      (x) => ({
+        id: x,
+        name: x,
+      })
+    ) || [];
+
+  return (
+    <PageContent>
+      <div className="top-section">
+        <div className="listing-heading">
+          <MuiTypography variant="h3" className="title">
+            Listing ID: <b style={{ color: "#1E75BB" }}>#{reportId}</b>
+          </MuiTypography>
+          <CustomStyledSelect
+            // value={value}
+            onChange={handleChangeStandard}
+            options={options || []}
+            optionTitle="name"
+            label="Action item"
+            optionValue="id"
+            style={{ width: "130px" }}
+            className="actions"
+          />
+        </div>
+      </div>
+      <div className="listing">
+        <div className="group-heading">
+          <MuiTypography variant="h4" className="heading">
+            Listing Info
+          </MuiTypography>
+          <MuiTypography variant="body2" className="timer">
+            Auction
+            <ActionTimeStatus type="error" time={300} />
+          </MuiTypography>
+        </div>
+
+        <div className="listing-info">
+          <div className="left">
+            <div className="group">
+              <MuiTypography variant="body1" className="header">
+                Item name
+              </MuiTypography>
+              <MuiTypography variant="body2" className="body">
+                1.1 KVA Generator
+              </MuiTypography>
+            </div>
+          </div>
+          <div className="right">
+            <div className="group">
+              <MuiTypography variant="body1" className="header">
+                Category
+              </MuiTypography>
+              <MuiTypography variant="body2" className="body">
+                Appliance
+              </MuiTypography>
+            </div>
+            <div className="group">
+              <MuiTypography variant="body1" className="header">
+                Condition
+              </MuiTypography>
+              <MuiTypography variant="body2" className="body">
+                New
+              </MuiTypography>
+            </div>
+            <div className="group">
+              <MuiTypography variant="body1" className="header">
+                Pickup method
+              </MuiTypography>
+              <MuiTypography variant="body2" className="body">
+                Van
+              </MuiTypography>
+            </div>
+          </div>
+        </div>
+        <div className="listing-info">
+          <div className="left">
+            <div className="group">
+              <MuiTypography variant="body1" className="header">
+                Description
+              </MuiTypography>
+              <MuiTypography variant="body2" className="body">
+                2 months old generator. Clean as new without any change of parts
+                or services done2 months old generator. Clean as new without any
+                change of parts or services done....2 months old generator.
+                Clean as new without any change of parts or services done....
+              </MuiTypography>
+            </div>
+          </div>
+          <div className="">
+            <SimpleBar className="">
+              <div className="image-wrapper">
+                {[...Array(4)].map((_, index) => (
+                  <MuiCardMedia
+                    key={index}
+                    component="img"
+                    src="https://images.unsplash.com/photo-1598688933273-77f7a673845d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1274&q=80"
+                    className="product"
+                  />
+                ))}
+              </div>
+            </SimpleBar>
+          </div>
+        </div>
+      </div>
+
+      {/* 
+      <VendgramCustomModal
+        closeOnOutsideClick={false}
+        handleClose={handleToggleShow}
+        open={show}
+        alignTitle="left"
+        title="Assign rider"
+        showClose>
+       
+      </VendgramCustomModal> */}
+    </PageContent>
+  );
+}
+
+const PageContent = styled.section`
+  width: 100%;
+  margin: auto;
+
+  & .listing-heading {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+
+    & .title {
+      font-size: 20px;
+      font-weight: bold;
+      flex: 1;
+    }
+
+    & .actions {
+      flex: 1;
+      max-width: fit-content;
+      justify-content: end;
+
+      & .MuiOutlinedInput-notchedOutline {
+        border-color: #fb651e;
+      }
+
+      & .MuiOutlinedInput-input {
+        background-color: #fff9f6;
+      }
+    }
+  }
+
+  & .listing-info {
+    display: grid;
+    grid-template-columns: 40% calc(60% - 30px);
+    gap: 30px;
+
+    & .right {
+      display: flex;
+      gap: 40px;
+      /* justify-content: space-between; */
+    }
+
+    & .image-wrapper {
+      display: flex;
+      gap: 10px;
+      & .product {
+        width: 90px;
+        height: 90px;
+        border-radius: 10px;
+      }
+    }
+  }
+
+  & .timer {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: space-between;
+    color: #64748b;
+  }
+
+  & .listing {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border: 1px solid #f4f4f4;
+    border-radius: 5px;
+    padding: 20px 15px;
+
+    & .group-heading {
+      font-weight: 700;
+      border-bottom: 1px solid #e8e8e8;
+      padding-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      & .heading {
+        font-weight: 600;
+        font-size: 16px;
+      }
+    }
+    & .group {
+      & .header {
+        color: #64748b;
+        font-size: 13px;
+      }
+
+      & .body {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+        color: #282828;
+        font-weight: 500;
+
+        & span {
+          font-size: 5px;
+        }
+      }
+    }
+  }
+`;

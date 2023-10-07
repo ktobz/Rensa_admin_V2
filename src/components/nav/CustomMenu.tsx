@@ -67,12 +67,12 @@ const menuLinks = [
   },
   {
     title: "Sales Revenue",
-    path: "revenue",
+    path: "sales-revenue",
     icon: <IconSales />,
   },
   {
     title: "Reported Listing",
-    path: "report",
+    path: "reported-listing",
     icon: <IconReport />,
   },
 
