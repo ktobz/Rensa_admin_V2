@@ -1,11 +1,11 @@
 import * as React from "react";
-import { MuiIconButton, MuiTypography, styled } from "lib";
-import { UserMenu } from "./UserProfile";
-import { useUserStore } from "config/store-config/store.config";
-import { IconMenu } from "lib/mui.lib.icons";
-import { Logo } from "components/logo";
-import AppContext from "@/providers/appContext";
 import { useLocation } from "react-router-dom";
+
+import { MuiIconButton, MuiTypography, styled } from "@/lib/index";
+import { UserMenu } from "./UserProfile";
+import { IconMenu } from "@/lib/mui.lib.icons";
+import { Logo } from "@/components/logo";
+import AppContext from "@/providers/appContext";
 import PageTitle from "../text/PageTitle";
 
 export default function Header() {
@@ -16,9 +16,8 @@ export default function Header() {
 
   return (
     <StyledWrapper>
-      {/* <Title className="page-title">{title}</Title> */}
-      <PageTitle title={title} />
       <div className="desktop">
+        <PageTitle title={title} />
         <div className="profile-wrapper">
           <div className="user-name">
             <div>
@@ -67,16 +66,19 @@ const StyledWrapper = styled.header`
     display: flex;
     align-items: center;
     gap: 10px;
+    justify-content: space-between;
+    gap: 30px;
+    width: 100%;
 
     & .image-wrapper {
       width: 45px;
       height: 45px;
-      /* background: #dddddd; */
+      background: #dddddd;
       border-radius: 50%;
       display: flex;
       justify-content: center;
       align-items: center;
-      border: 1px solid #f1f2f5;
+      object-fit: contain;
     }
     & .profile-wrapper {
       display: flex;
@@ -85,8 +87,8 @@ const StyledWrapper = styled.header`
 
       & .user-name {
         & .name {
-          font-weight: 600;
-          font-size: 18px;
+          font-weight: 500;
+          font-size: 14px;
           line-height: 23px;
           color: #000000;
           white-space: nowrap;

@@ -1,10 +1,10 @@
 import * as React from "react";
+import { Link as RouterLink, useLocation } from "react-router-dom";
+
 import Link, { LinkProps } from "@mui/material/Link";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
-import { Link as RouterLink, useLocation } from "react-router-dom";
 import { MuiTypography, styled } from "@/lib/index";
 import { useURLQuery } from "@/utils/query";
-// import { useURLQuery } from '@/utils/query';
 
 interface LinkRouterProps extends LinkProps {
   to: string;
@@ -30,18 +30,14 @@ const getCustomerName = (path: string) => {
 
 export default function BreadCrumbs({ style }: IProp) {
   const query = useURLQuery();
-  const matchName = query.get("info");
   let customerId = query.get("cid") || "";
   let partnerId = query.get("ptnid") || "";
   let playerName = "";
-  // const customerId2 = query.get('p_id') || '';
 
-  // const crumbsStartIndex = 1;
   const { pathname } = useLocation();
   const pathnames = pathname
     .split("/")
     .filter((x) => x && x !== "dashboard")
-    // .filter((x, index) => index > crumbsStartIndex)
     .map((x, index, paths) => {
       if (x === "app") {
         return `dashboard`;
@@ -68,14 +64,10 @@ export default function BreadCrumbs({ style }: IProp) {
       }
       return x;
     });
-  // const playerName =
 
   return (
     <StyledBreadCrumb style={style}>
-      <Breadcrumbs
-        aria-label="breadcrumb"
-        // maxItems={3}
-        separator="/">
+      <Breadcrumbs aria-label="breadcrumb" maxItems={4} separator="/">
         {pathnames.map((value, index) => {
           const last = index === pathnames.length - 1;
           const to = `${root}/${pathnames.slice(0, index + 1).join("/")}`;
@@ -182,5 +174,9 @@ const StyledBreadCrumb = styled.nav`
 
   @media screen and (max-width: 635px) {
     margin: -20px 0 20px 0;
+  }
+
+  @media screen and (max-width: 1050px) {
+    margin: 30px 0;
   }
 `;
