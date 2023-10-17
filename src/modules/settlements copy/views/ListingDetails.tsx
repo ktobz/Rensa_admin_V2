@@ -32,11 +32,22 @@ import { useIds } from "@/utils/hooks";
 import CustomStyledSelect from "@/components/select/CustomStyledSelect";
 import { ActionTimeStatus } from "../components/OrderStatus";
 import SimpleBar from "simplebar-react";
+import { ReportedComments } from "../components/ReportedComments";
+import { SellerInfo } from "../components/SellerInfo";
+import { BidsView } from "../components/BidsView";
+import { ActionConfirm } from "../components/ActionConfirm";
+
+const options =
+  ["Place On-hold", "Close listing"]?.map((x) => ({
+    id: x,
+    name: x,
+  })) || [];
 
 export function ListingDetails() {
   const queryClient = useQueryClient();
   const { state } = useLocation();
   const { reportId } = useIds();
+  const [action, setAction] = React.useState("");
   const [show, setShow] = React.useState(false);
 
   const { data } = useQuery(
@@ -59,24 +70,32 @@ export function ListingDetails() {
   };
   const handleRefresh = () => {
     queryClient.invalidateQueries(["order-details"]);
+    setAction("");
     setShow(false);
   };
 
-  const handleChangeStandard = (
+  const handleSetAction = (
     e: MuiSelectChangeEvent<any>,
     newValue: React.ReactNode
   ) => {
     const { value } = e.target;
-    // setValues?.((prev: any) => ({ ...prev, [name || ""]: value }));
+    setAction(value);
+    handleToggleShow();
   };
 
-  const options =
-    ["active", "Place On-hold", "Un-flag listing", "Close listing"]?.map(
-      (x) => ({
-        id: x,
-        name: x,
-      })
-    ) || [];
+  const handleAction = (callback: () => void) => () => {
+    // ListingService.delete(ids?.[0] || 0)
+    //   .then((res) => {
+    //     handleRefresh?.();
+    //     toast.success(res.data?.message || "");
+    //   })
+    //   .catch((err) => {
+    //     toast.error(err?.response?.data?.message || "");
+    //   })
+    //   .finally(() => {
+    //     callback();
+    //   });
+  };
 
   return (
     <PageContent>
@@ -87,14 +106,16 @@ export function ListingDetails() {
           </MuiTypography>
           <CustomStyledSelect
             // value={value}
-            onChange={handleChangeStandard}
+            onChange={handleSetAction}
             options={options || []}
             optionTitle="name"
             label="Action item"
             optionValue="id"
             style={{ width: "130px" }}
             className="actions"
+            placeholder="Action Items"
           />
+          <SettlementStatus type="active" />
         </div>
       </div>
       <div className="listing">
@@ -176,17 +197,29 @@ export function ListingDetails() {
           </div>
         </div>
       </div>
+      <div className="bid-info">
+        <div className="bid">
+          <BidsView />
+        </div>
+        <div className="seller-info">
+          <SellerInfo />
+        </div>
+      </div>
+      <ReportedComments />
 
-      {/* 
       <VendgramCustomModal
         closeOnOutsideClick={false}
         handleClose={handleToggleShow}
         open={show}
         alignTitle="left"
-        title="Assign rider"
+        title=""
         showClose>
-       
-      </VendgramCustomModal> */}
+        <ActionConfirm
+          handleAction={handleAction}
+          handleClose={handleToggleShow}
+          action={action}
+        />
+      </VendgramCustomModal>
     </PageContent>
   );
 }
@@ -194,6 +227,17 @@ export function ListingDetails() {
 const PageContent = styled.section`
   width: 100%;
   margin: auto;
+
+  & .bid-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 20px;
+
+    & .seller-info {
+      grid-column: 2/3;
+    }
+  }
 
   & .listing-heading {
     display: flex;
@@ -210,7 +254,8 @@ const PageContent = styled.section`
 
     & .actions {
       flex: 1;
-      max-width: fit-content;
+      max-width: 130px;
+      min-width: 130px;
       justify-content: end;
 
       & .MuiOutlinedInput-notchedOutline {

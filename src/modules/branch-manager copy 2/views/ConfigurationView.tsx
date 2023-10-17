@@ -2,6 +2,9 @@ import { styled } from "@/lib/index";
 import { AutomatedMessagesView } from "../components/AutomatedMessagesView";
 // import { FAQSectionView } from "../components/FAQSectionView";
 import { OperationSettingsView } from "../components/OperationSettingsView";
+import { CategoryView } from "../components/CategoryView";
+import { CategoryTable } from "../components/CategoryTable";
+import { ConditionTable } from "../components/ConditionTable";
 
 export function ConfigurationView() {
   return (
@@ -10,8 +13,15 @@ export function ConfigurationView() {
         <div className="grid-column left-column">
           <OperationSettingsView />
         </div>
+
         <div className="grid-column right-column">
           <AutomatedMessagesView />
+        </div>
+        <div className="third">
+          <CategoryTable />
+        </div>
+        <div className="fourth">
+          <ConditionTable />
         </div>
       </div>
       {/* <div className="faq-section">

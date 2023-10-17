@@ -1,4 +1,4 @@
-import { AxiosRequestConfig } from "axios";
+import { AxiosPromise, AxiosRequestConfig } from "axios";
 
 import {
   ILoginReq,
@@ -7,12 +7,15 @@ import {
   IChangePasswordProp,
   IBankConfirmProps,
   IPayoutAccountProps,
+  ILoginResponse,
 } from "types/globalTypes";
 
 import { getToken } from "utils/helper-funcs";
 import HTTP from "./unAuthHttp";
 const PATHS = {
-  login: "/login",
+  // login: "/login",
+  login: "/token/login",
+  logout: "/token/logout",
   sendOTP: "/send-otp",
   verifyOTP: "/verify-otp",
   banks: "/admin/banks",
@@ -29,7 +32,7 @@ const AuthService = {
   signUp(data: ISignupReq) {
     return HTTP.post(PATHS.signup, data);
   },
-  login(data: ILoginReq) {
+  login(data: ILoginReq): AxiosPromise<ILoginResponse> {
     return HTTP.post(PATHS.login, data);
   },
 

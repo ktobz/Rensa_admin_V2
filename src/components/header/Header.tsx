@@ -12,7 +12,7 @@ export default function Header() {
   const { toggleDrawer } = React.useContext(AppContext);
 
   const { pathname } = useLocation();
-  const title = pathname?.split("/")?.[2] || "Dashboard";
+  const title = pathname?.split("/")?.[2]?.replaceAll("-", " ") || "Dashboard";
 
   return (
     <StyledWrapper>

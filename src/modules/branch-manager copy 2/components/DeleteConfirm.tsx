@@ -5,72 +5,46 @@ import {
   MuiButton,
   MuiCircularProgress,
 } from "@/lib/index";
-
-import { IconDefaultUserImage, IconLock, IconUnlock } from "lib/mui.lib.icons";
-import { UserDetailCard } from "@/components/card/UserCard";
+import { IconDeleteLarge } from "lib/mui.lib.icons";
 
 type IProps = {
   handleClose: () => void;
-  data: any[];
+  variant: any;
   handleDelete: (callback: () => void) => () => void;
-  action: "active" | "inactive";
 };
 
-export const RiderStatusConfirm = ({
+export const DeleteConfirm = ({
   handleClose,
-  data,
+  variant,
   handleDelete,
-  action = "inactive",
 }: IProps) => {
-  const [isUpdating, setIsUpdating] = React.useState(false);
-
-  const isMorThanOne = data?.length > 1;
-  const riderData = data?.[0];
-
-  const isToClose =
-    data?.length === 1 ? riderData?.status : action === "inactive";
+  const [isDeleting, setIsDeleting] = React.useState(false);
 
   const callback = () => {
-    setIsUpdating(false);
+    setIsDeleting(false);
   };
 
   const handleSubmit = () => {
-    setIsUpdating(true);
+    setIsDeleting(true);
     handleDelete(callback)();
   };
 
   return (
     <StyledSection>
-      {isToClose ? (
-        <IconLock className="delete-icon" />
-      ) : (
-        <IconUnlock className="delete-icon" />
-      )}
+      <IconDeleteLarge className="delete-icon" />
       <MuiTypography variant="body2" className="heading">
-        {isToClose ? "Deactivate" : "Activate"} Rider{isMorThanOne ? "s" : ""}
+        Delete {variant}
       </MuiTypography>
       <MuiTypography variant="body2" className="body">
-        Are you sure you want to {isToClose ? "deactivate" : "activate"}{" "}
-        {isMorThanOne ? "these" : "this"} Rider
-        {isMorThanOne ? "s" : ""}?
+        Are you sure you want to delete this {variant}?
       </MuiTypography>
-
-      {/* {!isMorThanOne && (
-        <UserDetailCard
-          data={{
-            title: "",
-            body: "",
-            image: riderData?.profile,
-          }}
-        />
-      )} */}
 
       <div className="action-group">
         <MuiButton
           type="button"
           variant="contained"
           onClick={handleClose}
-          disabled={isUpdating}
+          disabled={isDeleting}
           className="secondary-btn btn">
           Cancel
         </MuiButton>
@@ -78,13 +52,11 @@ export const RiderStatusConfirm = ({
           type="button"
           color="error"
           variant="contained"
-          disabled={isUpdating}
+          disabled={isDeleting}
+          startIcon={isDeleting ? <MuiCircularProgress size={18} /> : null}
           onClick={handleSubmit}
-          startIcon={isUpdating ? <MuiCircularProgress size={14} /> : null}
           className="primary-btn btn">
-          {`${isToClose ? "Deactivate" : "Activate"} Rider${
-            isMorThanOne ? "s" : ""
-          }`}
+          Delete
         </MuiButton>
       </div>
     </StyledSection>

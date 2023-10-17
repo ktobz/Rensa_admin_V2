@@ -2,38 +2,23 @@ import * as React from "react";
 import SimpleBar from "simplebar-react";
 
 import {
-  MuiButton,
   MuiListItemIcon,
   MuiListItemText,
   MuiMenuItem,
   MuiMenuList,
-  MuiTypography,
   styled,
 } from "@/lib/index";
 import {
-  IconCreditCard,
-  IconCupReward,
-  IconGroup,
-  IconHistory,
   IconHome,
   IconBars,
-  IconBranches,
-  IconUserBox,
-  IconOrder,
-  IconProduct,
-  IconLogout,
-  IconSettings,
-  IconSettingsOutlined,
-  IconPerson,
-  IconPersonOutlined,
   IconConfig,
-  IconIncome,
   IconNotification,
   IconCustomers,
   IconBox,
   IconReport,
   IconSales,
   IconShop,
+  IconAppRelease,
 } from "lib/mui.lib.icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUserStore } from "config/store-config/store.config";
@@ -86,21 +71,11 @@ const menuLinks = [
     path: "notification-center",
     icon: <IconNotification />,
   },
-];
-
-const otherLinks = [
-  // {
-  //   title: "Profile",
-  //   path: "profile",
-  //   iconActive: <IconPerson />,
-  //   icon: <IconPersonOutlined />,
-  // },
-  // {
-  //   title: "Settings",
-  //   path: "settings",
-  //   iconActive: <IconSettings />,
-  //   icon: <IconSettingsOutlined />,
-  // },
+  {
+    title: "App Release",
+    path: "app-release",
+    icon: <IconAppRelease />,
+  },
 ];
 
 export default function CustomMenu() {

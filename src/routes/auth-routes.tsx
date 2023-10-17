@@ -24,6 +24,7 @@ import { MarketPlaceListingsView } from "@/modules/settlements/views/MarketPlace
 import { ScheduledOrdersView } from "@/modules/orders/views/ScheduledOrdersView";
 import ReportedListingPageView from "@/modules/settlements copy";
 import { ListingDetails } from "@/modules/settlements copy/views/ListingDetails";
+import AppReleaseView from "@/modules/branch-manager copy 3";
 
 export default function MergedModuleRoutes() {
   return (
@@ -55,6 +56,7 @@ export default function MergedModuleRoutes() {
       <Route path="/users/:c_id" element={<CustomerDetailsView />} />
 
       <Route path="/notification-center" element={<NotificationCenterView />} />
+      <Route path="/app-release" element={<AppReleaseView />} />
       <Route path="/configurations" element={<ConfigurationView />} />
 
       <Route path="/partners" element={<PartnersView />} />

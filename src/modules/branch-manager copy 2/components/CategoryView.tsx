@@ -30,7 +30,7 @@ const defaultQuery: IPagination = {
   totalPages: 1,
 };
 
-export function OperationSettingsView() {
+export function CategoryView() {
   const queryClient = useQueryClient();
 
   const [show, setShow] = React.useState({
@@ -44,18 +44,6 @@ export function OperationSettingsView() {
     setShow((prev) => ({ ...prev, [type]: !prev[type] }));
   };
 
-  const { data: deliverySetting, isLoading: deliveryIsLoading } = useQuery(
-    ["delivery-fee"],
-    () =>
-      ConfigService.getDeliveryFeeSettings().then((res) => {
-        const data = res.data?.data;
-        return data as IDeliverySettingsData;
-      }),
-    {
-      retry: 0,
-      refetchOnWindowFocus: false,
-    }
-  );
   const { data: serviceSetting, isLoading: serviceIsLoading } = useQuery(
     ["service-fee"],
     () =>
@@ -75,11 +63,6 @@ export function OperationSettingsView() {
       service: false,
     });
     setEditData(undefined);
-  };
-
-  const handleRefreshService = () => {
-    queryClient.invalidateQueries(["service-fee"]);
-    handleCloseModal();
   };
 
   const handleRefreshDelivery = () => {
@@ -136,141 +119,14 @@ export function OperationSettingsView() {
             </div>
           </div>
         </div>
-        <div className="settings-group">
-          <IconOrder className="icon" />
-          <div className="rows">
-            <div className="heading">
-              <MuiTypography variant="h3" className="group-heading">
-                Delivery fees
-              </MuiTypography>
-              <MuiBox className="action-group">
-                <MuiIconButton
-                  color="warning"
-                  onClick={handleToggleShow("delivery")}
-                  className={`action-btn edit-btn btn `}>
-                  <IconEdit />
-                </MuiIconButton>
-              </MuiBox>
-            </div>
-            <div className="data-row border">
-              <MuiTypography variant="body1" className="label">
-                Bike fee
-              </MuiTypography>
-              <MuiTypography variant="body1" className="value">
-                ₦
-                {formatCurrency({
-                  amount: deliverySetting?.base_fare || 0,
-                  style: "decimal",
-                })}
-              </MuiTypography>
-            </div>
-            <div className="data-row border">
-              <MuiTypography variant="body1" className="label">
-                Van fee
-              </MuiTypography>
-              <MuiTypography variant="body1" className="value">
-                ₦
-                {formatCurrency({
-                  amount: deliverySetting?.base_fare || 0,
-                  style: "decimal",
-                })}
-              </MuiTypography>
-            </div>
-            <div className="data-row border">
-              <MuiTypography variant="body1" className="label">
-                Base fare
-              </MuiTypography>
-              <MuiTypography variant="body1" className="value">
-                ₦
-                {formatCurrency({
-                  amount: deliverySetting?.base_fare || 0,
-                  style: "decimal",
-                })}
-              </MuiTypography>
-            </div>
-            <div className="data-row ">
-              <MuiTypography variant="body1" className="label">
-                Per kilometer
-              </MuiTypography>
-              <MuiTypography variant="body1" className="value">
-                ₦
-                {formatCurrency({
-                  amount: deliverySetting?.per_kilometer || 0,
-                  style: "decimal",
-                })}
-                /km
-              </MuiTypography>
-            </div>
-          </div>
-        </div>
       </div>
 
-      <div className="section">
-        <div className="tab-section">
-          <div className="top-section">
-            <MuiTypography variant="body2" className="heading">
-              Others
-            </MuiTypography>
-          </div>
-        </div>
-
-        <div className="settings-group">
-          <IconClock className="icon" />
-          <div className="rows">
-            <div className="heading">
-              <MuiTypography variant="h3" className="group-heading">
-                Payout
-              </MuiTypography>
-              <MuiBox className="action-group">
-                <MuiIconButton
-                  color="warning"
-                  onClick={handleToggleShow("service")}
-                  className={`action-btn edit-btn btn `}>
-                  <IconEdit />
-                </MuiIconButton>
-              </MuiBox>
-            </div>
-            <div className="data-row border">
-              <MuiTypography variant="body1" className="label">
-                Pay seller after
-              </MuiTypography>
-              <MuiTypography variant="body1" className="value">
-                {serviceSetting?.percentage || 0} hours
-              </MuiTypography>
-            </div>
-          </div>
-        </div>
-
-        <div className="settings-group">
-          <IconWallet className="icon" />
-          <div className="rows">
-            <div className="heading">
-              <MuiTypography variant="h3" className="group-heading">
-                Termii
-              </MuiTypography>
-            </div>
-            <div className="data-row">
-              <MuiTypography variant="body1" className="label">
-                Current balance
-              </MuiTypography>
-              <MuiTypography variant="body1" className="value">
-                ₦
-                {formatCurrency({
-                  amount: deliverySetting?.base_fare || 0,
-                  style: "decimal",
-                })}
-              </MuiTypography>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <VendgramCustomModal
+      {/* <VendgramCustomModal
         handleClose={handleToggleShow("service")}
         open={show.service}
         alignTitle="left"
         closeOnOutsideClick={false}
-        title={"Service fees"}
+        title={"Service fee"}
         showClose>
         <ServiceFeeEntryForm
           initData={serviceSetting}
@@ -283,20 +139,7 @@ export function OperationSettingsView() {
         open={show.delivery}
         alignTitle="left"
         closeOnOutsideClick={false}
-        title={"Delivery fees"}
-        showClose>
-        <DeliverySettingsForm
-          initData={deliverySetting}
-          refreshQuery={handleRefreshDelivery}
-          handleClose={handleCloseModal}
-        />
-      </VendgramCustomModal>
-      {/* <VendgramCustomModal
-        handleClose={handleToggleShow("delivery")}
-        open={show.delivery}
-        alignTitle="left"
-        closeOnOutsideClick={false}
-        title={"Delivery fees"}
+        title={"Delivery"}
         showClose>
         <DeliverySettingsForm
           initData={deliverySetting}

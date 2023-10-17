@@ -22,9 +22,10 @@ import TableWrapper from "@/components/table/TableWrapper";
 import { IconVisibility } from "@/lib/mui.lib.icons";
 
 import CustomSearch from "@/components/input/CustomSearch";
-import { ICustomerData, IPagination } from "@/types/globalTypes";
+import { IUserData, IPagination } from "@/types/globalTypes";
 import CustomerService from "@/services/customer-service";
 import { VerificationStatus } from "@/components/feedback/VerfiedStatus";
+import { createPaginationData } from "@/utils/helper-funcs";
 
 const defaultQuery: IPagination = {
   pageSize: 15,
@@ -43,34 +44,35 @@ export function CustomersTable() {
     ["all-customers", pagination.page, pagination.pageSize],
     () =>
       CustomerService.getAll(
-        `?page=${pagination.page}&perPage=${pagination.pageSize}`
+        `?PageNumber=${pagination.page}&PageSize=${pagination.pageSize}`
       ).then((res) => {
-        const data = res.data?.data;
-        // const { hasNextPage, hasPrevPage, total, totalPages } =
-        //   createPaginationData(data, pagination);
+        const { data, ...paginationData } = res.data?.result;
+        const { hasNextPage, hasPrevPage, total, totalPages } =
+          createPaginationData(data, paginationData);
 
-        // setPagination((prev) => ({
-        //   ...prev,
-        //   total,
-        //   totalPages,
-        //   hasNextPage,
-        //   hasPrevPage,
-        // }));
+        setPagination((prev) => ({
+          ...prev,
+          total,
+          totalPages,
+          hasNextPage,
+          hasPrevPage,
+        }));
 
-        return data as ICustomerData[];
+        return data;
       }),
     {
       retry: 0,
     }
   );
 
-  const handleViewDetails = (data: ICustomerData) => () => {
-    navigate(
-      `/app/users/cid__${data?.id}__${data?.full_name?.replaceAll(" ", "_")}`,
-      {
-        state: data,
-      }
-    );
+  const handleViewDetails = (data: IUserData) => () => {
+    const fullName = `${data?.firstName} ${data?.lastName}`;
+    // navigate(`/app/users/cid__${data?.id}__${fullName?.replaceAll(" ", "_")}`, {
+    //   state: data,
+    // });
+    navigate(`${data?.id}`, {
+      state: data,
+    });
   };
 
   return (
@@ -85,7 +87,7 @@ export function CustomersTable() {
             fontWeight="600"
             color="secondary"
             variant="body2">
-            {data?.length || 0}
+            {pagination?.total || 0}
           </MuiTypography>
         </div>
         <div className="action-section">
@@ -147,18 +149,23 @@ export function CustomersTable() {
                       "&:last-child td, &:last-child th": { border: 0 },
                     }}>
                     <MuiTableCell className="order-id" align="left">
-                      <b>{row?.full_name}</b>
+                      <b>
+                        {row?.firstName} {row?.lastName}
+                      </b>
                     </MuiTableCell>
-                    <MuiTableCell align="left">{row?.phone}</MuiTableCell>
-                    <MuiTableCell align="left">{row?.user_id}</MuiTableCell>
+                    <MuiTableCell align="left">{row?.phoneNumber}</MuiTableCell>
+                    <MuiTableCell align="left">{row?.userName}</MuiTableCell>
 
                     <MuiTableCell align="left">{row?.email}</MuiTableCell>
                     <MuiTableCell align="left">
-                      {format(new Date(row?.created_at || ""), "LL MMMM, yyyy")}
+                      {format(
+                        new Date(row?.creationTime || ""),
+                        "LL MMMM, yyyy"
+                      )}
                     </MuiTableCell>
                     <MuiTableCell align="left">
                       <VerificationStatus
-                        type={row?.profile_image ? "true" : "false"}
+                        type={row?.emailConfirmed ? "true" : "false"}
                       />
                     </MuiTableCell>
 

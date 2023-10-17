@@ -81,7 +81,10 @@ export function AutomatedMessagesView() {
         </div>
       </div>
       <div className="tab-section">
-        <CustomTabs variant="fullWidth" value={current || 0}>
+        <CustomTabs
+          variant="fullWidth"
+          style={{ width: "100%" }}
+          value={current || 0}>
           <CustomTab
             onClick={handleChangeIndex(0)}
             value={0}
@@ -89,6 +92,7 @@ export function AutomatedMessagesView() {
             current={current}
             hideIcon
             variant="primary"
+            className="custom-tab"
           />
           <CustomTab
             onClick={handleChangeIndex(1)}
@@ -97,6 +101,7 @@ export function AutomatedMessagesView() {
             current={current}
             hideIcon
             variant="primary"
+            className="custom-tab"
           />
           <CustomTab
             onClick={handleChangeIndex(2)}
@@ -105,6 +110,7 @@ export function AutomatedMessagesView() {
             current={current}
             hideIcon
             variant="primary"
+            className="custom-tab"
           />
         </CustomTabs>
       </div>
@@ -182,85 +188,6 @@ const StyledPage = styled.section`
   width: 100%;
   height: 450px;
 
-  & .visible-btn {
-    background-color: #e8f1f8;
-    border-radius: 10px;
-    color: #1e75bb;
-    padding: 12px;
-
-    svg {
-      width: 15px;
-      height: 15px;
-    }
-  }
-
-  & .group-selection {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-    background-color: #fff;
-    box-shadow: -1px 2px 32px 0px #00000021;
-    padding: 10px;
-    width: fit-content;
-    border-radius: 10px;
-    position: absolute;
-    top: -30px;
-    left: 60px;
-    margin: 10px 0;
-    & .info {
-      font-size: 13px;
-      color: #64748b;
-    }
-    & .label {
-      color: #64748b;
-      font-size: 12px;
-    }
-
-    & .publish-label {
-      margin-right: 10px;
-    }
-    & .delete-label {
-      color: #ef5050;
-    }
-
-    & .actions {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    & .delete-btn {
-      background: #ef50501a;
-      padding: 5px;
-      border-radius: 5px;
-    }
-  }
-
-  & .link {
-    color: #1e75bb;
-    text-transform: capitalize;
-    text-underline-offset: 2px;
-    /* font-size: 14px; */
-  }
-
-  & .action-group {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-  }
-
-  & .visible-btn {
-    background-color: #e8f1f8;
-    border-radius: 10px;
-    color: #fb651e;
-    padding: 12px;
-
-    svg {
-      width: 15px;
-      height: 15px;
-    }
-  }
-
   & .top-section {
     display: flex;
     gap: 20px;
@@ -276,6 +203,12 @@ const StyledPage = styled.section`
     }
   }
 
+  & .action-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
   & .tabs {
     /* width: 50%; */
     flex: 1;
@@ -285,9 +218,14 @@ const StyledPage = styled.section`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin: 20px 0 25px 0;
     flex-wrap: wrap;
+    margin: 20px 0 25px 0;
     gap: 20px;
+
+    & .custom-tab {
+      flex: 1;
+      width: 100%;
+    }
 
     & .action-section {
       display: flex;

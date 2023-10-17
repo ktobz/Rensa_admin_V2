@@ -68,7 +68,7 @@ export const ServiceFeeEntryForm = ({
           <VendgramInput
             id="percentage"
             name="percentage"
-            label="Percentage (based off item)"
+            label="Buyer service fee"
             placeholder="0%"
             type="number"
             value={values.percentage}
@@ -81,7 +81,7 @@ export const ServiceFeeEntryForm = ({
           <VendgramInput
             id="cap_price"
             name="cap_price"
-            label="Cap price"
+            label="Seller service fee"
             placeholder="₦0.00"
             type="number"
             value={values.cap_price}

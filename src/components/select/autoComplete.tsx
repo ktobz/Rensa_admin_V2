@@ -3,6 +3,7 @@ import * as React from "react";
 import {
   MuiCheckbox,
   MuiFormControl,
+  MuiHelperText,
   MuiIconButton,
   MuiInputLabel,
   muiStyled,
@@ -97,7 +98,7 @@ interface VendgramSelectProps extends SelectProps {
   optionCheckbox?: boolean;
   name?: string;
   toolTipText?: string;
-  // IconComponent?: OverridableComponent<SvgIconTypeMap<{}, "svg">>;
+  helperText?: any;
 }
 
 export default function VendgramSelect({
@@ -116,6 +117,7 @@ export default function VendgramSelect({
   sx,
   optionCheckbox = false,
   name,
+  helperText,
   ...otherProps
 }: VendgramSelectProps) {
   const [open, setOen] = React.useState(false);
@@ -216,6 +218,17 @@ export default function VendgramSelect({
             </MenuItem>
           ))}
       </SelectInputStyle>
+      {helperText && (
+        <MuiHelperText
+          style={{
+            color: error ? "tomato" : "gray",
+            fontSize: "12px",
+            marginLeft: "0",
+          }}
+          error={error}>
+          {helperText}
+        </MuiHelperText>
+      )}
     </MuiFormControl>
   );
 }

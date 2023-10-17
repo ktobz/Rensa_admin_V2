@@ -1,44 +1,52 @@
 import * as React from "react";
 import * as Yup from "yup";
 import { useFormik, FormikProvider } from "formik";
-
-import { styled, MuiButton, MuiCircularProgress } from "@/lib/index";
-import VendgramInput from "@/components/input";
-
 import { toast } from "react-toastify";
 
-import NotificationService from "@/services/notification-service";
+import {
+  styled,
+  MuiButton,
+  MuiCircularProgress,
+  MuiInputAdornment,
+  IconAttachment,
+} from "@/lib/index";
+import VendgramInput from "@/components/input";
 import ConfigService from "@/services/config-service";
 
 const SCHEMA = Yup.object().shape({
-  base_fare: Yup.number().required("required"),
-  per_kilometer: Yup.number().required("required"),
+  title: Yup.string().required("required"),
+  description: Yup.string().required("required"),
 });
 
 type IViewProps = {
+  mode: "new" | "edit";
   initData?: any;
   refreshQuery?: () => void;
   handleClose: () => void;
 };
 
-export const DeliverySettingsForm = ({
+export const CategoryForm = ({
+  mode,
   initData,
   handleClose,
   refreshQuery,
 }: IViewProps) => {
   const initialData = {
     id: initData?.id || "",
-    base_fare: initData?.base_fare || "",
-    per_kilometer: initData?.per_kilometer || "",
-    // order_proximity_radius: initData?.order_proximity_radius || "",
+    title: initData?.title || "",
+    description: initData?.description || "",
   };
 
+  const [action, setAction] = React.useState<"send" | "save" | null>(null);
   const [isSaving, setIsSaving] = React.useState(false);
 
-  const handleSetFees = (formValues: any) => {
+  const handleNotificationAddEdit = (formValues: any) => {
     setIsSaving(true);
 
-    ConfigService.setDeliveryFeeSettings(formValues)
+    (initialData?.id
+      ? ConfigService.updateFAQ(initialData?.id, formValues)
+      : ConfigService.createFAQ(formValues)
+    )
       .then((res) => {
         refreshQuery?.();
         toast.success(res.data?.message || "");
@@ -56,7 +64,7 @@ export const DeliverySettingsForm = ({
     validateOnChange: false,
     validateOnMount: false,
     onSubmit: async (values: any) => {
-      handleSetFees(values);
+      handleNotificationAddEdit(values);
     },
   });
 
@@ -67,52 +75,47 @@ export const DeliverySettingsForm = ({
       <StyledForm onSubmit={handleSubmit}>
         <div className="wrapper">
           <VendgramInput
-            id="base_fare"
-            name="base_fare"
-            label="Base fare"
-            placeholder="₦0.00"
-            type="number"
-            value={values.base_fare}
+            id="title"
+            name="title"
+            label="Category name"
+            placeholder="Enter a question"
+            type="text"
+            value={values.title}
             onChange={handleChange}
-            helperText={errors.base_fare}
-            error={!!errors.base_fare}
+            helperText={errors.title}
+            error={!!errors.title}
             required
           />
 
           <VendgramInput
-            id="per_kilometer"
-            name="per_kilometer"
-            label="Per kilometer (₦/km)"
-            placeholder="₦0.00"
-            type="number"
-            value={values.per_kilometer}
+            id="description"
+            name="description"
+            label="Upload icon (SVG only)"
+            placeholder="Choose file"
+            type="file"
+            value={values.description}
             onChange={handleChange}
-            helperText={errors.per_kilometer}
-            error={!!errors.per_kilometer}
+            helperText={errors.description}
+            error={!!errors.description}
             required
+            InputProps={{
+              endAdornment: (
+                <MuiInputAdornment position="end">
+                  <IconAttachment />
+                </MuiInputAdornment>
+              ),
+            }}
           />
 
-          {/* <VendgramInput
-            id="order_proximity_radius"
-            name="order_proximity_radius"
-            label="Order proximity radius (km)"
-            placeholder="0 km"
-            type="number"
-            value={values.order_proximity_radius}
-            onChange={handleChange}
-            helperText={errors.order_proximity_radius}
-            error={!!errors.order_proximity_radius}
-            required
-          /> */}
           <div className="btn-group">
             <MuiButton
               type="submit"
               variant="contained"
-              color="primary"
               disabled={isSaving}
+              color="primary"
               startIcon={isSaving ? <MuiCircularProgress size={16} /> : null}
               className="btn">
-              Save
+              {mode === "edit" ? "Save Category" : "Add category"}
             </MuiButton>
           </div>
         </div>
@@ -167,5 +170,10 @@ const StyledForm = styled.form`
 
   & textarea {
     padding: 0 !important;
+  }
+
+  & #file-upload-button {
+    width: 30px;
+    background: red;
   }
 `;

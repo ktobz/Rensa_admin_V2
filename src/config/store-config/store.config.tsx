@@ -1,4 +1,4 @@
-// import { IUserData } from "providers/contexts";
+import { IAdminData } from "@/types/globalTypes";
 import {
   APP_LOCAL_STATE_NAME,
   REFRESH_TOKEN_NAME,
@@ -7,23 +7,6 @@ import {
 import { create } from "zustand";
 import { StorageValue, persist } from "zustand/middleware";
 // import merge from "lodash.merge";
-
-export type IBankDetailsProps = {
-  _id: string;
-  account_number: string;
-  account_name: string;
-  owner: string;
-  brexId: string;
-  balance: number;
-  created_at: string | Date;
-  updated_at: string | Date;
-};
-
-export type IUserData = {
-  token: string;
-  email: string;
-  fullName: string;
-};
 
 export interface PersistStorage<S> {
   getItem: (
@@ -34,18 +17,20 @@ export interface PersistStorage<S> {
 }
 
 type State = {
-  user: IUserData;
-  setUser: (data: IUserData) => void;
-  setUserCardBalance: (balance: number) => void;
+  user: IAdminData;
+  setUser: (data: IAdminData) => void;
   logout: () => void;
   isAuthorized: boolean;
   setIsAuthorized: (status: boolean) => void;
 };
 
-const defaultUser: IUserData = {
+const defaultUser: IAdminData = {
   token: "",
-  email: "",
-  fullName: "",
+  expires: "",
+  isSuperAdmin: false,
+  refreshToken: "",
+  userId: "",
+  validity: 0,
 };
 
 export const useUserStore = create(
@@ -55,7 +40,7 @@ export const useUserStore = create(
       isAuthorized: false,
       setIsAuthorized: (status: boolean) =>
         set((prevState) => ({ ...prevState, isAuthorized: status })),
-      setUser: (data: IUserData) =>
+      setUser: (data: IAdminData) =>
         set((prevState) => ({ ...prevState, user: data, isAuthorized: true })),
       logout: () => {
         sessionStorage.removeItem(TOKEN_NAME);
@@ -63,17 +48,6 @@ export const useUserStore = create(
         sessionStorage.removeItem(APP_LOCAL_STATE_NAME);
         return set((prevState) => ({ ...prevState, user: defaultUser }));
       },
-      setUserCardBalance: (balance: number) =>
-        set((prevState: State) => ({
-          ...prevState,
-          user: {
-            ...prevState.user,
-            bankDetails: {
-              // ...prevState.user.bankDetails,
-              balance,
-            },
-          },
-        })),
     }),
 
     {

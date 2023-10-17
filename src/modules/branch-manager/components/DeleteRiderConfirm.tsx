@@ -49,7 +49,7 @@ export const DeleteRiderConfirm = ({
         {isMorThanOne ? "s" : ""}?
       </MuiTypography>
 
-      {!isMorThanOne && <UserDetailCard data={riderData} />}
+      {/* {!isMorThanOne && <UserDetailCard data={riderData} />} */}
 
       <div className="notice">
         <IconInfo htmlColor="#F05B2A" />

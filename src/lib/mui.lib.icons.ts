@@ -96,8 +96,21 @@ import { ReactComponent as IconGridActive } from "assets/icon/grid_active.svg";
 import { ReactComponent as IconGridInactive } from "assets/icon/grid_inactive.svg";
 import { ReactComponent as IconListActive } from "assets/icon/list_active.svg";
 import { ReactComponent as IconListInactive } from "assets/icon/list_inactive.svg";
+import { ReactComponent as IconWallet } from "assets/icon/wallet.svg";
+import { ReactComponent as IconLocationBig } from "assets/icon/location_big.svg";
+import { ReactComponent as IconPhone } from "assets/icon/phone.svg";
+import { ReactComponent as IconVerification } from "assets/icon/verificaton.svg";
+
+import { ReactComponent as IconAttachment } from "assets/icon/attachment.svg";
+import { ReactComponent as IconAppRelease } from "assets/icon/app_release.svg";
 
 export {
+  IconAppRelease,
+  IconVerification,
+  IconLocationBig,
+  IconPhone,
+  IconAttachment,
+  IconWallet,
   IconChevronLeft,
   IconChevronRight,
   IconGridActive,

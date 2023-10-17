@@ -11,13 +11,7 @@ export default function CustomTabs({
 }: ITabsProp) {
   return (
     <StyledTab className={className}>
-      {/* <div className="desktop-tabs">{children}</div> */}
-      <MuiTabs
-        {...othersProps}
-        scrollButtons={false}
-        value={value}
-        // className="mobile-tabs"
-      >
+      <MuiTabs {...othersProps} scrollButtons={false} value={value}>
         {children}
       </MuiTabs>
     </StyledTab>

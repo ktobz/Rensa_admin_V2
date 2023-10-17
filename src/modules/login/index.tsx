@@ -39,19 +39,15 @@ export default function Login() {
   const [showPassword, setShowPassword] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-  const loginUser = ({ email, password }: ILoginReq) => {
-    const reqData = { email, password };
+  const loginUser = ({ username, password }: ILoginReq) => {
+    const reqData = { username, password };
     setIsSubmitting(true);
 
     AuthService.login(reqData)
       .then((res) => {
-        const { api_token, email, full_name } = res.data?.data;
-        setUser({
-          email,
-          token: api_token,
-          fullName: full_name,
-        });
-        setAccessToken(api_token);
+        const data = res.data?.result;
+        setUser(data);
+        setAccessToken(data?.token, data?.refreshToken);
         navigate("/app/dashboard", { replace: true });
       })
       .catch((err) => {
@@ -61,15 +57,18 @@ export default function Login() {
   };
 
   const SCHEMA = Yup.object().shape({
-    email: Yup.string()
+    username: Yup.string()
       .email("Please enter a valid email")
       .required("Email is required"),
     password: Yup.string().required("Please enter a password"),
   });
 
   const initialData = {
-    email: state?.email || "kingsconsult001@gmail.com",
-    password: "Kingssley123@",
+    // email: state?.email || "kingsconsult001@gmail.com",
+    // password: "Kingssley123@",
+
+    username: state?.email || "administrator@rensa.com",
+    password: "Admin12345.",
   };
 
   const formik = useFormik({
@@ -124,14 +123,14 @@ export default function Login() {
 
           <MuiBox marginTop="30px" width="100%">
             <VendgramInput
-              name="email"
+              name="username"
               label="Email Address"
               placeholder="Enter email address "
               type="text"
-              value={values.email}
+              value={values.username}
               onChange={customHandleChange}
-              helperText={errors.email}
-              error={!!errors.email && touched.email}
+              helperText={errors.username}
+              error={!!errors.username && touched.username}
               onBlur={handleBlur}
               required
             />

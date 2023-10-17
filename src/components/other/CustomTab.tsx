@@ -1,6 +1,6 @@
 import { IconDot } from "@/lib/mui.lib.icons";
 import { TabProps } from "@mui/material";
-import { MuiButton, styled } from "lib/index";
+import { MuiButton, MuiTab, styled } from "lib/index";
 
 function a11yProps(index: number) {
   return {
@@ -25,22 +25,34 @@ export default function CustomTab(
     onClick,
     variant = "secondary",
     hideIcon = false,
+    className,
+    ...otherProps
   } = props;
 
   return (
-    <StyledTab isFirst={value === 0} variant={variant} {...a11yProps(value)}>
-      <MuiButton
+    <StyledTab
+      isFirst={value === 0}
+      variant={variant}
+      className={className}
+      {...a11yProps(value)}>
+      <MuiTab
         onClick={onClick}
-        className={current === value ? "selected" : "unselected"}
-        startIcon={
+        className={
+          current === value ? "custom-tab selected" : "custom-tab  unselected"
+        }
+        label={label}
+        iconPosition="start"
+        icon={
           icon ? (
             icon
           ) : !hideIcon ? (
             <IconDot style={{ width: "12px", height: "12px" }} />
-          ) : null
-        }>
-        {label}
-      </MuiButton>
+          ) : (
+            <></>
+          )
+        }
+        {...otherProps}
+      />
     </StyledTab>
   );
 }
@@ -52,11 +64,12 @@ const StyledTab = styled.div<{
   & .selected {
     background-color: ${({ variant }) =>
       variant === "secondary" ? "#FFF9F6" : "#FB651E"};
-    color: ${({ variant }) => (variant === "secondary" ? "#FB651E" : "#fff")};
+    color: ${({ variant }) =>
+      variant === "secondary" ? "#FB651E" : "#fff !important"};
     font-family: "Inter";
     font-size: 13px;
     font-weight: 700;
-    line-height: 23px;
+    /* line-height: 23px; */
     letter-spacing: 0em;
     text-align: center;
     border-radius: 10px;
@@ -65,7 +78,10 @@ const StyledTab = styled.div<{
     pointer-events: none;
     position: relative;
     height: 36px;
+    min-height: 36px;
     padding: 15px;
+    width: 100%;
+    text-transform: capitalize;
 
     & svg > path {
       fill: ${({ variant }) => (variant === "secondary" ? "#FB651E" : "")};
@@ -83,6 +99,8 @@ const StyledTab = styled.div<{
     height: 36px;
     padding: 15px;
     border-radius: 10px;
+    min-height: 36px;
+    text-transform: capitalize;
 
     & svg > path {
       fill: ${({ variant }) => (variant === "secondary" ? "#777E90" : "")};

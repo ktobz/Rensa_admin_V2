@@ -1,5 +1,5 @@
 export interface ILoginReq {
-  email: string;
+  username: string;
   password: string;
 }
 export interface ISignupReq extends ILoginReq {
@@ -388,4 +388,106 @@ export type IOrderMetrics = {
   total_sales: number;
   total_orders: number;
   top_selling_branch: IBranchData;
+};
+
+export type IAdminData = {
+  token: string;
+  refreshToken: string;
+  validity: number;
+  expires: string;
+  isSuperAdmin: boolean;
+  userId: string;
+};
+
+export type IResponse = {
+  hasResult: boolean;
+  resultType: number;
+  message: string;
+  validationMessages: any;
+  successful: boolean;
+  exceptionThrown: false;
+  error: any;
+  responseCode: string; //200,
+};
+
+export type ILoginResponse = {
+  result: IAdminData;
+};
+
+export type IPaginationResponse = {
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  pageNumber: number;
+  pageSize: number;
+  totalPages: number;
+  totalRecords: number;
+};
+
+export type IUserData = {
+  creationTime: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  userName: string;
+  phoneNumber: string;
+  emailConfirmed: boolean;
+  id: string;
+};
+
+export type IUsersResponse = {
+  result: IPaginationResponse & {
+    data: IUserData[];
+  };
+};
+
+// APP RELEASE
+export type IAppReleaseData = {
+  versionNumber: string;
+  releaseNotes: string;
+  forceUpdate: boolean;
+  devicePlatform: number;
+  id?: string;
+};
+
+export type IAppReleaseResponse = {
+  result: IPaginationResponse & {
+    data: IAppReleaseData[];
+  };
+};
+
+// CATALOGUE CATEGORY
+export type ICategoryData = {
+  name: string;
+  image: string;
+};
+
+export type ICategoryDataResponse = {
+  result: IPaginationResponse & {
+    data: ICategoryData[];
+  };
+};
+
+// AUTOMATED MESSAGE CATEGORY
+export type IAutomatedMessage = {
+  title: string;
+  subject: string;
+  message: string;
+};
+
+export type IAutomatedMessageResponse = {
+  result: IPaginationResponse & {
+    data: IAutomatedMessage[];
+  };
+};
+
+// ConditionE CATEGORY
+export type ICondition = {
+  name: string;
+  description: string;
+};
+
+export type IConditionResponse = {
+  result: IPaginationResponse & {
+    data: ICondition[];
+  };
 };

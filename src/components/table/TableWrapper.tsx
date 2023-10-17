@@ -10,6 +10,7 @@ type IProps = {
   pagination?: IPagination;
   handleChangePagination?: (page: number) => void;
   children: React.ReactNode;
+  className?: string;
 };
 
 const paginationData: IPagination = {
@@ -26,6 +27,7 @@ export default function TableWrapper({
   pagination = paginationData,
   handleChangePagination,
   children,
+  className,
 }: IProps) {
   const handleChange = (event: React.ChangeEvent<unknown>, page: number) => {
     if (handleChangePagination) {
@@ -34,7 +36,7 @@ export default function TableWrapper({
   };
 
   return (
-    <StyledWrapper>
+    <StyledWrapper className={className}>
       {children}
 
       {showPagination && pagination && pagination?.total > 0 && (

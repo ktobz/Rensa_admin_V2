@@ -1,4 +1,4 @@
-import { IPagination } from "@/types/globalTypes";
+import { IPagination, IPaginationResponse } from "@/types/globalTypes";
 import { REFRESH_TOKEN_NAME, TOKEN_NAME } from "types/actionTypes";
 
 export const getCurrentYear = () => {
@@ -17,8 +17,9 @@ export const setRefreshToken = (token: string) => {
   sessionStorage.setItem(REFRESH_TOKEN_NAME, token);
 };
 
-export const setAccessToken = (token: string) => {
+export const setAccessToken = (token: string, refreshToken: string) => {
   sessionStorage.setItem(TOKEN_NAME, token);
+  sessionStorage.setItem(REFRESH_TOKEN_NAME, refreshToken);
 };
 
 export const randomizer = () => {
@@ -49,14 +50,17 @@ export async function copyTextToClipboard(text: string) {
   }
 }
 
-export const createPaginationData = (data: any, pagination: IPagination) => {
-  const totalEntries = data?.totalPageSize || 1;
-  const totalPages = Math.ceil(totalEntries / pagination.pageSize);
-  const hasNextPage = pagination.page < totalPages;
-  const hasPrevPage = pagination.page > 1;
+export const createPaginationData = (
+  data: any,
+  pagination: IPaginationResponse
+) => {
+  const totalEntries = pagination?.totalRecords || 1;
+  const totalPages = pagination.totalPages;
+  const hasNextPage = pagination.hasNextPage;
+  const hasPrevPage = pagination.hasPreviousPage;
 
   return {
-    total: data?.totalPageSize || 1,
+    total: totalEntries,
     totalPages,
     hasNextPage,
     hasPrevPage,

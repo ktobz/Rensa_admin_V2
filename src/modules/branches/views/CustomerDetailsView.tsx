@@ -8,7 +8,7 @@ import { OrderTable } from "@/modules/orders";
 import { TotalCard } from "@/components/index";
 import CustomSearch from "@/components/input/CustomSearch";
 import CustomerService from "@/services/customer-service";
-import { ICustomerData } from "@/types/globalTypes";
+import { IUserData } from "@/types/globalTypes";
 import { useIds } from "@/utils/hooks";
 import { VerificationStatus } from "@/components/feedback/VerfiedStatus";
 import VendgramCustomModal from "@/components/modal/Modal";
@@ -39,17 +39,17 @@ export function CustomerDetailsView() {
   };
 
   const { data, isLoading, isError } = useQuery(
-    ["customers", customerId],
+    ["user", customerId],
     () =>
       CustomerService.getCustomerDetails(customerId || "").then((res) => {
         const data = res.data?.data;
-        return data as ICustomerData;
+        return data as IUserData;
       }),
     {
       retry: 0,
       refetchOnWindowFocus: false,
       enabled: !!customerId,
-      initialData: state as ICustomerData,
+      initialData: state as IUserData,
     }
   );
 
@@ -92,7 +92,7 @@ export function CustomerDetailsView() {
         <div className="left">
           <div className="header">
             <MuiTypography variant="h3" className="name">
-              {data?.full_name || "-"}
+              {data?.firstName || "-"} {data?.lastName || "-"}
             </MuiTypography>
           </div>
           <div className="outlet-info">
@@ -101,7 +101,7 @@ export function CustomerDetailsView() {
                 Phone number
               </MuiTypography>
               <MuiTypography variant="body2" className="body">
-                {data?.phone}
+                {data?.phoneNumber}
               </MuiTypography>
             </div>
             <div className="info-detail">
@@ -117,7 +117,7 @@ export function CustomerDetailsView() {
                 Username
               </MuiTypography>
               <MuiTypography variant="body2" className="body">
-                {data?.full_name}
+                {data?.userName}
               </MuiTypography>
             </div>
             <div className="info-detail">
@@ -125,8 +125,8 @@ export function CustomerDetailsView() {
                 Date joined
               </MuiTypography>
               <MuiTypography variant="body2" className="body">
-                {data
-                  ? format(new Date(data?.created_at || ""), "LL MMMM, yyyy")
+                {data?.creationTime
+                  ? format(new Date(data?.creationTime || ""), "LL MMMM, yyyy")
                   : ""}
               </MuiTypography>
             </div>
@@ -141,7 +141,7 @@ export function CustomerDetailsView() {
                     borderRadius: "5px",
                     fontSize: "12px",
                   }}
-                  type={data?.profile_image ? "true" : "false"}
+                  type={data?.emailConfirmed ? "true" : "false"}
                 />
               </MuiTypography>
             </div>
@@ -304,7 +304,7 @@ const PageContent = styled.section`
 
     & .outlet-info {
       display: flex;
-      gap: 20px;
+      gap: 5px 20px;
       flex-wrap: wrap;
 
       & .info-detail {

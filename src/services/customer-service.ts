@@ -1,14 +1,15 @@
 import { getToken } from "utils/helper-funcs";
 import HTTP from "./Http";
-import { IOrderQuery } from "@/types/globalTypes";
+import { IOrderQuery, IUsersResponse } from "@/types/globalTypes";
+import { AxiosPromise } from "axios";
 
 const PATHS = {
-  customers: "/admin/customers",
+  customers: "/admin/users",
   dashboardMetrics: "/orders/dashboard",
 };
 
 const CustomerService = {
-  getAll(query?: string) {
+  getAll(query?: string): AxiosPromise<IUsersResponse> {
     return HTTP.get(`${PATHS.customers}${query ? query : ""}`, {
       headers: {
         Authorization: getToken(),

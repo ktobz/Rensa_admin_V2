@@ -217,6 +217,13 @@ const theme = createTheme({
         },
       },
     },
+    MuiDivider: {
+      styleOverrides: {
+        root: {
+          borderColor: "#f4f4f4",
+        },
+      },
+    },
     MuiFormLabel: {
       styleOverrides: {
         root: {
