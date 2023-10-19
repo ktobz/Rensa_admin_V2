@@ -87,11 +87,11 @@ export default function SetNewPasswordView() {
       AuthService.setNewPassword(values)
         .then((res) => {
           const { api_token, email, full_name } = res.data?.data;
-          setUser({
-            email,
-            token: api_token,
-            fullName: full_name,
-          });
+          // setUser({
+          //   email,
+          //   token: api_token,
+          //   fullName: full_name,
+          // });
           navigate("/app/dashboard", { replace: true });
         })
         .catch((err) => {

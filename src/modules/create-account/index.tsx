@@ -88,7 +88,7 @@ export const CreateAccountForm = ({
   const navigate = useNavigate();
 
   const initialData = {
-    email: "",
+    username: "",
     password: "",
     domain,
     accountType: "",
@@ -101,7 +101,6 @@ export const CreateAccountForm = ({
       .required("Email is required"),
     password: Yup.string().required("Please enter a password"),
     accountType: Yup.string().required("Please enter a your Last Name"),
-    // firstName: Yup.string().required("Please enter a First Name"),
     accepted_terms: Yup.boolean()
       .equals([true], "Accept terms")
       .required("required"),
@@ -139,17 +138,17 @@ export const CreateAccountForm = ({
     //   toggleMode({ email: values.email });
     // }, 2000);
 
-    AuthService.signUp(values)
-      .then((res) => {
-        const data = res?.data;
-        console.log(data, "response");
-        toggleMode({ email: values.email });
-      })
-      .catch((err) => {
-        const message = err?.response?.data?.message;
-        toast.error(message);
-      })
-      .finally(() => setIsSubmitting(false));
+    // AuthService.signUp(values)
+    //   .then((res) => {
+    //     const data = res?.data;
+    //     console.log(data, "response");
+    //     toggleMode({ email: values.email });
+    //   })
+    //   .catch((err) => {
+    //     const message = err?.response?.data?.message;
+    //     toast.error(message);
+    //   })
+    //   .finally(() => setIsSubmitting(false));
   };
 
   const handleTogglePassword = () => {
@@ -198,7 +197,7 @@ export const CreateAccountForm = ({
             onBlur={handleBlur}
             required
           /> */}
-          <VendgramInput
+          {/* <VendgramInput
             name="email"
             label="Company Email Address"
             placeholder="Enter email address"
@@ -209,7 +208,7 @@ export const CreateAccountForm = ({
             error={!!errors.email && touched.email}
             onBlur={handleBlur}
             required
-          />
+          /> */}
           {/* <VendgramSelect
             name="accountType"
             label="Select Account Type"

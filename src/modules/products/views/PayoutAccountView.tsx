@@ -29,10 +29,9 @@ type IViewProps = {
 };
 
 export const PayoutAccountView = ({ partnerId }: { partnerId: string }) => {
-  const navigate = useNavigate();
   const [show, setShow] = React.useState(false);
   const [mode, setMode] = React.useState("view");
-  const { email } = useUserStore((state) => state.user);
+  // const { email } = useUserStore((state) => state.user);
   const queryClient = useQueryClient();
 
   const initialData = {
@@ -68,18 +67,18 @@ export const PayoutAccountView = ({ partnerId }: { partnerId: string }) => {
     validateOnMount: false,
     onSubmit: async (values: any) => {
       setIsSubmitting(true);
-      AuthService.sendOTP({
-        email,
-      })
-        .then((res) => {
-          setShow(true);
-        })
-        .catch((err) => {
-          toast.error(err.response?.data?.message);
-        })
-        .finally(() => {
-          setIsSubmitting(false);
-        });
+      // AuthService.sendOTP({
+      //   email,
+      // })
+      //   .then((res) => {
+      //     setShow(true);
+      //   })
+      //   .catch((err) => {
+      //     toast.error(err.response?.data?.message);
+      //   })
+      //   .finally(() => {
+      //     setIsSubmitting(false);
+      //   });
     },
   });
 
@@ -180,16 +179,16 @@ export const PayoutAccountView = ({ partnerId }: { partnerId: string }) => {
   }
 
   function resendOTP(callback: () => void) {
-    AuthService.sendOTP({
-      email,
-    })
-      .then((res) => {
-        toast.success(res.data?.message || "");
-      })
-      .catch((err) => {
-        toast.error(err.response?.data?.message);
-      })
-      .finally(() => callback());
+    // AuthService.sendOTP({
+    //   email,
+    // })
+    //   .then((res) => {
+    //     toast.success(res.data?.message || "");
+    //   })
+    //   .catch((err) => {
+    //     toast.error(err.response?.data?.message);
+    //   })
+    //   .finally(() => callback());
   }
 
   const handleEdit = () => {
@@ -291,7 +290,7 @@ export const PayoutAccountView = ({ partnerId }: { partnerId: string }) => {
                   onVerify={handleVerifyOTP}
                   resendOTP={resendOTP}
                   buttonText="Submit"
-                  email={email}
+                  // email={email}
                   title=" "
                   subtitle="For security reasons, we have sent a 6-digit OTP code to your email to confirm account changes"
                   variant="payout"

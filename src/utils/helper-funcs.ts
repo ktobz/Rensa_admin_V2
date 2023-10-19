@@ -1,4 +1,5 @@
 import { IPagination, IPaginationResponse } from "@/types/globalTypes";
+import { format } from "date-fns";
 import { REFRESH_TOKEN_NAME, TOKEN_NAME } from "types/actionTypes";
 
 export const getCurrentYear = () => {
@@ -77,4 +78,13 @@ export const dataURLtoBlob = (dataurl: string = ",") => {
     u8arr[n] = bstr.charCodeAt(n);
   }
   return new Blob([u8arr], { type: mime });
+};
+
+export const formatDate = (
+  date: string | Date,
+  pattern: string = "LL MMMM, yyyy"
+) => {
+  const value = format(new Date(date || ""), pattern);
+
+  return value;
 };

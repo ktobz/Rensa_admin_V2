@@ -3,9 +3,7 @@ export interface ILoginReq {
   password: string;
 }
 export interface ISignupReq extends ILoginReq {
-  // firstName: string;
   domain: string;
-  email: string;
   password: string;
 }
 export interface IVerifyOTPReq {
@@ -447,6 +445,7 @@ export type IAppReleaseData = {
   forceUpdate: boolean;
   devicePlatform: number;
   id?: string;
+  creationTime?: string;
 };
 
 export type IAppReleaseResponse = {
@@ -490,4 +489,41 @@ export type IConditionResponse = {
   result: IPaginationResponse & {
     data: ICondition[];
   };
+};
+
+// LOOKUPS
+
+export type ILookupGroupName =
+  | "automatedMessageCategory"
+  | "automatedMessageType"
+  | "bidStatus"
+  | "bidType"
+  | "catalogueStatus"
+  | "devicePlatform"
+  | "emailType"
+  | "mailStatus"
+  | "pickupMethod"
+  | "userType";
+
+export type IAutomatedMessageCategory = {
+  name: string;
+  id: number;
+};
+
+export type ICategory = {
+  name: string;
+  id: number;
+};
+
+export type ILookups = {
+  automatedMessageCategory: ICategory[];
+  automatedMessageType: ICategory[];
+  bidStatus: ICategory[];
+  bidType: ICategory;
+  catalogueStatus: ICategory[];
+  devicePlatform: ICategory[];
+  emailType: ICategory[];
+  mailStatus: ICategory[];
+  pickupMethod: ICategory[];
+  userType: ICategory[];
 };

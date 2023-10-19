@@ -39,8 +39,9 @@ import { AppReleaseForm } from "./AppReleaseForm";
 import { DeleteAppReleaseConfirm } from "./DeleteAppReleaseConfirm";
 
 import { IAppReleaseData, IPagination } from "@/types/globalTypes";
-import { createPaginationData } from "@/utils/helper-funcs";
+import { createPaginationData, formatDate } from "@/utils/helper-funcs";
 import AppReleaseService from "@/services/app-release-service";
+import OtherService from "@/services/others.service";
 
 const defaultQuery: IPagination = {
   pageSize: 15,
@@ -169,6 +170,20 @@ export function AppReleaseTable() {
           hasNextPage,
           hasPrevPage,
         }));
+
+        return data;
+      }),
+    {
+      retry: 0,
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  const { data: a } = useQuery(
+    ["app-lookup"],
+    () =>
+      OtherService.getLookup().then((res) => {
+        const data = res.data?.result;
 
         return data;
       }),
@@ -342,7 +357,9 @@ export function AppReleaseTable() {
                       {row?.releaseNotes || "-"}
                     </MuiTableCell>
 
-                    <MuiTableCell align="left">-</MuiTableCell>
+                    <MuiTableCell align="left">
+                      {formatDate(row?.creationTime || "")}
+                    </MuiTableCell>
 
                     <MuiTableCell align="left">
                       <MuiBox className="action-group">
