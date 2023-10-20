@@ -98,7 +98,11 @@ export default function AppContentLayout() {
             </div>
             <MuiButton
               variant="text"
-              style={{ width: "100%" }}
+              style={{
+                width: "100%",
+                justifyContent: "start",
+                paddingLeft: "40px",
+              }}
               onClick={handleLogout}
               startIcon={<IconLogout />}>
               Logout

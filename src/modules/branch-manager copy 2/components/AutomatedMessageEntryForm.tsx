@@ -71,28 +71,27 @@ export const AutomatedMessageEntryForm = ({
       <StyledForm onSubmit={handleSubmit}>
         <div className="wrapper">
           <VendgramInput
-            id="title"
-            name="title"
-            label="Title"
-            placeholder="Enter title"
-            type="text"
-            value={values.title}
-            onChange={handleChange}
-            helperText={errors.title}
-            error={!!errors.title}
-            required
-          />
-
-          <VendgramInput
             id="subject"
             name="subject"
             label="Subject"
             placeholder="Enter subject"
             type="text"
             value={values.subject}
-            onChange={handleChange}
             helperText={errors.subject}
             error={!!errors.subject}
+            onChange={() => null}
+            disabled
+          />
+
+          <VendgramInput
+            id="title"
+            name="title"
+            label="Title"
+            placeholder="Enter title"
+            type="text"
+            value={values.title}
+            helperText={errors.title}
+            error={!!errors.title}
             required
           />
 

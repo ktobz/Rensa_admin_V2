@@ -24,6 +24,7 @@ import CustomTab from "@/components/other/CustomTab";
 import { createPaginationData } from "@/utils/helper-funcs";
 import { AutomatedMessageEntryForm } from "./AutomatedMessageEntryForm";
 import PaymentCardSkeleton from "@/components/skeleton/PaymentCardSkeleton";
+import useCachedDataStore from "@/config/store-config/lookup";
 
 const defaultQuery: IPagination = {
   pageSize: 1000,
@@ -34,15 +35,30 @@ const defaultQuery: IPagination = {
   totalPages: 1,
 };
 
+const groupByKey = (data: any[], key: string) => {
+  const groupedData: { [key: number]: any } = {};
+
+  for (let i = 0; i < data?.length; i += 1) {
+    if (data[i]?.[key] in groupedData) {
+      groupedData[data[i]?.[key]] = [...groupedData[data[i]?.[key]], data[i]];
+    } else {
+      groupedData[data[i]?.[key]] = [data[i]];
+    }
+  }
+
+  return groupedData;
+};
+
 export function AutomatedMessagesView() {
   const queryClient = useQueryClient();
+  const {
+    lookup: { automatedMessageCategory },
+  } = useCachedDataStore((state) => state.cache);
 
   const [pagination, setPagination] = React.useState<IPagination>(defaultQuery);
   const [show, setShow] = React.useState(false);
   const [editData, setEditData] = React.useState<null | any>(null);
-  const [current, setCurrent] = React.useState(() => {
-    return 0;
-  });
+  const [current, setCurrent] = React.useState(1);
 
   const handleChangeIndex = (index: number) => () => {
     setCurrent(index);
@@ -65,7 +81,8 @@ export function AutomatedMessagesView() {
       ).then((res) => {
         const data = res.data?.result;
 
-        return data;
+        const groupedData = groupByKey(data, "automatedMessageCategory");
+        return groupedData;
       }),
     {
       retry: 0,
@@ -96,33 +113,18 @@ export function AutomatedMessagesView() {
           variant="fullWidth"
           style={{ width: "100%" }}
           value={current || 0}>
-          <CustomTab
-            onClick={handleChangeIndex(0)}
-            value={0}
-            label="General"
-            current={current}
-            hideIcon
-            variant="primary"
-            className="custom-tab"
-          />
-          <CustomTab
-            onClick={handleChangeIndex(1)}
-            value={1}
-            label="Seller"
-            current={current}
-            hideIcon
-            variant="primary"
-            className="custom-tab"
-          />
-          <CustomTab
-            onClick={handleChangeIndex(2)}
-            value={2}
-            label="Buyer"
-            current={current}
-            hideIcon
-            variant="primary"
-            className="custom-tab"
-          />
+          {automatedMessageCategory?.map((x, index) => (
+            <CustomTab
+              key={x.id}
+              onClick={handleChangeIndex(x.id)}
+              value={x.id}
+              label={x.name}
+              current={current}
+              hideIcon
+              variant="primary"
+              className="custom-tab"
+            />
+          ))}
         </CustomTabs>
       </div>
       <SimpleBar
@@ -134,13 +136,16 @@ export function AutomatedMessagesView() {
         <div className="rows-wrapper">
           {!isLoading &&
             data &&
-            data?.map((row) => (
+            data?.[current]?.map((row: IAutomatedMessage) => (
               <div key={row?.id} className="notif-row">
                 <div className="content">
                   <IconBellBlue className="icon" />
                   <div className="text-group">
-                    <MuiTypography variant="body2" className="faq-title">
+                    <MuiTypography variant="body2" className="faq-subject">
                       {row?.subject}
+                    </MuiTypography>
+                    <MuiTypography variant="body2" className="faq-title">
+                      {row?.title}
                     </MuiTypography>
                     <MuiTypography variant="body2" className="body">
                       {row?.message}
@@ -170,16 +175,19 @@ export function AutomatedMessagesView() {
         </div>
       </SimpleBar>
 
-      {!isLoading && data && data?.length === 0 && !isError && (
-        <div className="no-data-cell">
-          <NoData
-            title="No automated messages yet"
-            icon={<IconNotificationInfo className="icon" />}
-            message="Create one and start sending to users"></NoData>
-        </div>
-      )}
+      {!isLoading &&
+        data?.[current] &&
+        data?.[current]?.length === 0 &&
+        !isError && (
+          <div className="no-data-cell">
+            <NoData
+              title="No automated messages yet"
+              icon={<IconNotificationInfo className="icon" />}
+              message="Create one and start sending to users"></NoData>
+          </div>
+        )}
 
-      {isError && !data && (
+      {isError && !data?.[current] && (
         <div className="no-data-cell">
           <NoData
             title="An Error Occurred"
@@ -333,6 +341,13 @@ const StyledPage = styled.section`
     & .faq-title {
       color: #000;
       font-weight: 500;
+      font-size: 12px;
+    }
+
+    & .faq-subject {
+      color: #000;
+      font-weight: 600;
+      font-size: 12px;
     }
 
     & .body {
