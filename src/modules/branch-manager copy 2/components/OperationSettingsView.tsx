@@ -119,7 +119,7 @@ export function OperationSettingsView() {
                 Buyer service fee
               </MuiTypography>
               <MuiTypography variant="body1" className="value">
-                {serviceSetting?.percentage || 0}%
+                ₦{serviceSetting?.percentage || 0}
               </MuiTypography>
             </div>
             <div className="data-row">
