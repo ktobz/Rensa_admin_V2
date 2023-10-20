@@ -108,12 +108,14 @@ const PageContent = styled.section`
   }
 
   & .cards {
-    display: flex;
+    display: grid;
     gap: 10px;
-    flex-wrap: wrap;
+    /* grid-template-columns: repeat(5, minmax(auto-fit, 200px)); */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 
     & .card {
-      width: calc((100% - 40px) / 5);
+      /* width: calc((100% - 40px) / 5); */
+      width: 100%;
     }
   }
 

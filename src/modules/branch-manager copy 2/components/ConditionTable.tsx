@@ -38,10 +38,11 @@ import {
 
 import VendgramCustomModal from "@/components/modal/Modal";
 
-import { INotificationData, IPagination } from "@/types/globalTypes";
+import { ICondition, IPagination } from "@/types/globalTypes";
 import NotificationService from "@/services/notification-service";
 import { ConditionEntryForm } from "./ConditionEntryForm";
 import { DeleteConfirm } from "./DeleteConfirm";
+import { createPaginationData } from "@/utils/helper-funcs";
 
 const defaultQuery: IPagination = {
   pageSize: 15,
@@ -75,31 +76,30 @@ export function ConditionTable() {
     setShow((prev) => ({ ...prev, delete: true }));
   };
 
-  const handleSetEditData = (data: INotificationData) => () => {
+  const handleSetEditData = (data: ICondition) => () => {
     setEditData(data);
     setShow((prev) => ({ ...prev, add: true }));
   };
 
   const { data, isLoading, isError } = useQuery(
-    ["all-notifications", pagination.page, pagination.pageSize],
+    ["all-conditions", pagination.page, pagination.pageSize],
     () =>
-      NotificationService.getAll(
-        `?page=${pagination.page}&perPage=${pagination.pageSize}`
+      NotificationService.getConditions(
+        `?PageNumber=${pagination.page}&PageSize=${pagination.pageSize}`
       ).then((res) => {
-        const data = res.data?.data;
-        // const { hasNextPage, hasPrevPage, total, totalPages } =
-        //   createPaginationData(data, pagination);
+        const { data, ...paginationData } = res.data?.result;
+        const { hasNextPage, hasPrevPage, total, totalPages } =
+          createPaginationData(data, paginationData);
 
-        // setPagination((prev) => ({
-        //   ...prev,
-        //   total,
-        //   totalPages,
-        //   hasNextPage,
-        //   hasPrevPage,
-        // }));
-        // return data;
+        setPagination((prev) => ({
+          ...prev,
+          total,
+          totalPages,
+          hasNextPage,
+          hasPrevPage,
+        }));
 
-        return data as INotificationData[];
+        return data;
       }),
     {
       retry: 0,
@@ -126,7 +126,7 @@ export function ConditionTable() {
 
   const handleDelete = (callback: () => void) => () => {
     const ids = deleteData.map((data) => data?.id);
-    NotificationService.delete(ids?.[0] || 0)
+    NotificationService.deleteConditions(ids?.[0] || 0)
       .then((res) => {
         handleRefresh?.();
         toast.success(res.data?.message || "");
@@ -141,7 +141,7 @@ export function ConditionTable() {
 
   return (
     <StyledPage>
-      <TableWrapper>
+      <TableWrapper className="table-wrapper">
         <div className="tab-section">
           <div className="top-section">
             <MuiTypography variant="body2" className="heading">
@@ -157,20 +157,12 @@ export function ConditionTable() {
             maxWidth: "100%",
             minHeight: data?.length === 0 ? "inherit" : "unset",
             flex: 1,
+            maxHeight: 600,
           }}>
-          <MuiTable
-            sx={{
-              // minWidth: 750,
-              minHeight: data?.length === 0 ? "inherit" : "unset",
-            }}
-            aria-label="simple table">
+          <MuiTable aria-label="simple table">
             <MuiTableHead>
               <MuiTableRow>
-                <MuiTableCell className="heading" align="left"></MuiTableCell>
-                <MuiTableCell
-                  className="heading"
-                  align="left"
-                  style={{ minWidth: "150px" }}>
+                <MuiTableCell className="heading" width="100%" align="left">
                   Conditions
                 </MuiTableCell>
 
@@ -190,16 +182,12 @@ export function ConditionTable() {
                       "&:last-child td, &:last-child th": { border: 0 },
                     }}>
                     <MuiTableCell align="left">
-                      <MuiCardMedia src="" component="img" />
-                    </MuiTableCell>
-                    <MuiTableCell align="left">
                       <div className="data">
                         <MuiTypography variant="body1" className="title">
-                          New
+                          {row?.name}
                         </MuiTypography>
                         <MuiTypography variant="body1" className="body">
-                          Excellent condition, but has previously been worn or
-                          used. No signs of wear or defects.
+                          {row?.description}
                         </MuiTypography>
                       </div>
                     </MuiTableCell>
@@ -319,7 +307,7 @@ export function ConditionTable() {
 
 const StyledPage = styled.section`
   width: 100%;
-  padding: 20px 10px;
+  padding: 10px 0px;
   & .tab-section {
     margin: 15px 0 0 !important;
     display: flex;
@@ -336,13 +324,12 @@ const StyledPage = styled.section`
 
     justify-content: space-between;
     align-items: center;
-    /* margin-bottom: 10px; */
     margin: 0;
     padding: 0 20px !important;
 
     & .heading {
       font-weight: 600;
-      color: #000;
+      color: #000 !important;
       font-size: 20px;
       font-family: "Helvetica";
     }
@@ -376,55 +363,6 @@ const StyledPage = styled.section`
     }
   }
 
-  & .group-selection {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-    background-color: #fff;
-    box-shadow: -1px 2px 32px 0px #00000021;
-    padding: 10px;
-    width: fit-content;
-    border-radius: 10px;
-    position: absolute;
-    top: -30px;
-    left: 60px;
-    margin: 10px 0;
-    & .info {
-      font-size: 13px;
-      color: #64748b;
-    }
-    & .label {
-      color: #64748b;
-      font-size: 12px;
-    }
-
-    & .publish-label {
-      margin-right: 10px;
-    }
-    & .delete-label {
-      color: #ef5050;
-    }
-
-    & .actions {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    & .delete-btn {
-      background: #ef50501a;
-      padding: 5px;
-      border-radius: 5px;
-    }
-  }
-
-  & .link {
-    color: #1e75bb;
-    text-transform: capitalize;
-    text-underline-offset: 2px;
-    /* font-size: 14px; */
-  }
-
   & .action-group {
     display: flex;
     gap: 10px;
@@ -440,27 +378,6 @@ const StyledPage = styled.section`
     svg {
       width: 15px;
       height: 15px;
-    }
-  }
-
-  & .top-section {
-    display: flex;
-    gap: 20px;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-
-    & .view-all {
-      height: fit-content;
-      min-height: fit-content;
-      font-family: "Helvetica";
-    }
-
-    & .card-name {
-      font-weight: 600;
-      color: #000;
-      font-size: 14px;
-      font-family: "Helvetica";
     }
   }
 

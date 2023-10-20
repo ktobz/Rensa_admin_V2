@@ -38,10 +38,11 @@ import {
 
 import VendgramCustomModal from "@/components/modal/Modal";
 
-import { INotificationData, IPagination } from "@/types/globalTypes";
+import { ICategoryData, IPagination } from "@/types/globalTypes";
 import NotificationService from "@/services/notification-service";
 import { CategoryForm } from "./CategoryForm";
 import { DeleteConfirm } from "./DeleteConfirm";
+import { createPaginationData } from "@/utils/helper-funcs";
 
 const defaultQuery: IPagination = {
   pageSize: 15,
@@ -75,7 +76,7 @@ export function CategoryTable() {
     setShow((prev) => ({ ...prev, delete: true }));
   };
 
-  const handleSetEditData = (data: INotificationData) => () => {
+  const handleSetEditData = (data: ICategoryData) => () => {
     setEditData(data);
     setShow((prev) => ({ ...prev, add: true }));
   };
@@ -83,23 +84,22 @@ export function CategoryTable() {
   const { data, isLoading, isError } = useQuery(
     ["all-categories", pagination.page, pagination.pageSize],
     () =>
-      NotificationService.getAll(
-        `?page=${pagination.page}&perPage=${pagination.pageSize}`
+      NotificationService.getCategories(
+        `?PageNumber=${pagination.page}&PageSize=${pagination.pageSize}`
       ).then((res) => {
-        const data = res.data?.data;
-        // const { hasNextPage, hasPrevPage, total, totalPages } =
-        //   createPaginationData(data, pagination);
+        const { data, ...paginationData } = res.data?.result;
+        const { hasNextPage, hasPrevPage, total, totalPages } =
+          createPaginationData(data, paginationData);
 
-        // setPagination((prev) => ({
-        //   ...prev,
-        //   total,
-        //   totalPages,
-        //   hasNextPage,
-        //   hasPrevPage,
-        // }));
-        // return data;
+        setPagination((prev) => ({
+          ...prev,
+          total,
+          totalPages,
+          hasNextPage,
+          hasPrevPage,
+        }));
 
-        return data as INotificationData[];
+        return data;
       }),
     {
       retry: 0,
@@ -126,7 +126,7 @@ export function CategoryTable() {
 
   const handleDelete = (callback: () => void) => () => {
     const ids = deleteData.map((data) => data?.id);
-    NotificationService.delete(ids?.[0] || 0)
+    NotificationService.deleteCategory(ids?.[0] || 0)
       .then((res) => {
         handleRefresh?.();
         toast.success(res.data?.message || "");
@@ -157,20 +157,22 @@ export function CategoryTable() {
             maxWidth: "100%",
             minHeight: data?.length === 0 ? "inherit" : "unset",
             flex: 1,
+            maxHeight: 600,
           }}>
           <MuiTable
-            sx={{
-              // minWidth: 750,
-              minHeight: data?.length === 0 ? "inherit" : "unset",
-            }}
+            sx={
+              {
+                // minWidth: 750,
+              }
+            }
             aria-label="simple table">
             <MuiTableHead>
               <MuiTableRow>
-                <MuiTableCell className="heading" align="left"></MuiTableCell>
                 <MuiTableCell
                   className="heading"
-                  align="left"
-                  style={{ minWidth: "150px" }}>
+                  width={30}
+                  align="left"></MuiTableCell>
+                <MuiTableCell className="heading" width="100%" align="left">
                   Category name
                 </MuiTableCell>
 
@@ -190,9 +192,13 @@ export function CategoryTable() {
                       "&:last-child td, &:last-child th": { border: 0 },
                     }}>
                     <MuiTableCell align="left">
-                      <MuiCardMedia src="" component="img" />
+                      <MuiCardMedia
+                        src={row?.fileUrl}
+                        className="img"
+                        component="img"
+                      />
                     </MuiTableCell>
-                    <MuiTableCell align="left">Furniture</MuiTableCell>
+                    <MuiTableCell align="left">{row?.name}</MuiTableCell>
 
                     <MuiTableCell align="left">
                       <MuiBox className="action-group">
@@ -283,7 +289,7 @@ export function CategoryTable() {
 
 const StyledPage = styled.section`
   width: 100%;
-  padding: 20px 10px;
+  padding: 10px;
   & .tab-section {
     margin: 15px 0 0 !important;
     display: flex;
@@ -293,6 +299,11 @@ const StyledPage = styled.section`
     width: 100%;
   }
 
+  & .img {
+    width: 25px;
+    height: 25px;
+  }
+
   & .top-section {
     display: flex;
     gap: 20px;
@@ -300,13 +311,12 @@ const StyledPage = styled.section`
 
     justify-content: space-between;
     align-items: center;
-    /* margin-bottom: 10px; */
     margin: 0;
     padding: 0 20px !important;
 
     & .heading {
       font-weight: 600;
-      color: #000;
+      color: #000 !important;
       font-size: 20px;
       font-family: "Helvetica";
     }

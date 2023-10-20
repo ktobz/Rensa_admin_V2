@@ -11,6 +11,7 @@ import NotificationService from "@/services/notification-service";
 import VendgramSelect from "@/components/select/autoComplete";
 import AppReleaseService from "@/services/app-release-service";
 import { IAppReleaseData } from "@/types/globalTypes";
+import useCachedDataStore from "@/config/store-config/lookup";
 
 const SCHEMA = Yup.object().shape({
   devicePlatform: Yup.number().required("required").min(1, "Required"),
@@ -32,7 +33,9 @@ export const AppReleaseForm = ({
   handleClose,
   refreshQuery,
 }: IViewProps) => {
-  const [show, setShow] = React.useState(false);
+  const {
+    lookup: { devicePlatform },
+  } = useCachedDataStore((state) => state.cache);
 
   const initialData: IAppReleaseData = {
     id: initData?.id || "",
@@ -42,6 +45,7 @@ export const AppReleaseForm = ({
     versionNumber: initData?.versionNumber || "",
   };
 
+  const [show, setShow] = React.useState(false);
   const [action, setAction] = React.useState<"send" | "save" | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isSaving, setIsSaving] = React.useState(false);
@@ -92,7 +96,7 @@ export const AppReleaseForm = ({
             value={values.devicePlatform}
             onChange={handleChange}
             helperText={errors.devicePlatform}
-            options={devices}
+            options={devicePlatform}
             error={!!errors.devicePlatform}
             required
           />
@@ -216,11 +220,11 @@ const StyledForm = styled.form`
 const devices = [
   {
     id: 1,
-    name: "IOS",
+    name: "Android",
   },
   {
     id: 2,
-    name: "Android",
+    name: "IOS",
   },
 ];
 

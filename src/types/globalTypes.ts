@@ -457,7 +457,9 @@ export type IAppReleaseResponse = {
 // CATALOGUE CATEGORY
 export type ICategoryData = {
   name: string;
-  image: string;
+  file: string;
+  id?: string;
+  fileUrl?: string;
 };
 
 export type ICategoryDataResponse = {
@@ -466,23 +468,29 @@ export type ICategoryDataResponse = {
   };
 };
 
+export type IEntryResponse = IResponse & {
+  result: {
+    message: string;
+  };
+};
+
 // AUTOMATED MESSAGE CATEGORY
 export type IAutomatedMessage = {
   title: string;
   subject: string;
   message: string;
+  id?: string;
 };
 
 export type IAutomatedMessageResponse = {
-  result: IPaginationResponse & {
-    data: IAutomatedMessage[];
-  };
+  result: IAutomatedMessage[];
 };
 
 // ConditionE CATEGORY
 export type ICondition = {
   name: string;
   description: string;
+  id?: string;
 };
 
 export type IConditionResponse = {
@@ -519,7 +527,7 @@ export type ILookups = {
   automatedMessageCategory: ICategory[];
   automatedMessageType: ICategory[];
   bidStatus: ICategory[];
-  bidType: ICategory;
+  bidType: ICategory[];
   catalogueStatus: ICategory[];
   devicePlatform: ICategory[];
   emailType: ICategory[];

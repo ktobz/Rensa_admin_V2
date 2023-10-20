@@ -1,5 +1,7 @@
 import { getToken } from "utils/helper-funcs";
 import HTTP from "./unAuthHttp";
+import { AxiosPromise } from "axios";
+import { ILookups } from "@/types/globalTypes";
 const PATHS = {
   period: "/admin/periods",
   status: "/admin/statuses",
@@ -22,7 +24,7 @@ const OtherService = {
       },
     });
   },
-  getLookup() {
+  getLookup(): AxiosPromise<{ result: ILookups }> {
     return HTTP.get(`${PATHS.lookup}`, {
       headers: {
         Authorization: getToken(),

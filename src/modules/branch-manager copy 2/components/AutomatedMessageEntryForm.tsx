@@ -9,8 +9,9 @@ import ConfigService from "@/services/config-service";
 import NotificationService from "@/services/notification-service";
 
 const SCHEMA = Yup.object().shape({
-  name: Yup.string().required("required"),
-  description: Yup.string().required("required"),
+  title: Yup.string().required("required"),
+  message: Yup.string().required("required"),
+  subject: Yup.string().required("required"),
 });
 
 type IViewProps = {
@@ -20,7 +21,7 @@ type IViewProps = {
   handleClose: () => void;
 };
 
-export const ConditionEntryForm = ({
+export const AutomatedMessageEntryForm = ({
   mode,
   initData,
   handleClose,
@@ -28,19 +29,19 @@ export const ConditionEntryForm = ({
 }: IViewProps) => {
   const initialData = {
     id: initData?.id || "",
-    name: initData?.name || "",
-    description: initData?.description || "",
+    title: initData?.title || "",
+    subject: initData?.subject || "",
+    message: initData?.message || "",
   };
 
-  const [action, setAction] = React.useState<"send" | "save" | null>(null);
-  const [isSaving, setIsSaving] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const handleNotificationAddEdit = (formValues: any) => {
-    setIsSaving(true);
+    setIsSubmitting(true);
 
     (initialData?.id
-      ? NotificationService.updateConditions(initialData?.id, formValues)
-      : NotificationService.createConditions(formValues)
+      ? NotificationService.updateAutomatedMessage(initialData?.id, formValues)
+      : NotificationService.createAutomatedMessage(formValues)
     )
       .then((res) => {
         refreshQuery?.();
@@ -49,7 +50,7 @@ export const ConditionEntryForm = ({
       .catch((err) => {
         toast.error(err?.response?.data?.message || "");
       })
-      .finally(() => setIsSaving(false));
+      .finally(() => setIsSubmitting(false));
   };
 
   const formik = useFormik({
@@ -70,28 +71,41 @@ export const ConditionEntryForm = ({
       <StyledForm onSubmit={handleSubmit}>
         <div className="wrapper">
           <VendgramInput
-            id="name"
-            name="name"
-            label="Condition name"
-            placeholder="Enter name"
+            id="title"
+            name="title"
+            label="Title"
+            placeholder="Enter title"
             type="text"
-            value={values.name}
+            value={values.title}
             onChange={handleChange}
-            helperText={errors.name}
-            error={!!errors.name}
+            helperText={errors.title}
+            error={!!errors.title}
             required
           />
 
           <VendgramInput
-            id="description"
-            name="description"
-            label="Brief Description"
-            placeholder="Describe condition"
+            id="subject"
+            name="subject"
+            label="Subject"
+            placeholder="Enter subject"
             type="text"
-            value={values.description}
+            value={values.subject}
             onChange={handleChange}
-            helperText={errors.description}
-            error={!!errors.description}
+            helperText={errors.subject}
+            error={!!errors.subject}
+            required
+          />
+
+          <VendgramInput
+            id="message"
+            name="message"
+            label="Message"
+            placeholder="Enter message"
+            type="text"
+            value={values.message}
+            onChange={handleChange}
+            helperText={errors.message}
+            error={!!errors.message}
             required
             rows={2}
             multiline
@@ -101,11 +115,13 @@ export const ConditionEntryForm = ({
             <MuiButton
               type="submit"
               variant="contained"
-              disabled={isSaving}
+              disabled={isSubmitting}
               color="primary"
-              startIcon={isSaving ? <MuiCircularProgress size={16} /> : null}
+              startIcon={
+                isSubmitting ? <MuiCircularProgress size={16} /> : null
+              }
               className="btn">
-              {mode === "edit" ? "Save Condition" : "Add condition"}
+              {mode === "edit" ? "Save message" : "Add message"}
             </MuiButton>
           </div>
         </div>

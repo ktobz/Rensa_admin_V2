@@ -1,8 +1,15 @@
 import * as React from "react";
 import { useQuery, useQueryClient } from "react-query";
+import SimpleBar from "simplebar-react";
 
 import { NoData } from "@/components/feedback/NoData";
-import { MuiBox, MuiIconButton, MuiTypography, styled } from "@/lib/index";
+import {
+  MuiBox,
+  MuiIconButton,
+  MuiSkeleton,
+  MuiTypography,
+  styled,
+} from "@/lib/index";
 import {
   IconBellBlue,
   IconEdit,
@@ -10,13 +17,16 @@ import {
 } from "@/lib/mui.lib.icons";
 
 import VendgramCustomModal from "@/components/modal/Modal";
-import { INotificationData, IPagination } from "@/types/globalTypes";
+import { IAutomatedMessage, IPagination } from "@/types/globalTypes";
 import NotificationService from "@/services/notification-service";
 import CustomTabs from "@/components/other/CustomTabs";
 import CustomTab from "@/components/other/CustomTab";
+import { createPaginationData } from "@/utils/helper-funcs";
+import { AutomatedMessageEntryForm } from "./AutomatedMessageEntryForm";
+import PaymentCardSkeleton from "@/components/skeleton/PaymentCardSkeleton";
 
 const defaultQuery: IPagination = {
-  pageSize: 15,
+  pageSize: 1000,
   page: 1,
   total: 1,
   hasNextPage: false,
@@ -27,10 +37,9 @@ const defaultQuery: IPagination = {
 export function AutomatedMessagesView() {
   const queryClient = useQueryClient();
 
+  const [pagination, setPagination] = React.useState<IPagination>(defaultQuery);
   const [show, setShow] = React.useState(false);
-
   const [editData, setEditData] = React.useState<null | any>(null);
-
   const [current, setCurrent] = React.useState(() => {
     return 0;
   });
@@ -43,31 +52,33 @@ export function AutomatedMessagesView() {
     setShow((prev) => !prev);
   };
 
-  const handleSetEditData = (data: INotificationData) => () => {
+  const handleSetEditData = (data: IAutomatedMessage) => () => {
     setEditData(data);
     setShow(true);
   };
 
   const { data, isLoading, isError } = useQuery(
-    ["all-automated-message"],
+    ["all-auto-messages"],
     () =>
-      NotificationService.getAll("").then((res) => {
-        const data = res.data?.data;
-        return data as INotificationData[];
+      NotificationService.getAutomatedMessages(
+        `?PageNumber=${pagination.page}&PageSize=${pagination.pageSize}`
+      ).then((res) => {
+        const data = res.data?.result;
+
+        return data;
       }),
     {
       retry: 0,
       refetchOnWindowFocus: false,
     }
   );
-
   const handleCloseModal = () => {
     setShow(false);
     setEditData(undefined);
   };
 
   const handleRefresh = () => {
-    queryClient.invalidateQueries(["all-automated-message"]);
+    queryClient.invalidateQueries(["all-auto-messages"]);
     handleCloseModal();
   };
 
@@ -114,33 +125,50 @@ export function AutomatedMessagesView() {
           />
         </CustomTabs>
       </div>
-      <div className="rows-wrapper">
-        {!isLoading &&
-          data &&
-          data?.map((row) => (
-            <div key={row?.id} className="notif-row">
-              <div className="content">
-                <IconBellBlue className="icon" />
-                <div className="text-group">
-                  <MuiTypography variant="body2" className="faq-title">
-                    {row?.title}
-                  </MuiTypography>
-                  <MuiTypography variant="body2" className="body">
-                    {row?.description}
-                  </MuiTypography>
+      <SimpleBar
+        style={{
+          height: "660px",
+          width: "calc(100% + 10px)",
+          paddingRight: "20px",
+        }}>
+        <div className="rows-wrapper">
+          {!isLoading &&
+            data &&
+            data?.map((row) => (
+              <div key={row?.id} className="notif-row">
+                <div className="content">
+                  <IconBellBlue className="icon" />
+                  <div className="text-group">
+                    <MuiTypography variant="body2" className="faq-title">
+                      {row?.subject}
+                    </MuiTypography>
+                    <MuiTypography variant="body2" className="body">
+                      {row?.message}
+                    </MuiTypography>
+                  </div>
                 </div>
+                <MuiBox className="action-group">
+                  <MuiIconButton
+                    color="warning"
+                    onClick={handleSetEditData(row)}
+                    className={`action-btn edit-btn btn `}>
+                    <IconEdit />
+                  </MuiIconButton>
+                </MuiBox>
               </div>
-              <MuiBox className="action-group">
-                <MuiIconButton
-                  color="warning"
-                  onClick={handleSetEditData(row)}
-                  className={`action-btn edit-btn btn `}>
-                  <IconEdit />
-                </MuiIconButton>
-              </MuiBox>
-            </div>
-          ))}
-      </div>
+            ))}
+          {!data &&
+            isLoading &&
+            [...Array(10)].map((_, index) => (
+              <MuiSkeleton
+                variant="rounded"
+                key={index}
+                className="notif-row"
+                style={{ background: "#fbfbfb", margin: "10px 0" }}
+              />
+            ))}
+        </div>
+      </SimpleBar>
 
       {!isLoading && data && data?.length === 0 && !isError && (
         <div className="no-data-cell">
@@ -161,25 +189,20 @@ export function AutomatedMessagesView() {
         </div>
       )}
 
-      {/* {!data && isLoading && (
-                <CustomTableSkeleton columns={7} rows={10} />
-              )} */}
-
-      {/* <VendgramCustomModal
+      <VendgramCustomModal
         handleClose={handleToggleShow}
         open={show}
         alignTitle="left"
         closeOnOutsideClick={false}
         title={"Automated message"}
         showClose>
-        <NotificationEntryForm
+        <AutomatedMessageEntryForm
           mode={editData ? "edit" : "new"}
           initData={editData}
           refreshQuery={handleRefresh}
           handleClose={handleCloseModal}
         />
       </VendgramCustomModal>
-       */}
     </StyledPage>
   );
 }
@@ -285,7 +308,10 @@ const StyledPage = styled.section`
   }
 
   & .rows-wrapper {
-    padding: 10px;
+    padding: 10px 0 10px 10px;
+
+    /* max-height: 660px; */
+    /* overflow-y: auto; */
   }
 
   & .notif-row {
@@ -294,7 +320,9 @@ const StyledPage = styled.section`
     gap: 20px;
     align-items: center;
     border-bottom: 1px solid #eeeeee;
-    padding-bottom: 20px;
+    padding: 20px 0;
+    min-height: 80px;
+    width: 100%;
 
     & .content {
       display: flex;

@@ -19,7 +19,7 @@ import {
 } from "@/lib/index";
 
 import CustomTableSkeleton from "@/components/skeleton/CustomTableSkeleton";
-import { formatCurrency } from "@/utils/helper-funcs";
+import { formatCurrency, formatDate } from "@/utils/helper-funcs";
 import TableWrapper from "@/components/table/TableWrapper";
 import {
   IconVisibility,
@@ -443,11 +443,7 @@ export function OrderTable({
                         {row?.user?.full_name || "-"}
                       </MuiTableCell>
                       <MuiTableCell align="left">
-                        {" "}
-                        {format(
-                          new Date(row?.created_at || ""),
-                          "LL MMMM, yyyy"
-                        )}
+                        {formatDate(row?.created_at)}
                       </MuiTableCell>
                       <MuiTableCell align="left">
                         {row?.delivery_pickup_date}
@@ -480,7 +476,6 @@ export function OrderTable({
                   data?.orderList?.length === 0 &&
                   !isError && (
                     <MuiTableRow>
-                      {" "}
                       <MuiTableCell
                         colSpan={9}
                         align="center"
@@ -496,7 +491,6 @@ export function OrderTable({
 
                 {isError && !data && (
                   <MuiTableRow>
-                    {" "}
                     <MuiTableCell
                       colSpan={9}
                       className="no-data-cell"

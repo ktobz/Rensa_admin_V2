@@ -2,7 +2,7 @@ import * as React from "react";
 import SimpleBar from "simplebar-react";
 import { SwipeableDrawer } from "@mui/material";
 
-import { MuiBox, styled } from "@/lib/index";
+import { IconLogout, MuiBox, MuiButton, styled } from "@/lib/index";
 import Header from "@/components/header/Header";
 import DesktopMenu from "@/components/nav/DesktopMenu";
 import CustomMenu from "@/components/nav/CustomMenu";
@@ -16,7 +16,8 @@ import NotAuthorized from "@/components/other/401";
 import UserIdlenessFeedback from "@/components/feedback/UserIdlenessFeedback";
 
 export default function AppContentLayout() {
-  const { isAuthorized } = useUserStore((state) => state);
+  const { isAuthorized, logout } = useUserStore((state) => state);
+
   const [open, setOpen] = React.useState(false);
 
   const toggleDrawer =
@@ -34,6 +35,10 @@ export default function AppContentLayout() {
     };
 
   const year = new Date().getFullYear();
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <AppContext.Provider
@@ -60,24 +65,44 @@ export default function AppContentLayout() {
               overflow: "hidden",
             },
             "& .logo-section": {
-              borderBottom: "1px solid #000",
+              borderBottom: "1px solid #f4f4f4",
               padding: "10px",
               marginBottom: "10px",
               position: "sticky",
               background: "#fff",
+              "& .mobile-logo": {
+                width: "50%",
+                maxWidth: "120px",
+                textALign: "center",
+                margin: "auto auto 10px auto",
+              },
             },
           }}
           onOpen={toggleDrawer(true)}>
           <MuiBox
             component="section"
-            sx={{ width: "100%", overflow: "hidden" }}
+            sx={{
+              width: "100%",
+              overflow: "hidden",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              height: "100%",
+            }}
             id="mobile-menu">
             <div className="logo-section">
               <Logo className="mobile-logo" />
             </div>
-            <div style={{ width: "100%", paddingLeft: "15px" }}>
+            <div style={{ width: "100%", paddingLeft: "15px", flex: 1 }}>
               <CustomMenu />
             </div>
+            <MuiButton
+              variant="text"
+              style={{ width: "100%" }}
+              onClick={handleLogout}
+              startIcon={<IconLogout />}>
+              Logout
+            </MuiButton>
           </MuiBox>
         </SwipeableDrawer>
 
@@ -172,7 +197,8 @@ const Layout = styled.section`
     min-width: 100%;
 
     & .mobile-logo {
-      width: 100px;
+      width: 70px;
+      display: none;
     }
   }
 

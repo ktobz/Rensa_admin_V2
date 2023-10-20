@@ -93,15 +93,14 @@ export default function CustomMenu() {
     toggleDrawer(false)();
   };
 
-  const handleGotoPage = () => {
-    toggleDrawer(false)();
-  };
+  // const handleGotoPage = () => {
+  //   toggleDrawer(false)();
+  // };
 
   return (
     <StyledWrapper>
       <SimpleBar
         style={{
-          // maxHeight: "calc(100vh - 80px)",
           position: "relative",
           paddingRight: "15px",
           paddingBottom: "20px",

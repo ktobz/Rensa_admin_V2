@@ -120,53 +120,7 @@ export const BranchEntryFormView = ({
     setShow(false);
   };
 
-  const uploadImage = (image: File) => {
-    const formData = new FormData();
-    formData.append("image", image);
-
-    // UserService.updateProfileImage(formData, {
-    //   onUploadProgress: (progressEvent) => {
-    //     setUploadFileState((prev) => ({
-    //       ...prev,
-    //       isUploading: true,
-    //       progress: Math.round(
-    //         (progressEvent.loaded * 100) / progressEvent.total
-    //       ),
-    //     }));
-    //   },
-    //   timeout: 30000,
-    //   timeoutErrorMessage: "File took too long to upload",
-    // })
-    //   .then((res) => {
-    //     const data = res.data;
-    //     if (data.code === 200 || data.code === 201) {
-    //       toast.success(data.message || data.status);
-    //       setUser(data?.data);
-    //       // update STORE
-    //     } else {
-    //       toast.error(data?.message);
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     toast.error(error.response?.message);
-    //   })
-    //   .finally(() => {
-    //     setUploadFileState((prev) => ({
-    //       ...prev,
-    //       isUploading: false,
-    //       progress: 0,
-    //     }));
-    //   });
-  };
-
   const handleChangeProfileImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // setSelectedName(e.target.files[0].name);
-    setUploadFileState((prev) => ({
-      ...prev,
-      isUploading: false,
-      progress: 0,
-    }));
-
     if (e.target?.files) {
       // setFile(e.target.files[0]);
       const file = new FileReader();
@@ -174,7 +128,7 @@ export const BranchEntryFormView = ({
       file.onload = () => {
         if (file.readyState === 2) {
           setFileURL(file.result);
-          uploadImage(e.target.files?.[0] as File);
+          // uploadImage(e.target.files?.[0] as File);
         }
       };
       file.readAsDataURL(e.target.files[0]);

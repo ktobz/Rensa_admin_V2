@@ -23,6 +23,8 @@ import { IconVisibility, IconVisibilityOff } from "lib/mui.lib.icons";
 import { useUserStore } from "@/config/store-config/store.config";
 import { setAccessToken } from "@/utils/helper-funcs";
 import AuthLayoutWrapper from "@/components/layout/AuthLayoutWrapper";
+import OtherService from "@/services/others.service";
+import useCachedDataStore from "@/config/store-config/lookup";
 
 const LoginSEOData = SEOData.LOGIN;
 interface LocationProp {
@@ -33,27 +35,44 @@ export default function Login() {
   const state = useLocation().state as LocationProp;
   const navigate = useNavigate();
   const { setUser } = useUserStore();
+  const { updateLookup } = useCachedDataStore();
 
   const [mode, setMode] = React.useState<"login" | "verify">("login");
 
   const [showPassword, setShowPassword] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-  const loginUser = ({ username, password }: ILoginReq) => {
+  const loginUser = async ({ username, password }: ILoginReq) => {
     const reqData = { username, password };
     setIsSubmitting(true);
 
-    AuthService.login(reqData)
-      .then((res) => {
-        const data = res.data?.result;
-        setUser(data);
-        setAccessToken(data?.token, data?.refreshToken);
+    try {
+      const {
+        data,
+        status: loginStatus,
+        statusText,
+      } = await AuthService.login(reqData);
+      const userData = data?.result;
+      setUser(userData);
+      setAccessToken(userData?.token, userData?.refreshToken);
+
+      if (loginStatus === 200) {
+        const { data, status } = await OtherService.getLookup();
+
+        if (status === 200) {
+          updateLookup(data?.result);
+        }
+
         navigate("/app/dashboard", { replace: true });
-      })
-      .catch((err) => {
-        toast.error(err?.response?.data?.message || err?.response?.data?.error);
-      })
-      .finally(() => setIsSubmitting(false));
+        return;
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || error?.response?.data?.error
+      );
+    }
+
+    return setIsSubmitting(false);
   };
 
   const SCHEMA = Yup.object().shape({

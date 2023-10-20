@@ -12,10 +12,11 @@ import {
 } from "@/lib/index";
 import VendgramInput from "@/components/input";
 import ConfigService from "@/services/config-service";
+import NotificationService from "@/services/notification-service";
 
 const SCHEMA = Yup.object().shape({
-  title: Yup.string().required("required"),
-  description: Yup.string().required("required"),
+  name: Yup.string().required("required"),
+  fileUrl: Yup.string().required("required"),
 });
 
 type IViewProps = {
@@ -33,23 +34,29 @@ export const CategoryForm = ({
 }: IViewProps) => {
   const initialData = {
     id: initData?.id || "",
-    title: initData?.title || "",
-    description: initData?.description || "",
+    name: initData?.name || "",
+    file: initData?.fileUrl || "",
   };
 
-  const [action, setAction] = React.useState<"send" | "save" | null>(null);
   const [isSaving, setIsSaving] = React.useState(false);
+  const [fileURL, setFileURL] = React.useState<string | File | null>(
+    initData?.fileUrl || ""
+  );
+  const profileImageRef = React.useRef<HTMLInputElement>(null);
 
   const handleNotificationAddEdit = (formValues: any) => {
+    const formData = new FormData();
+    formData.append("name", formValues?.name);
+    formData.append("file", fileURL as File);
     setIsSaving(true);
 
     (initialData?.id
-      ? ConfigService.updateFAQ(initialData?.id, formValues)
-      : ConfigService.createFAQ(formValues)
+      ? NotificationService.updateCategory(initialData?.id, formData)
+      : NotificationService.createCategory(formData)
     )
       .then((res) => {
         refreshQuery?.();
-        toast.success(res.data?.message || "");
+        // toast.success(res. || "");
       })
       .catch((err) => {
         toast.error(err?.response?.data?.message || "");
@@ -70,33 +77,66 @@ export const CategoryForm = ({
 
   const { errors, handleSubmit, handleChange, values, setFieldValue } = formik;
 
+  const handleChangeProfileImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target?.files) {
+      const file = e.target?.files?.[0];
+      // setFile(e.target.files[0]);
+      const fileName = file?.name;
+      const fileType = file?.type;
+
+      if (fileType !== "image/svg+xml") {
+        setFieldValue("fileUrl", "");
+        return toast.error("Please upload an SVG file");
+      }
+
+      setFieldValue("fileUrl", fileName);
+      setFileURL(e.target.files?.[0] as File);
+      // uploadImage(e.target.files?.[0] as File);
+    }
+  };
+
+  const handleClickInputField = () => {
+    if (profileImageRef.current) {
+      profileImageRef?.current?.click();
+    }
+  };
+
   return (
     <FormikProvider value={formik}>
       <StyledForm onSubmit={handleSubmit}>
         <div className="wrapper">
           <VendgramInput
-            id="title"
-            name="title"
+            id="name"
+            name="name"
             label="Category name"
             placeholder="Enter a question"
             type="text"
-            value={values.title}
+            value={values.name}
             onChange={handleChange}
-            helperText={errors.title}
-            error={!!errors.title}
+            helperText={errors.name}
+            error={!!errors.name}
             required
           />
 
+          <input
+            ref={profileImageRef}
+            onChange={handleChangeProfileImage}
+            name="profile-image"
+            type="file"
+            accept="image/*"
+            style={{ visibility: "hidden" }}
+          />
           <VendgramInput
-            id="description"
-            name="description"
+            id="fileUrl"
+            name="fileUrl"
             label="Upload icon (SVG only)"
             placeholder="Choose file"
-            type="file"
-            value={values.description}
-            onChange={handleChange}
-            helperText={errors.description}
-            error={!!errors.description}
+            type="text"
+            value={values.fileUrl}
+            onChange={() => null}
+            helperText={errors.fileUrl}
+            error={!!errors.fileUrl}
+            onClick={handleClickInputField}
             required
             InputProps={{
               endAdornment: (

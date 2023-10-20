@@ -42,6 +42,7 @@ import { IAppReleaseData, IPagination } from "@/types/globalTypes";
 import { createPaginationData, formatDate } from "@/utils/helper-funcs";
 import AppReleaseService from "@/services/app-release-service";
 import OtherService from "@/services/others.service";
+import useCachedDataStore from "@/config/store-config/lookup";
 
 const defaultQuery: IPagination = {
   pageSize: 15,
@@ -55,6 +56,10 @@ const defaultQuery: IPagination = {
 type TShowMode = "add" | "updateStatus" | "info" | "delete" | "send";
 
 export function AppReleaseTable() {
+  const {
+    lookup: { devicePlatform },
+  } = useCachedDataStore((state) => state.cache);
+  console.log(devicePlatform);
   const queryClient = useQueryClient();
 
   const navigate = useNavigate();
@@ -170,20 +175,6 @@ export function AppReleaseTable() {
           hasNextPage,
           hasPrevPage,
         }));
-
-        return data;
-      }),
-    {
-      retry: 0,
-      refetchOnWindowFocus: false,
-    }
-  );
-
-  const { data: a } = useQuery(
-    ["app-lookup"],
-    () =>
-      OtherService.getLookup().then((res) => {
-        const data = res.data?.result;
 
         return data;
       }),
@@ -348,7 +339,9 @@ export function AppReleaseTable() {
                       />
                     </MuiTableCell> */}
 
-                    <MuiTableCell>{row?.devicePlatform}</MuiTableCell>
+                    <MuiTableCell>
+                      {devicePlatform[(row?.devicePlatform || 1) - 1]?.name}
+                    </MuiTableCell>
                     <MuiTableCell align="left">
                       {row?.versionNumber}
                     </MuiTableCell>
