@@ -22,7 +22,7 @@ import { IPagination } from "@/types/globalTypes";
 import CustomTableSkeleton from "@/components/skeleton/CustomTableSkeleton";
 import { createPaginationData, formatCurrency } from "utils/helper-funcs";
 import TableWrapper from "@/components/table/TableWrapper";
-import { IconVisibility } from "@/lib/mui.lib.icons";
+import { IconAdd, IconVisibility } from "@/lib/mui.lib.icons";
 
 import {
   ActionTimeStatus,
@@ -168,6 +168,10 @@ export function SettlementTable({
   //   }
   // );
 
+  const handleAddNew = () => {
+    navigate("add-listing");
+  };
+
   const handleChange = (page: number) => {
     setPagination((prev) => ({ ...prev, page }));
   };
@@ -210,6 +214,15 @@ export function SettlementTable({
               handleSetValue={handleSetFilter}
             />
             <CustomSearch placeholder="Search order ID" />
+            <MuiButton
+              startIcon={<IconAdd />}
+              variant="contained"
+              color="primary"
+              style={{ whiteSpace: "nowrap" }}
+              onClick={handleAddNew}
+              className="btn">
+              Add New
+            </MuiButton>
           </div>
         )}
       </div>
@@ -402,7 +415,8 @@ const StyledPage = styled.section`
     /* gap: 20px; */
     justify-content: end;
     align-items: center;
-    max-width: 700px;
+    /* max-width: 700px; */
+    gap: 10px;
   }
 
   & .top-section {
@@ -464,5 +478,14 @@ const StyledPage = styled.section`
   }
   & .delivered > path {
     stroke: #05a357;
+  }
+
+  & .btn {
+    height: 36px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    width: fit-content;
   }
 `;

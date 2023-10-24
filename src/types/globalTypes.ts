@@ -535,3 +535,33 @@ export type ILookups = {
   pickupMethod: ICategory[];
   userType: ICategory[];
 };
+
+export type IListingProp = {
+  name: string;
+  id?: number;
+  description: string;
+  price: number;
+  location: string;
+  langitude: string;
+  longitude: string;
+  CatalogueConditionId: number;
+  CatalogueCategoryId: number;
+  DurationInHours: number;
+  PickupMethod: number;
+  UserId: string;
+  files: any[];
+};
+
+export interface MainTextMatchedSubstrings {
+  offset: number;
+  length: number;
+}
+export interface StructuredFormatting {
+  main_text: string;
+  secondary_text: string;
+  main_text_matched_substrings?: readonly MainTextMatchedSubstrings[];
+}
+export interface PlaceType {
+  description: string;
+  structured_formatting: StructuredFormatting;
+}

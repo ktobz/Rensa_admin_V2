@@ -116,7 +116,7 @@ const LabelStyle = muiStyled(MuiInputLabel)(({ theme }) => ({
   position: "relative",
   color: "#000000",
   fontWeight: "500",
-  fontSize: 12,
+  fontSize: 14,
   width: "100%",
   left: "0px",
   textTransform: "initial",

@@ -25,6 +25,7 @@ import { ScheduledOrdersView } from "@/modules/orders/views/ScheduledOrdersView"
 import ReportedListingPageView from "@/modules/settlements copy";
 import { ListingDetails } from "@/modules/settlements copy/views/ListingDetails";
 import AppReleaseView from "@/modules/branch-manager copy 3";
+import { AddListing } from "@/modules/settlements copy/views/AddListing";
 
 export default function MergedModuleRoutes() {
   return (
@@ -48,6 +49,11 @@ export default function MergedModuleRoutes() {
       <Route
         path="/marketplace/listings"
         element={<MarketPlaceListingsView />}
+      />
+
+      <Route
+        path="/marketplace/listings/add-listing"
+        element={<AddListing />}
       />
 
       <Route path="/transactions" element={<TransactionsView />} />

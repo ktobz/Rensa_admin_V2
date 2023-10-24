@@ -147,7 +147,7 @@ export function CustomerDetailsView() {
             </div>
           </div>
         </div>
-        <TotalCard
+        {/* <TotalCard
           title="Wallet Balance"
           variant="sales"
           className="wallet"
@@ -157,7 +157,7 @@ export function CustomerDetailsView() {
             action: handleViewTransactions,
           }}
           defaultValue={walletBalance}
-        />
+        /> */}
       </div>
 
       {/* <div className="tab-section">

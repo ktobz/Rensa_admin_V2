@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useQuery, useQueryClient } from "react-query";
+import SimpleBar from "simplebar-react";
 
 import { NoData } from "@/components/feedback/NoData";
 import {
@@ -42,9 +43,9 @@ export function BidsView() {
   const { data, isLoading, isError } = useQuery(
     ["all-bids"],
     () =>
-      NotificationService.getAll("").then((res) => {
-        const data = res.data?.data;
-        return data as INotificationData[];
+      NotificationService.getAutomatedMessages("").then((res) => {
+        const data = res.data?.result;
+        return data;
       }),
     {
       retry: 0,
@@ -71,7 +72,7 @@ export function BidsView() {
           <CustomTab
             onClick={handleChangeIndex(0)}
             value={0}
-            label="General"
+            label="Bid"
             current={current}
             hideIcon
             variant="primary"
@@ -80,7 +81,7 @@ export function BidsView() {
           <CustomTab
             onClick={handleChangeIndex(1)}
             value={1}
-            label="Seller"
+            label="Offers"
             current={current}
             hideIcon
             variant="primary"
@@ -101,7 +102,7 @@ export function BidsView() {
               </MuiTypography>
               <span>|</span>
               <MuiTypography variant="body1" className="total">
-                <b>6</b> bidders
+                <b>{data?.length || 0}</b> bidders
               </MuiTypography>
             </div>
           </div>
@@ -111,32 +112,34 @@ export function BidsView() {
               Recent offers
             </MuiTypography>
             <MuiTypography variant="body1" className="total">
-              <b>16</b> offers
+              <b>{data?.length || 0}</b> offers
             </MuiTypography>
           </div>
         )}
 
-        {!isLoading &&
-          data &&
-          data?.map((row) => (
-            <div key={row?.id} className="notif-row">
-              <UserDetailCard
-                variant="bidder"
-                data={{
-                  fullName: "Kenchi K",
-                  date: "9 Jul 2023, 11:34 PM",
-                  image: "",
-                  verStatus: true,
-                }}
-              />
-              <MuiBox className="bid-value">
-                <MuiTypography variant="body1" className="amount">
-                  ₦451,000
-                </MuiTypography>
-                {current == 1 && <BidStatus status="pending" />}
-              </MuiBox>
-            </div>
-          ))}
+        <SimpleBar className="list-wrapper">
+          {!isLoading &&
+            data &&
+            data?.map((row) => (
+              <div key={row?.id} className="notif-row">
+                <UserDetailCard
+                  variant="bidder"
+                  data={{
+                    fullName: "Kenchi K",
+                    date: "9 Jul 2023, 11:34 PM",
+                    image: "",
+                    verStatus: true,
+                  }}
+                />
+                <MuiBox className="bid-value">
+                  <MuiTypography variant="body1" className="amount">
+                    ₦451,000
+                  </MuiTypography>
+                  {current == 1 && <BidStatus status="pending" />}
+                </MuiBox>
+              </div>
+            ))}
+        </SimpleBar>
       </div>
 
       {!isLoading && data && data?.length === 0 && !isError && (
@@ -256,5 +259,11 @@ const StyledPage = styled.section`
         font-weight: 500;
       }
     }
+  }
+
+  & .list-wrapper {
+    height: 320px;
+    padding-right: 20px;
+    width: calc(100% + 20px);
   }
 `;
