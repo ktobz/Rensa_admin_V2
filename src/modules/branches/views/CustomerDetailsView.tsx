@@ -220,7 +220,7 @@ export function CustomerDetailsView() {
           </div>
         </div>
       </div>
-      <CustomTabPanel index={current} value={0}>
+      {/* <CustomTabPanel index={current} value={0}>
         <OrderTable
           variant="section"
           page="branches"
@@ -242,12 +242,9 @@ export function CustomerDetailsView() {
         <TransactionTable
           variant="customer"
           showActionTab={false}
-          // page="branches"
-          // apiFunc={CustomerService.getCustomerOrders}
           customerId={customerId}
-          // queryKey="all-customer-transaction"
         />
-      </CustomTabPanel>
+      </CustomTabPanel> */}
 
       <VendgramCustomModal
         handleClose={handleToggleShow}

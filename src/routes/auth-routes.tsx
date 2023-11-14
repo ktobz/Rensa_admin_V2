@@ -3,23 +3,22 @@ import { Routes, Route, Navigate } from "react-router-dom";
 
 import { OrdersView } from "@/modules/orders/views/OrdersView";
 import { OrderDetails } from "@/modules/orders";
-import { PartnersView } from "@/modules/products/views/PartnersView";
+// import { PartnersView } from "@/modules/products/views/PartnersView";
 import { SettlementsView } from "@/modules/settlements/views/SettlementsView";
 import { DashboardView } from "@/modules/dashboard/views/DashboardView";
 import CustomersView, {
   CustomerDetailsView,
   CustomerOrdersView,
 } from "@/modules/branches";
-import { RidersView } from "@/modules/branch-manager/views/RidersView";
+// import { RidersView } from "@/modules/branch-manager/views/RidersView";
 import { TransactionsView } from "@/modules/branches copy/views/TransactionsView";
 import { CustomerTransactionsView } from "@/modules/branches/views/CustomerTransactionsView";
 import { IncomeView } from "@/modules/orders copy/views/IncomeView";
-import { PartnerDetailsView } from "@/modules/products/views/PartnerDetailsView";
+// import { PartnerDetailsView } from "@/modules/products/views/PartnerDetailsView";
 import NotificationCenterView from "@/modules/branch-manager copy";
 import ConfigurationView from "@/modules/branch-manager copy 2";
 
-import { RiderOrders } from "@/modules/branch-manager/views/RiderOrders";
-import { BranchDetailsView } from "@/modules/products/views/branches";
+// import { BranchDetailsView } from "@/modules/products/views/branches";
 import { MarketPlaceListingsView } from "@/modules/settlements/views/MarketPlaceListingsView";
 import { ScheduledOrdersView } from "@/modules/orders/views/ScheduledOrdersView";
 import ReportedListingPageView from "@/modules/settlements copy";
@@ -65,10 +64,10 @@ export default function MergedModuleRoutes() {
       <Route path="/app-release" element={<AppReleaseView />} />
       <Route path="/configurations" element={<ConfigurationView />} />
 
-      <Route path="/partners" element={<PartnersView />} />
+      {/* <Route path="/partners" element={<PartnersView />} />
       <Route path="/partners/:p_id" element={<PartnerDetailsView />} />
       <Route path="/partners/:p_id/:b_id" element={<BranchDetailsView />} />
-      <Route path="/partners/:p_id/:b_id/:orderId" element={<OrderDetails />} />
+      <Route path="/partners/:p_id/:b_id/:orderId" element={<OrderDetails />} /> */}
 
       <Route path="/customers/:id/orders" element={<CustomerOrdersView />} />
       <Route
@@ -79,11 +78,11 @@ export default function MergedModuleRoutes() {
         path="/customers/:c_id/orders/:orderId"
         element={<OrderDetails />}
       />
-
+      {/* 
       <Route path="/riders" element={<RidersView />} />
       <Route path="/riders/:r_id" element={<RiderOrders />} />
       <Route path="/riders/:r_id/orders" element={<RiderOrders />} />
-      <Route path="/riders/:r_id/orders/:orderId" element={<OrderDetails />} />
+      <Route path="/riders/:r_id/orders/:orderId" element={<OrderDetails />} /> */}
       {/* <Route path="*" element={<NotFound />} /> */}
     </Routes>
   );

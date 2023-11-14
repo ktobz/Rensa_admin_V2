@@ -6,7 +6,7 @@ import { useIds } from "@/utils/hooks";
 
 export function CustomerOrdersView() {
   const { customerId } = useIds();
-  console.log(customerId);
+
   return (
     <PageContent>
       <div className="top-section">
@@ -15,13 +15,13 @@ export function CustomerOrdersView() {
         </MuiTypography>
       </div>
 
-      <OrderTable
+      {/* <OrderTable
         variant="page"
         page="branch-order"
         queryKey={`customer-orders-${customerId}`}
         apiFunc={CustomerService.getCustomerOrders}
         id={customerId}
-      />
+      /> */}
     </PageContent>
   );
 }

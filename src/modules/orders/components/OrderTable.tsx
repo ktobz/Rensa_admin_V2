@@ -141,7 +141,7 @@ export function OrderTable({
           createPaginationData(data, paginationData);
 
         const orderSortedByDate = data?.reduce((acc, val) => {
-          const constructedKey = constructOrderKey(val?.created_at);
+          const constructedKey = constructOrderKey(val?.creationTime || "");
           if (constructedKey in acc) {
             acc[constructedKey] += 1;
           } else {
@@ -428,7 +428,7 @@ export function OrderTable({
                       sx={{
                         "&:last-child td, &:last-child th": { border: 0 },
                       }}>
-                      <MuiTableCell align="left">
+                      {/* <MuiTableCell align="left">
                         <OrderIcon type={row?.status as IStatus} />
                       </MuiTableCell>
                       <MuiTableCell className="order-id" align="left">
@@ -458,7 +458,7 @@ export function OrderTable({
                         <OrderStatus
                           type={row?.status?.toLowerCase() as IStatus}
                         />
-                      </MuiTableCell>
+                      </MuiTableCell> */}
                       <MuiTableCell align="left">
                         <MuiIconButton
                           onClick={handleViewDetails(row)}

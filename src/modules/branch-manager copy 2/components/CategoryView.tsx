@@ -48,8 +48,8 @@ export function CategoryView() {
     ["service-fee"],
     () =>
       ConfigService.getServiceFeeSettings().then((res) => {
-        const data = res.data?.data;
-        return data as IServiceFeeData;
+        const data = res.data?.result;
+        return data;
       }),
     {
       retry: 0,
@@ -97,7 +97,7 @@ export function CategoryView() {
                 </MuiIconButton>
               </MuiBox>
             </div>
-            <div className="data-row border">
+            {/* <div className="data-row border">
               <MuiTypography variant="body1" className="label">
                 Buyer service fee
               </MuiTypography>
@@ -116,7 +116,7 @@ export function CategoryView() {
                   style: "decimal",
                 })}
               </MuiTypography>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
