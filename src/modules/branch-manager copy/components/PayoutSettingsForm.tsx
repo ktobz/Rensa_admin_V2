@@ -1,48 +1,42 @@
 import * as React from "react";
 import * as Yup from "yup";
 import { useFormik, FormikProvider } from "formik";
-import { toast } from "react-toastify";
 
 import { styled, MuiButton, MuiCircularProgress } from "@/lib/index";
 import VendgramInput from "@/components/input";
-import ConfigService from "@/services/config-service";
+
+import { toast } from "react-toastify";
+
 import NotificationService from "@/services/notification-service";
+import ConfigService from "@/services/config-service";
+import { IPayoutData, IServiceFeeReq } from "@/types/globalTypes";
 
 const SCHEMA = Yup.object().shape({
-  title: Yup.string().required("required"),
-  message: Yup.string().required("required"),
-  subject: Yup.string().required("required"),
+  waitTimeInHours: Yup.number().required("required"),
 });
 
 type IViewProps = {
-  mode: "new" | "edit";
   initData?: any;
   refreshQuery?: () => void;
   handleClose: () => void;
 };
 
-export const AutomatedMessageEntryForm = ({
-  mode,
+export const PayoutSettingsForm = ({
   initData,
   handleClose,
   refreshQuery,
 }: IViewProps) => {
-  const initialData = {
+  const initialData: IPayoutData = {
     id: initData?.id || "",
-    title: initData?.title || "",
-    subject: initData?.subject || "",
-    message: initData?.message || "",
+    waitTimeInHours: initData?.waitTimeInHours || "",
   };
 
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isSaving, setIsSaving] = React.useState(false);
 
-  const handleNotificationAddEdit = (formValues: any) => {
-    setIsSubmitting(true);
+  const handleSetFees = (formValues: IPayoutData) => {
+    setIsSaving(true);
 
-    (initialData?.id
-      ? NotificationService.updateAutomatedMessage(initialData?.id, formValues)
-      : NotificationService.createAutomatedMessage(formValues)
-    )
+    ConfigService.setPayoutSettings(initData?.id || 0, formValues)
       .then((res) => {
         refreshQuery?.();
         toast.success(res.data?.message || "");
@@ -50,7 +44,7 @@ export const AutomatedMessageEntryForm = ({
       .catch((err) => {
         toast.error(err?.response?.data?.message || "");
       })
-      .finally(() => setIsSubmitting(false));
+      .finally(() => setIsSaving(false));
   };
 
   const formik = useFormik({
@@ -60,56 +54,38 @@ export const AutomatedMessageEntryForm = ({
     validateOnChange: false,
     validateOnMount: false,
     onSubmit: async (values: any) => {
-      handleNotificationAddEdit(values);
+      handleSetFees(values);
     },
   });
 
-  const { errors, handleSubmit, handleChange, values, setFieldValue } = formik;
+  const { errors, handleSubmit, handleChange, values } = formik;
 
   return (
     <FormikProvider value={formik}>
       <StyledForm onSubmit={handleSubmit}>
         <div className="wrapper">
-          <p className="subject">{values.subject}</p>
-
           <VendgramInput
-            id="title"
-            name="title"
-            label="Title"
-            placeholder="Enter title"
-            type="text"
-            value={values.title}
-            helperText={errors.title}
-            error={!!errors.title}
-            required
-          />
-
-          <VendgramInput
-            id="message"
-            name="message"
-            label="Message"
-            placeholder="Enter message"
-            type="text"
-            value={values.message}
+            id="waitTimeInHours"
+            name="waitTimeInHours"
+            label="Wait Time In Hours"
+            placeholder=""
+            type="number"
+            value={values.waitTimeInHours}
             onChange={handleChange}
-            helperText={errors.message}
-            error={!!errors.message}
+            helperText={errors.waitTimeInHours}
+            error={!!errors.waitTimeInHours}
             required
-            rows={2}
-            multiline
           />
 
           <div className="btn-group">
             <MuiButton
               type="submit"
               variant="contained"
-              disabled={isSubmitting}
               color="primary"
-              startIcon={
-                isSubmitting ? <MuiCircularProgress size={16} /> : null
-              }
+              disabled={isSaving}
+              startIcon={isSaving ? <MuiCircularProgress size={16} /> : null}
               className="btn">
-              {mode === "edit" ? "Save message" : "Add message"}
+              Save
             </MuiButton>
           </div>
         </div>
@@ -129,12 +105,6 @@ const StyledForm = styled.form`
   & .wrapper {
     max-width: 450px;
     width: 100%;
-  }
-
-  & .subject {
-    background: #fff9f6;
-    padding: 10px;
-    font-weight: 600;
   }
 
   & .flex-wrapper {

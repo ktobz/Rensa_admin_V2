@@ -22,7 +22,7 @@ import {
 import { useQuery } from "react-query";
 import OtherService from "@/services/others.service";
 import { OrderStatus } from "../feedback/OrderStatus";
-import { IStatus } from "@/types/globalTypes";
+import { ICategory, IStatus } from "@/types/globalTypes";
 
 const StyledSelect = muiStyled(Select)(({ theme }) => ({
   "& .MuiOutlinedInput-root": {
@@ -87,6 +87,7 @@ interface VendgramSelectProps extends SelectProps {
   iconName?: string;
   selectedValue: number[];
   handleSetValue: (value: number[]) => void;
+  options?: ICategory[];
 }
 
 type IStatusObject = {
@@ -110,6 +111,7 @@ export default function StatusFilter({
   helperText,
   selectedValue,
   handleSetValue,
+  options = [],
   ...otherProps
 }: VendgramSelectProps) {
   // const [personName, setPersonName] = React.useState<number[]>([]);
@@ -124,8 +126,11 @@ export default function StatusFilter({
     {
       retry: 0,
       refetchOnWindowFocus: false,
+      enabled: !!options?.length,
     }
   );
+
+  const filterOptions = !!options?.length ? options : data;
 
   const handleChange = (event: MuiSelectChangeEvent<any>, node: any) => {
     const {
@@ -186,7 +191,9 @@ export default function StatusFilter({
         renderValue={(selected: any) => (
           <MuiBox sx={{ display: "flex", gap: 0.5 }}>
             {selected?.map((value: any) => {
-              const statusName = data?.find((x) => x?.id === value)?.name;
+              const statusName = filterOptions?.find(
+                (x) => x?.id === value
+              )?.name;
               return (
                 // <MuiChip key={value} label={value} />
                 <OrderStatus
@@ -203,8 +210,8 @@ export default function StatusFilter({
           </MuiBox>
         )}
         {...otherProps}>
-        {data &&
-          data?.map((opt, index) => (
+        {filterOptions &&
+          filterOptions?.map((opt, index) => (
             <MenuItem
               key={index}
               sx={{

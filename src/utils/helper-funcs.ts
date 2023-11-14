@@ -1,4 +1,8 @@
-import { IPagination, IPaginationResponse } from "@/types/globalTypes";
+import {
+  ICategory,
+  IPagination,
+  IPaginationResponse,
+} from "@/types/globalTypes";
 import { format } from "date-fns";
 import { REFRESH_TOKEN_NAME, TOKEN_NAME } from "types/actionTypes";
 
@@ -82,9 +86,13 @@ export const dataURLtoBlob = (dataurl: string = ",") => {
 
 export const formatDate = (
   date: string | Date,
-  pattern: string = "LL MMMM, yyyy"
+  pattern: string = "do LLLL yyyy"
 ) => {
   const value = format(new Date(date || ""), pattern);
 
   return value;
+};
+
+export const getIdName = (id: number, list: ICategory[]) => {
+  return list?.find((x) => id === x?.id)?.name || "";
 };

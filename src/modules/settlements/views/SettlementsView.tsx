@@ -26,7 +26,7 @@ export function SettlementsView() {
         <TotalCard title="Total Listing" variant="order" showFilter={false} />
       </div>
       <div className="activities">
-        <SettlementTable showMoreText />
+        <SettlementTable showMoreText showAddNew />
       </div>
     </PageContent>
   );

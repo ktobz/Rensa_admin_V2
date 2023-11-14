@@ -9,10 +9,15 @@ import { toast } from "react-toastify";
 
 import NotificationService from "@/services/notification-service";
 import ConfigService from "@/services/config-service";
+import {
+  IDeliverySettingsData,
+  IDeliverySettingsReq,
+} from "@/types/globalTypes";
 
 const SCHEMA = Yup.object().shape({
-  base_fare: Yup.number().required("required"),
-  per_kilometer: Yup.number().required("required"),
+  deliveryPickupMethod: Yup.number().required("required"),
+  baseFee: Yup.number().required("required"),
+  pricePerKm: Yup.number().required("required"),
 });
 
 type IViewProps = {
@@ -26,11 +31,11 @@ export const DeliverySettingsForm = ({
   handleClose,
   refreshQuery,
 }: IViewProps) => {
-  const initialData = {
+  const initialData: IDeliverySettingsData = {
     id: initData?.id || "",
-    base_fare: initData?.base_fare || "",
-    per_kilometer: initData?.per_kilometer || "",
-    // order_proximity_radius: initData?.order_proximity_radius || "",
+    deliveryPickupMethod: initData?.deliveryPickupMethod || "",
+    pricePerKm: initData?.pricePerKm || "",
+    baseFee: initData?.baseFee || "",
   };
 
   const [isSaving, setIsSaving] = React.useState(false);
@@ -38,7 +43,7 @@ export const DeliverySettingsForm = ({
   const handleSetFees = (formValues: any) => {
     setIsSaving(true);
 
-    ConfigService.setDeliveryFeeSettings(formValues)
+    ConfigService.setDeliveryFeeSettings(initData?.id, formValues)
       .then((res) => {
         refreshQuery?.();
         toast.success(res.data?.message || "");
@@ -66,44 +71,47 @@ export const DeliverySettingsForm = ({
     <FormikProvider value={formik}>
       <StyledForm onSubmit={handleSubmit}>
         <div className="wrapper">
+          {initData?.deliveryPickupMethod === 1 ? (
+            <VendgramInput
+              id="baseFee"
+              name="baseFee"
+              label="Bike  fee"
+              placeholder="₦0.00"
+              type="number"
+              value={values.baseFee}
+              onChange={handleChange}
+              helperText={errors.baseFee}
+              error={!!errors.baseFee}
+              required
+            />
+          ) : (
+            <VendgramInput
+              id="baseFee"
+              name="baseFee"
+              label="Van fee"
+              placeholder="₦0.00"
+              type="number"
+              value={values.baseFee}
+              onChange={handleChange}
+              helperText={errors.baseFee}
+              error={!!errors.baseFee}
+              required
+            />
+          )}
+
           <VendgramInput
-            id="base_fare"
-            name="base_fare"
+            id="pricePerKm"
+            name="pricePerKm"
             label="Base fare"
             placeholder="₦0.00"
             type="number"
-            value={values.base_fare}
+            value={values.pricePerKm}
             onChange={handleChange}
-            helperText={errors.base_fare}
-            error={!!errors.base_fare}
+            helperText={errors.pricePerKm}
+            error={!!errors.pricePerKm}
             required
           />
 
-          <VendgramInput
-            id="per_kilometer"
-            name="per_kilometer"
-            label="Per kilometer (₦/km)"
-            placeholder="₦0.00"
-            type="number"
-            value={values.per_kilometer}
-            onChange={handleChange}
-            helperText={errors.per_kilometer}
-            error={!!errors.per_kilometer}
-            required
-          />
-
-          {/* <VendgramInput
-            id="order_proximity_radius"
-            name="order_proximity_radius"
-            label="Order proximity radius (km)"
-            placeholder="0 km"
-            type="number"
-            value={values.order_proximity_radius}
-            onChange={handleChange}
-            helperText={errors.order_proximity_radius}
-            error={!!errors.order_proximity_radius}
-            required
-          /> */}
           <div className="btn-group">
             <MuiButton
               type="submit"

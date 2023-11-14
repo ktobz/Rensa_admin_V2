@@ -21,6 +21,14 @@ const defaultLookup: ILookups = {
   mailStatus: [],
   pickupMethod: [],
   userType: [],
+  catalogueTransactionStatus: [],
+  bankProvider: [],
+  catalogueOrderStatus: [],
+  deliveryFeePickupMethod: [],
+  reportedListingStatus: [],
+  serviceFeeType: [],
+  verificationStatus: [],
+  verificationType: [],
 };
 
 const useCachedDataStore = create(

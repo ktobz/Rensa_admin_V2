@@ -1,10 +1,19 @@
 import { getToken } from "utils/helper-funcs";
 import HTTP from "./Http";
-import { IServiceFeeReq, IDeliverySettingsReq } from "@/types/globalTypes";
+import {
+  IServiceFeeReq,
+  IDeliverySettingsReq,
+  IDeliverySettingsResponse,
+  IServiceFeeResponse,
+  IPayoutDataResponse,
+  IPayoutData,
+} from "@/types/globalTypes";
+import { AxiosPromise } from "axios";
 const PATHS = {
   all: "/admin/faqs",
-  service: "/admin/service-fees",
-  delivery: "/admin/delivery-settings",
+  service: "/admin/configuration/service-fee",
+  delivery: "/admin/configuration/delivery-fee",
+  payout: "/admin/configuration/payout",
 };
 
 const ConfigService = {
@@ -31,29 +40,44 @@ const ConfigService = {
     });
   },
 
-  getServiceFeeSettings() {
+  getServiceFeeSettings(): AxiosPromise<IServiceFeeResponse> {
     return HTTP.get(`${PATHS.service}`, {
       headers: {
         Authorization: getToken(),
       },
     });
   },
-  getDeliveryFeeSettings() {
+  getDeliveryFeeSettings(): AxiosPromise<IDeliverySettingsResponse> {
     return HTTP.get(`${PATHS.delivery}`, {
       headers: {
         Authorization: getToken(),
       },
     });
   },
-  setServiceFeeSettings(data: IServiceFeeReq) {
-    return HTTP.post(`${PATHS.service}`, data, {
+  getPayoutSettings(): AxiosPromise<IPayoutDataResponse> {
+    return HTTP.get(`${PATHS.payout}`, {
       headers: {
         Authorization: getToken(),
       },
     });
   },
-  setDeliveryFeeSettings(data: IDeliverySettingsReq) {
-    return HTTP.post(`${PATHS.delivery}`, data, {
+  setPayoutSettings(id: number, data: IPayoutData) {
+    return HTTP.put(`${PATHS.payout}/${id}`, data, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+  setServiceFeeSettings(id: number, data: IServiceFeeReq) {
+    return HTTP.put(`${PATHS.service}/${id}`, data, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+
+  setDeliveryFeeSettings(id: number, data: IDeliverySettingsReq) {
+    return HTTP.put(`${PATHS.delivery}/${id}`, data, {
       headers: {
         Authorization: getToken(),
       },

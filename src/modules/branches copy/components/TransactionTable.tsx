@@ -16,7 +16,11 @@ import {
   styled,
 } from "@/lib/index";
 import CustomTableSkeleton from "components/skeleton/CustomTableSkeleton";
-import { formatCurrency } from "utils/helper-funcs";
+import {
+  createPaginationData,
+  formatCurrency,
+  getIdName,
+} from "utils/helper-funcs";
 import TableWrapper from "@/components/table/TableWrapper";
 import { IconVisibility } from "@/lib/mui.lib.icons";
 
@@ -28,6 +32,7 @@ import { TransactionDetails } from "./TransactionDetails";
 import TransactionService from "@/services/transaction-service";
 import { OrderStatus } from "@/components/feedback/OrderStatus";
 import StatusFilter from "@/components/select/StatusFillter";
+import useCachedDataStore from "@/config/store-config/lookup";
 
 const defaultQuery: IPagination = {
   pageSize: 15,
@@ -51,6 +56,9 @@ export function TransactionTable({
   customerId,
   showActionTab = true,
 }: IProps) {
+  const {
+    lookup: { catalogueTransactionStatus },
+  } = useCachedDataStore((state) => state.cache);
   const [show, setShow] = React.useState(false);
   const [filter, setFilter] = React.useState<number[]>([]);
 
@@ -67,22 +75,21 @@ export function TransactionTable({
     ["all-transactions", customerId, pagination.page, pagination.pageSize],
     () =>
       TransactionService.getAll(
-        `?page=${pagination.page}&perPage=${pagination.pageSize}`,
-        customerId
+        `?pageNumber=${pagination.page}&pageSize=${pagination.pageSize}`
       ).then((res) => {
-        const data = res.data?.data;
-        // const { hasNextPage, hasPrevPage, total, totalPages } =
-        //   createPaginationData(data, pagination);
+        const { data, ...paginationData } = res.data?.result;
+        const { hasNextPage, hasPrevPage, total, totalPages } =
+          createPaginationData(data, paginationData);
 
-        // setPagination((prev) => ({
-        //   ...prev,
-        //   total,
-        //   totalPages,
-        //   hasNextPage,
-        //   hasPrevPage,
-        // }));
+        setPagination((prev) => ({
+          ...prev,
+          total,
+          totalPages,
+          hasNextPage,
+          hasPrevPage,
+        }));
 
-        return data as ITransactionData[];
+        return data;
       }),
     {
       retry: 0,
@@ -115,13 +122,14 @@ export function TransactionTable({
             <StatusFilter
               selectedValue={filter}
               handleSetValue={handleSetFilter}
+              options={catalogueTransactionStatus}
             />
             <CustomSearch placeholder="Search amount, reference" />
           </div>
         </div>
       )}
 
-      <TableWrapper showPagination>
+      <TableWrapper showPagination pagination={pagination}>
         <MuiTableContainer
           sx={{
             maxWidth: "100%",
@@ -173,32 +181,41 @@ export function TransactionTable({
                     sx={{
                       "&:last-child td, &:last-child th": { border: 0 },
                     }}>
-                    <MuiTableCell>{row?.user?.full_name || "-"}</MuiTableCell>
-                    <MuiTableCell align="left">{row?.id}</MuiTableCell>
+                    <MuiTableCell>{row?.userId || "-"}</MuiTableCell>
+                    <MuiTableCell align="left">{row?.catalogueId}</MuiTableCell>
                     <MuiTableCell align="left">
-                      {" "}
                       ₦{" "}
                       {formatCurrency({
-                        amount: Math.abs(row?.amount),
+                        amount: Math.abs(row?.itemAmount),
                         style: "decimal",
                       })}
                     </MuiTableCell>
 
-                    <MuiTableCell align="left">{row?.reference}</MuiTableCell>
-                    <MuiTableCell align="left">{row?.description}</MuiTableCell>
+                    <MuiTableCell align="left">
+                      {row?.transactionReference}
+                    </MuiTableCell>
+                    <MuiTableCell align="left">{"-"}</MuiTableCell>
                     <MuiTableCell align="left">
                       {" "}
-                      {format(new Date(row?.created_at || ""), "LL MMMM, yyyy")}
+                      {format(
+                        new Date(row?.creationTime || ""),
+                        "LL MMMM, yyyy"
+                      )}
                     </MuiTableCell>
                     <MuiTableCell align="left">
                       <OrderStatus
-                        type={row?.status?.toLowerCase() as IStatus}
+                        type={
+                          getIdName(
+                            row?.status,
+                            catalogueTransactionStatus
+                          )?.toLowerCase() as IStatus
+                        }
                       />
                     </MuiTableCell>
                     <MuiTableCell align="left">
                       <MuiBox className="action-group">
                         <MuiIconButton
-                          onClick={handleViewDetails(row)}
+                          // onClick={handleViewDetails(row)}
                           className="visible-btn">
                           <IconVisibility />
                         </MuiIconButton>

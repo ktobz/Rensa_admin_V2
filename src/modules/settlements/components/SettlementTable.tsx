@@ -118,12 +118,14 @@ type IProps = {
   showPagination?: boolean;
   showFilter?: boolean;
   showMoreText?: boolean;
+  showAddNew?: boolean;
 };
 
 export function SettlementTable({
   showMoreText = true,
   showFilter = false,
   showPagination = false,
+  showAddNew = false,
 }: IProps) {
   const navigate = useNavigate();
   const [pagination, setPagination] = React.useState<IPagination>(defaultQuery);
@@ -169,7 +171,7 @@ export function SettlementTable({
   // );
 
   const handleAddNew = () => {
-    navigate("add-listing");
+    navigate("/app/marketplace/listings/add-listing");
   };
 
   const handleChange = (page: number) => {
@@ -181,7 +183,7 @@ export function SettlementTable({
   };
 
   const handleViewDetails = (id: string) => () => {
-    navigate(`/app/orders/${id}`);
+    navigate(`/app/reported-listing/${id}`);
   };
 
   return (
@@ -207,13 +209,18 @@ export function SettlementTable({
             </MuiButton>
           )}
         </div>
-        {showFilter && (
-          <div className="action-section">
-            <StatusFilter
-              selectedValue={filter}
-              handleSetValue={handleSetFilter}
-            />
-            <CustomSearch placeholder="Search order ID" />
+
+        <div className="action-section">
+          {showFilter && (
+            <>
+              <StatusFilter
+                selectedValue={filter}
+                handleSetValue={handleSetFilter}
+              />
+              <CustomSearch placeholder="Search order ID" />
+            </>
+          )}
+          {showAddNew && (
             <MuiButton
               startIcon={<IconAdd />}
               variant="contained"
@@ -223,8 +230,8 @@ export function SettlementTable({
               className="btn">
               Add New
             </MuiButton>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       <TableWrapper showPagination={showPagination}>

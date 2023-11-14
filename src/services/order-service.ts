@@ -1,23 +1,20 @@
 import { getToken } from "utils/helper-funcs";
 import HTTP from "./Http";
-import { IOrderQuery } from "@/types/globalTypes";
+import { IOrderQuery, IOrderResponse } from "@/types/globalTypes";
+import { AxiosPromise } from "axios";
 
 const PATHS = {
-  orders: "/admin/orders",
+  orders: "/admin/order",
   dashboardMetrics: "/orders/dashboard",
   assignRider: "/admin/orders",
   period: "/admin/periods",
 };
 
 const OrderService = {
-  getAll(id?: string | number, query?: IOrderQuery) {
-    return HTTP.post(
-      `${PATHS.orders}/index${
-        query?.currentPage ? `?page=${query?.currentPage}` : ""
-      }`,
-      {
-        statuses: query?.status ? query?.status : [],
-      },
+  getAll(query?: string): AxiosPromise<IOrderResponse> {
+    return HTTP.get(
+      `${PATHS.orders}${query ? `${query}` : ""}`,
+
       {
         headers: {
           Authorization: getToken(),

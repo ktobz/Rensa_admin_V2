@@ -1,29 +1,21 @@
 import { getToken } from "utils/helper-funcs";
 import HTTP from "./Http";
+import { AxiosPromise } from "axios";
+import { ITransactionsResponse } from "@/types/globalTypes";
 
 const PATHS = {
-  transactions: "/admin/transactions/index",
+  transactions: "/admin/transaction",
   dashboardMetrics: "/orders/dashboard",
   userTransactions: "/admin/transactions/customers",
 };
 
 const TransactionService = {
-  getAll(query?: string, customerId?: string) {
-    return HTTP.post(
-      `${
-        customerId
-          ? `${PATHS.userTransactions}/${customerId}`
-          : PATHS.transactions
-      }${query ? query : ""}`,
-      {
-        statuses: [],
+  getAll(query?: string): AxiosPromise<ITransactionsResponse> {
+    return HTTP.get(`${PATHS.transactions}${query ? query : ""}`, {
+      headers: {
+        Authorization: getToken(),
       },
-      {
-        headers: {
-          Authorization: getToken(),
-        },
-      }
-    );
+    });
   },
 
   getOrderDetails(id: number | string) {

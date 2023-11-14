@@ -60,7 +60,7 @@ const SCHEMA = Yup.object().shape({
 
 export function AddListing() {
   const {
-    lookup: { pickupMethod },
+    lookup: { pickupMethod, deliveryFeePickupMethod },
   } = useCachedDataStore((state) => state.cache);
   const queryClient = useQueryClient();
   const { state } = useLocation();
@@ -135,7 +135,7 @@ export function AddListing() {
 
   const handelUpdateValue = (value: any) => {
     setLocationValue(value);
-    console.log(value);
+    // console.log(value);
     setFieldValue("location", value?.description);
   };
 
@@ -272,7 +272,7 @@ export function AddListing() {
               value={values.pickupMethod}
               onChange={handleChange}
               helperText={errors.pickupMethod}
-              options={pickupMethod}
+              options={deliveryFeePickupMethod}
               error={!!errors.pickupMethod}
               required
             />

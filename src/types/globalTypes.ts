@@ -243,21 +243,24 @@ export type INotificationData = {
 export type IFAQData = Omit<INotificationData, "last_sent" | "scheduled">;
 
 export type IDeliverySettingsReq = {
-  base_fare: number;
-  per_kilometer: number;
-  order_proximity_radius: number;
+  baseFee: number;
+  pricePerKm: number;
+  deliveryPickupMethod?: number;
 };
 
 export type IDeliverySettingsData = IDeliverySettingsReq & {
   id: number;
-  status: boolean;
 };
 
 export type IServiceFeeReq = {
-  percentage: number;
-  cap_price: number;
+  buyerServiceFee: number;
+  sellerServiceFee: number;
+  id?: number;
 };
-
+export type IPayoutData = {
+  waitTimeInHours: number;
+  id?: number;
+};
 export type IServiceFeeData = IServiceFeeReq & {
   id: number;
   status: boolean;
@@ -282,6 +285,7 @@ export type IStatus =
   | "declined"
   | "abandoned"
   | "completed"
+  | "successful"
   | "failed";
 
 export type IVerifyStatus = "true" | "false";
@@ -454,6 +458,28 @@ export type IAppReleaseResponse = {
   };
 };
 
+// ORDERS
+export type IOrderData = {
+  versionNumber: string;
+  releaseNotes: string;
+  forceUpdate: boolean;
+  devicePlatform: number;
+  id?: string;
+  creationTime?: string;
+};
+
+export type IOrderResponse = {
+  result: IPaginationResponse & {
+    data: IOrderData[];
+  };
+};
+
+// DELIVERY SETTINGS
+
+export type IDeliverySettingsResponse = {
+  result: IDeliverySettingsData[];
+};
+
 // CATALOGUE CATEGORY
 export type ICategoryData = {
   name: string;
@@ -486,6 +512,14 @@ export type IAutomatedMessageResponse = {
   result: IAutomatedMessage[];
 };
 
+export type IServiceFeeResponse = {
+  result: IServiceFeeReq[];
+};
+
+export type IPayoutDataResponse = {
+  result: IPayoutData[];
+};
+
 // ConditionE CATEGORY
 export type ICondition = {
   name: string;
@@ -496,6 +530,47 @@ export type ICondition = {
 export type IConditionResponse = {
   result: IPaginationResponse & {
     data: ICondition[];
+  };
+};
+
+// Transactions
+export type ITransactions = {
+  transactionReference: string;
+  itemAmount: number;
+  serviceFee: number;
+  minDeliveryFee: number;
+  maxDeliveryFee: number;
+  minTotalAmount: number;
+  maxTotalAmount: number;
+  catalogueId: string;
+  catalogue: null;
+  catalogueBidId: number;
+  userId: string;
+  destinationLongitude: number;
+  destinationLatitude: number;
+  destinationLocation: string;
+  phoneNumber: string;
+  deliveryDate: string;
+  response: null;
+  // statusQueryResponse: '{"HasResult":false,"Result":null,"ResultType":2,"Message":"An error occurred on verifying transaction","ValidationMessages":null,"Successful":false,"ExceptionThrown":false,"Error":null,"ResponseCode":null}';
+  // statusQueryCount: 1;
+  // lastStatusQueryDate: "2023-11-11T15:31:08.3957833";
+  // providerReference: null;
+  // provider: number;
+  status: number;
+  id: number;
+  // creatorUserId: string;
+  // lastModifierUserId: null;
+  // deleterUserId: null;
+  creationTime: string;
+  // lastModificationTime: null;
+  // deletionTime: null;
+  // isDeleted: false;
+};
+
+export type ITransactionsResponse = {
+  result: IPaginationResponse & {
+    data: ITransactions[];
   };
 };
 
@@ -534,6 +609,14 @@ export type ILookups = {
   mailStatus: ICategory[];
   pickupMethod: ICategory[];
   userType: ICategory[];
+  catalogueTransactionStatus: ICategory[];
+  deliveryFeePickupMethod: ICategory[];
+  reportedListingStatus: ICategory[];
+  serviceFeeType: ICategory[];
+  verificationType: ICategory[];
+  catalogueOrderStatus: ICategory[];
+  verificationStatus: ICategory[];
+  bankProvider: ICategory[];
 };
 
 export type IListingProp = {

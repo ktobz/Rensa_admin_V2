@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
-import { AxiosResponse } from "axios";
+import { AxiosPromise, AxiosResponse } from "axios";
 import { format } from "date-fns";
 
 import { NoData } from "@/components/feedback/NoData";
@@ -19,7 +19,11 @@ import {
 } from "@/lib/index";
 
 import CustomTableSkeleton from "@/components/skeleton/CustomTableSkeleton";
-import { formatCurrency, formatDate } from "@/utils/helper-funcs";
+import {
+  createPaginationData,
+  formatCurrency,
+  formatDate,
+} from "@/utils/helper-funcs";
 import TableWrapper from "@/components/table/TableWrapper";
 import {
   IconVisibility,
@@ -30,15 +34,14 @@ import {
   IconChevronLeft,
   IconChevronRight,
 } from "@/lib/mui.lib.icons";
-import CustomTabs from "@/components/other/CustomTabs";
-import CustomTab from "@/components/other/CustomTab";
+
 import CustomSearch from "@/components/input/CustomSearch";
 
 import { TotalCard } from "@/components/index";
 import OrderService from "@/services/order-service";
 import {
-  IOrderDetails,
-  IOrderQuery,
+  IOrderData,
+  IOrderResponse,
   IOrderTotalStats,
   IPagination,
   IStatus,
@@ -65,10 +68,7 @@ const DATE_LIST = [
 type IProps = {
   variant?: "page" | "section" | "home" | "cards";
   page: "orders" | "dashboard" | "branches" | "branch-order";
-  apiFunc?: (
-    id: string | number,
-    query?: IOrderQuery
-  ) => Promise<AxiosResponse<any, any>>;
+  apiFunc?: (query?: string) => AxiosPromise<IOrderResponse>;
   id?: string;
   queryKey?: string;
   viewMode?: "grid" | "list";
@@ -133,11 +133,12 @@ export function OrderTable({
   const { data, isLoading, isError } = useQuery(
     [queryKey, id, filter, pagination.page, pagination.pageSize],
     () =>
-      apiFunc(id, {
-        currentPage: pagination.page,
-        status: filter,
-      }).then((res) => {
-        const data = res.data?.data as IOrderDetails[];
+      apiFunc(
+        `?pageNumber${pagination.page}&pageSize=${pagination?.pageSize}`
+      ).then((res) => {
+        const { data, ...paginationData } = res.data?.result;
+        const { hasNextPage, hasPrevPage, total, totalPages } =
+          createPaginationData(data, paginationData);
 
         const orderSortedByDate = data?.reduce((acc, val) => {
           const constructedKey = constructOrderKey(val?.created_at);
@@ -149,16 +150,13 @@ export function OrderTable({
           return acc;
         }, {} as { [key: string]: number });
 
-        // const { hasNextPage, hasPrevPage, total, totalPages } =
-        //   createPaginationData(data, pagination);
-
-        // setPagination((prev) => ({
-        //   ...prev,
-        //   total,
-        //   totalPages,
-        //   hasNextPage,
-        //   hasPrevPage,
-        // }));
+        setPagination((prev) => ({
+          ...prev,
+          total,
+          totalPages,
+          hasNextPage,
+          hasPrevPage,
+        }));
 
         return {
           orderList: data,

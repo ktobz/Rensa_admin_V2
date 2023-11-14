@@ -8,11 +8,13 @@ import {
   IconFee,
   IconClock,
   IconWallet,
+  IconBike,
 } from "@/lib/mui.lib.icons";
 import VendgramCustomModal from "@/components/modal/Modal";
 
 import {
   IDeliverySettingsData,
+  IDeliverySettingsReq,
   IPagination,
   IServiceFeeData,
 } from "@/types/globalTypes";
@@ -20,6 +22,8 @@ import ConfigService from "@/services/config-service";
 import { ServiceFeeEntryForm } from "@/modules/branch-manager copy/components/ServiceFeeEntryForm";
 import { DeliverySettingsForm } from "@/modules/branch-manager copy/components/DeliverySettingsForm";
 import { formatCurrency } from "@/utils/helper-funcs";
+import useCachedDataStore from "@/config/store-config/lookup";
+import { PayoutSettingsForm } from "@/modules/branch-manager copy/components/PayoutSettingsForm";
 
 const defaultQuery: IPagination = {
   pageSize: 15,
@@ -30,38 +34,71 @@ const defaultQuery: IPagination = {
   totalPages: 1,
 };
 
+type IDeliverType = { [key: string]: any };
+
 export function OperationSettingsView() {
   const queryClient = useQueryClient();
+  const { deliveryFeePickupMethod } = useCachedDataStore(
+    (state) => state?.cache?.lookup
+  );
 
   const [show, setShow] = React.useState({
     service: false,
     delivery: false,
+    payout: false,
   });
 
-  const [editData, setEditData] = React.useState<null | any>(null);
+  const [editData, setEditData] = React.useState<null | IDeliverySettingsReq>(
+    null
+  );
 
-  const handleToggleShow = (type: "delivery" | "service") => () => {
-    setShow((prev) => ({ ...prev, [type]: !prev[type] }));
-  };
+  const handleToggleShow =
+    (type: "delivery" | "service" | "payout", data?: any) => () => {
+      setShow((prev) => ({ ...prev, [type]: !prev[type] }));
+      if (type === "delivery") {
+        setEditData(data);
+      }
+    };
 
   const { data: deliverySetting, isLoading: deliveryIsLoading } = useQuery(
     ["delivery-fee"],
     () =>
       ConfigService.getDeliveryFeeSettings().then((res) => {
-        const data = res.data?.data;
-        return data as IDeliverySettingsData;
+        const data = res.data?.result;
+        const keyedData: IDeliverType = {};
+        for (let i = 0; i < deliveryFeePickupMethod.length; i += 1) {
+          const option = deliveryFeePickupMethod?.[i];
+          keyedData[option?.name?.toLowerCase() || ""] = data?.find(
+            (x) => x?.deliveryPickupMethod === option?.id
+          );
+        }
+        return keyedData;
       }),
     {
       retry: 0,
       refetchOnWindowFocus: false,
     }
   );
+
   const { data: serviceSetting, isLoading: serviceIsLoading } = useQuery(
     ["service-fee"],
     () =>
       ConfigService.getServiceFeeSettings().then((res) => {
-        const data = res.data?.data;
-        return data as IServiceFeeData;
+        const data = res.data?.result;
+        return data?.[0] || {};
+      }),
+    {
+      retry: 0,
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  const { data: payoutSetting, isLoading: payoutIsLoading } = useQuery(
+    ["payout-setting"],
+    () =>
+      ConfigService.getPayoutSettings().then((res) => {
+        const data = res.data?.result;
+        return data?.[0] || {};
       }),
     {
       retry: 0,
@@ -73,8 +110,9 @@ export function OperationSettingsView() {
     setShow({
       delivery: false,
       service: false,
+      payout: false,
     });
-    setEditData(undefined);
+    setEditData(null);
   };
 
   const handleRefreshService = () => {
@@ -84,6 +122,10 @@ export function OperationSettingsView() {
 
   const handleRefreshDelivery = () => {
     queryClient.invalidateQueries(["delivery-fee"]);
+    handleCloseModal();
+  };
+  const handleRefreshPayout = () => {
+    queryClient.invalidateQueries(["payout-setting"]);
     handleCloseModal();
   };
 
@@ -119,7 +161,7 @@ export function OperationSettingsView() {
                 Buyer service fee
               </MuiTypography>
               <MuiTypography variant="body1" className="value">
-                ₦{serviceSetting?.percentage || 0}
+                {serviceSetting?.buyerServiceFee || 0}%
               </MuiTypography>
             </div>
             <div className="data-row">
@@ -127,11 +169,11 @@ export function OperationSettingsView() {
                 Seller service fee
               </MuiTypography>
               <MuiTypography variant="body1" className="value">
-                ₦
                 {formatCurrency({
-                  amount: serviceSetting?.cap_price || 0,
+                  amount: serviceSetting?.sellerServiceFee || 0,
                   style: "decimal",
                 })}
+                %
               </MuiTypography>
             </div>
           </div>
@@ -141,12 +183,55 @@ export function OperationSettingsView() {
           <div className="rows">
             <div className="heading">
               <MuiTypography variant="h3" className="group-heading">
-                Delivery fees
+                Van Delivery fees
               </MuiTypography>
               <MuiBox className="action-group">
                 <MuiIconButton
                   color="warning"
-                  onClick={handleToggleShow("delivery")}
+                  onClick={handleToggleShow("delivery", deliverySetting?.van)}
+                  className={`action-btn edit-btn btn `}>
+                  <IconEdit />
+                </MuiIconButton>
+              </MuiBox>
+            </div>
+
+            <div className="data-row border">
+              <MuiTypography variant="body1" className="label">
+                Van Base fee
+              </MuiTypography>
+              <MuiTypography variant="body1" className="value">
+                ₦
+                {formatCurrency({
+                  amount: deliverySetting?.van?.baseFee || 0,
+                  style: "decimal",
+                })}
+              </MuiTypography>
+            </div>
+            <div className="data-row border">
+              <MuiTypography variant="body1" className="label">
+                Van fee per km
+              </MuiTypography>
+              <MuiTypography variant="body1" className="value">
+                ₦
+                {formatCurrency({
+                  amount: deliverySetting?.van?.pricePerKm || 0,
+                  style: "decimal",
+                })}
+              </MuiTypography>
+            </div>
+          </div>
+        </div>
+        <div className="settings-group">
+          <IconBike className="icon" />
+          <div className="rows">
+            <div className="heading">
+              <MuiTypography variant="h3" className="group-heading">
+                Bike Delivery fees
+              </MuiTypography>
+              <MuiBox className="action-group">
+                <MuiIconButton
+                  color="warning"
+                  onClick={handleToggleShow("delivery", deliverySetting?.bike)}
                   className={`action-btn edit-btn btn `}>
                   <IconEdit />
                 </MuiIconButton>
@@ -154,51 +239,27 @@ export function OperationSettingsView() {
             </div>
             <div className="data-row border">
               <MuiTypography variant="body1" className="label">
-                Bike fee
+                Bike Base fee
               </MuiTypography>
               <MuiTypography variant="body1" className="value">
                 ₦
                 {formatCurrency({
-                  amount: deliverySetting?.base_fare || 0,
+                  amount: deliverySetting?.bike?.baseFee || 0,
                   style: "decimal",
                 })}
               </MuiTypography>
             </div>
+
             <div className="data-row border">
               <MuiTypography variant="body1" className="label">
-                Van fee
+                Bike fee per km
               </MuiTypography>
               <MuiTypography variant="body1" className="value">
                 ₦
                 {formatCurrency({
-                  amount: deliverySetting?.base_fare || 0,
+                  amount: deliverySetting?.bike?.pricePerKm || 0,
                   style: "decimal",
                 })}
-              </MuiTypography>
-            </div>
-            <div className="data-row border">
-              <MuiTypography variant="body1" className="label">
-                Base fare
-              </MuiTypography>
-              <MuiTypography variant="body1" className="value">
-                ₦
-                {formatCurrency({
-                  amount: deliverySetting?.base_fare || 0,
-                  style: "decimal",
-                })}
-              </MuiTypography>
-            </div>
-            <div className="data-row ">
-              <MuiTypography variant="body1" className="label">
-                Per kilometer
-              </MuiTypography>
-              <MuiTypography variant="body1" className="value">
-                ₦
-                {formatCurrency({
-                  amount: deliverySetting?.per_kilometer || 0,
-                  style: "decimal",
-                })}
-                /km
               </MuiTypography>
             </div>
           </div>
@@ -224,7 +285,7 @@ export function OperationSettingsView() {
               <MuiBox className="action-group">
                 <MuiIconButton
                   color="warning"
-                  onClick={handleToggleShow("service")}
+                  onClick={handleToggleShow("payout")}
                   className={`action-btn edit-btn btn `}>
                   <IconEdit />
                 </MuiIconButton>
@@ -235,7 +296,7 @@ export function OperationSettingsView() {
                 Pay seller after
               </MuiTypography>
               <MuiTypography variant="body1" className="value">
-                {serviceSetting?.percentage || 0} hours
+                {payoutSetting?.waitTimeInHours || 0} hours
               </MuiTypography>
             </div>
           </div>
@@ -255,10 +316,10 @@ export function OperationSettingsView() {
               </MuiTypography>
               <MuiTypography variant="body1" className="value">
                 ₦
-                {formatCurrency({
+                {/* {formatCurrency({
                   amount: deliverySetting?.base_fare || 0,
                   style: "decimal",
-                })}
+                })} */}
               </MuiTypography>
             </div>
           </div>
@@ -279,18 +340,35 @@ export function OperationSettingsView() {
         />
       </VendgramCustomModal>
       <VendgramCustomModal
-        handleClose={handleToggleShow("delivery")}
+        handleClose={handleCloseModal}
         open={show.delivery}
         alignTitle="left"
         closeOnOutsideClick={false}
-        title={"Delivery fees"}
+        title={`${
+          editData?.deliveryPickupMethod === 2 ? "Van" : "Bike"
+        } Delivery Fees`}
         showClose>
         <DeliverySettingsForm
-          initData={deliverySetting}
+          initData={editData}
           refreshQuery={handleRefreshDelivery}
           handleClose={handleCloseModal}
         />
       </VendgramCustomModal>
+
+      <VendgramCustomModal
+        handleClose={handleToggleShow("payout")}
+        open={show.payout}
+        alignTitle="left"
+        closeOnOutsideClick={false}
+        title={"Payout Settings"}
+        showClose>
+        <PayoutSettingsForm
+          initData={payoutSetting}
+          refreshQuery={handleRefreshPayout}
+          handleClose={handleCloseModal}
+        />
+      </VendgramCustomModal>
+
       {/* <VendgramCustomModal
         handleClose={handleToggleShow("delivery")}
         open={show.delivery}

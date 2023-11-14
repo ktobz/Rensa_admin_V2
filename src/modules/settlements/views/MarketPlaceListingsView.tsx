@@ -4,7 +4,12 @@ import { SettlementTable } from "../components/SettlementTable";
 export function MarketPlaceListingsView() {
   return (
     <PageContent>
-      <SettlementTable showPagination showFilter showMoreText={false} />
+      <SettlementTable
+        showPagination
+        showFilter
+        showMoreText={false}
+        showAddNew
+      />
     </PageContent>
   );
 }

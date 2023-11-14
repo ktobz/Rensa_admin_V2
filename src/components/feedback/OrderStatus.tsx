@@ -30,14 +30,21 @@ const statusData: {
     text: "Confirmed",
   },
   cancelled: {
-    bg: "#EF50501A",
-    color: "#EF5050",
+    // bg: "#EF50501A",
+    // color: "#EF5050",
     text: "Cancelled",
+    bg: "#64748B1A",
+    color: "#64748B",
   },
   delivered: {
     bg: "#E8FFF3",
     color: "#45B26B",
     text: "Delivered",
+  },
+  successful: {
+    bg: "#E8FFF3",
+    color: "#45B26B",
+    text: "Successful",
   },
   abandoned: {
     bg: "#64748B1A",

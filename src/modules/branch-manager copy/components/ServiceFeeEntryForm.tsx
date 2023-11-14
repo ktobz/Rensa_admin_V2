@@ -9,10 +9,11 @@ import { toast } from "react-toastify";
 
 import NotificationService from "@/services/notification-service";
 import ConfigService from "@/services/config-service";
+import { IServiceFeeReq } from "@/types/globalTypes";
 
 const SCHEMA = Yup.object().shape({
-  percentage: Yup.number().required("required"),
-  cap_price: Yup.number().required("required"),
+  buyerServiceFee: Yup.number().required("required"),
+  sellerServiceFee: Yup.number().required("required"),
 });
 
 type IViewProps = {
@@ -26,18 +27,18 @@ export const ServiceFeeEntryForm = ({
   handleClose,
   refreshQuery,
 }: IViewProps) => {
-  const initialData = {
+  const initialData: IServiceFeeReq = {
     id: initData?.id || "",
-    percentage: initData?.percentage || "",
-    cap_price: initData?.cap_price || "",
+    buyerServiceFee: initData?.buyerServiceFee || "",
+    sellerServiceFee: initData?.sellerServiceFee || "",
   };
 
   const [isSaving, setIsSaving] = React.useState(false);
 
-  const handleSetFees = (formValues: any) => {
+  const handleSetFees = (formValues: IServiceFeeReq) => {
     setIsSaving(true);
 
-    ConfigService.setServiceFeeSettings(formValues)
+    ConfigService.setServiceFeeSettings(initData?.id || 0, formValues)
       .then((res) => {
         refreshQuery?.();
         toast.success(res.data?.message || "");
@@ -66,28 +67,28 @@ export const ServiceFeeEntryForm = ({
       <StyledForm onSubmit={handleSubmit}>
         <div className="wrapper">
           <VendgramInput
-            id="percentage"
-            name="percentage"
+            id="buyerServiceFee"
+            name="buyerServiceFee"
             label="Buyer service fee"
-            placeholder="0%"
+            placeholder="₦0.00"
             type="number"
-            value={values.percentage}
+            value={values.buyerServiceFee}
             onChange={handleChange}
-            helperText={errors.percentage}
-            error={!!errors.percentage}
+            helperText={errors.buyerServiceFee}
+            error={!!errors.buyerServiceFee}
             required
           />
 
           <VendgramInput
-            id="cap_price"
-            name="cap_price"
+            id="sellerServiceFee"
+            name="sellerServiceFee"
             label="Seller service fee"
             placeholder="₦0.00"
             type="number"
-            value={values.cap_price}
+            value={values.sellerServiceFee}
             onChange={handleChange}
-            helperText={errors.cap_price}
-            error={!!errors.cap_price}
+            helperText={errors.sellerServiceFee}
+            error={!!errors.sellerServiceFee}
             required
           />
 
