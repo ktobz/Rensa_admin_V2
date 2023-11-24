@@ -29,6 +29,8 @@ const defaultLookup: ILookups = {
   serviceFeeType: [],
   verificationStatus: [],
   verificationType: [],
+  dashboardFilter: [],
+  durationHours: [],
 };
 
 const useCachedDataStore = create(

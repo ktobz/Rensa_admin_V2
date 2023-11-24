@@ -122,14 +122,12 @@ export const ActionTimeStatus = ({
 
   const { seconds, minutes, hours, restart } = useTimer({
     expiryTimestamp: currentTime,
-    onExpire: () => {
-      // restart(currentTime);
-    },
+    onExpire: () => {},
   });
   const statusType =
     type !== "error" && type !== "warning"
       ? type
-      : minutes >= 3
+      : minutes >= 10
       ? "warning"
       : "error";
 

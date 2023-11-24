@@ -66,6 +66,7 @@ export default function VendgramAutoCompleteWithCheckbox<
   wrapperStyle,
   hasPreviousResult = false,
   onInputChange,
+  getOptionLabel,
   ...otherProps
 }: Omit<
   MyAutocomplete<T, Multiple, DisableClearable, FreeSolo>,
@@ -146,19 +147,11 @@ export default function VendgramAutoCompleteWithCheckbox<
         renderTags={() => null}
         onChange={(e, newValue) => {
           updateFieldValue(newValue);
-          // console.log(newValue);
         }}
         renderOption={(props, option: any, { selected }) => (
           <MuiBox
             component="li"
             sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
-            // style={{
-            //   width: "100%",
-            //   display: "flex",
-            //   justifyContent: "space-between",
-            //   alignItems: "center",
-            //   // margin: "10px 0",
-            // }}
             {...props}>
             <div
               style={{
@@ -168,7 +161,6 @@ export default function VendgramAutoCompleteWithCheckbox<
                 flex: 1,
                 width: "100%",
                 fontSize: "12px",
-                // paddingLeft: "10px",
               }}>
               {hasImage && iconName === "flag" && (
                 <ReactCountryFlag

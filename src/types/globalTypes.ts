@@ -434,6 +434,8 @@ export type IUserData = {
   phoneNumber: string;
   emailConfirmed: boolean;
   id: string;
+  isVerified: boolean;
+  isActive: boolean;
 };
 
 export type IUsersResponse = {
@@ -552,26 +554,100 @@ export type ITransactions = {
   phoneNumber: string;
   deliveryDate: string;
   response: null;
-  // statusQueryResponse: '{"HasResult":false,"Result":null,"ResultType":2,"Message":"An error occurred on verifying transaction","ValidationMessages":null,"Successful":false,"ExceptionThrown":false,"Error":null,"ResponseCode":null}';
-  // statusQueryCount: 1;
-  // lastStatusQueryDate: "2023-11-11T15:31:08.3957833";
-  // providerReference: null;
-  // provider: number;
   status: number;
   id: number;
-  // creatorUserId: string;
-  // lastModifierUserId: null;
-  // deleterUserId: null;
   creationTime: string;
-  // lastModificationTime: null;
-  // deletionTime: null;
-  // isDeleted: false;
 };
 
 export type ITransactionsResponse = {
   result: IPaginationResponse & {
     data: ITransactions[];
   };
+};
+
+// LISTING
+
+export type ICatalogueBid = {
+  id: number;
+  catalogueId: string;
+  userId: string;
+  bidType: number;
+  bidPrice: number;
+  bidStatus: number;
+  bidStatusDescription: string;
+  bidTypeDescription: string;
+};
+
+export type IListingData = {
+  name: string;
+  coverPhoto: string;
+  catalogueCategoryName: string;
+  location: string;
+  price: number;
+  totalBidders: number;
+  totalBids: number;
+  totalOffers: number;
+  durationInHours: number;
+  pickupMethod: number;
+  catalogueStatus: number;
+  catalogueStatusDescription: string;
+  pickupMethodDescription: string;
+  id: string;
+  creatorUserId: string;
+  lastModifierUserId: null;
+  deleterUserId: null;
+  creationTime: string;
+  lastModificationTime: null;
+  deletionTime: null;
+  isDeleted: false;
+  catalogueBids: ICatalogueBid[];
+  catalogueCategory: ICategoryData;
+  catalogueCondition: ICondition;
+  catalogueAttachments: {
+    cleansedName: string;
+    url: string;
+  }[];
+  description: string;
+};
+
+export type IReportedListingData = {
+  catalogue: IListingData;
+  catalogueId: string;
+  reason: string;
+  category: string;
+  status: number;
+  catalogueCreationTime: string;
+  catalogueCreatorUserId: string;
+  catalogueLastModificationTime: string;
+  catalogueLastModifierUserId: string;
+  catalogueCategoryId: number;
+  catalogueConditionId: number;
+  catalogueStatus: number;
+  coverPhoto: string;
+  description: string;
+  durationInHours: number;
+  location: string;
+  longitude: string;
+  langitude: string;
+  name: string;
+  pickupMethod: number;
+  price: number;
+  userId: string;
+  totalCount: number;
+};
+export type IListingResponse = {
+  result: IPaginationResponse & {
+    data: IListingData[];
+  };
+};
+
+export type IReportedListingResponse = {
+  result: IPaginationResponse & {
+    data: IReportedListingData[];
+  };
+};
+export type IListingDetailsResponse = {
+  result: IListingData;
 };
 
 // LOOKUPS
@@ -617,6 +693,8 @@ export type ILookups = {
   catalogueOrderStatus: ICategory[];
   verificationStatus: ICategory[];
   bankProvider: ICategory[];
+  dashboardFilter: ICategory[];
+  durationHours: ICategory[];
 };
 
 export type IListingProp = {

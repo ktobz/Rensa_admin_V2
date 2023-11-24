@@ -9,9 +9,12 @@ import { formatCurrency } from "utils/helper-funcs";
 import Title from "@/components/text/Title";
 import { IconLocation } from "@/lib/mui.lib.icons";
 import DurationFilter from "../select/DurationFilter";
-import { IBranchData, IStatus } from "@/types/globalTypes";
+import { IBranchData, ICategory, IStatus } from "@/types/globalTypes";
 import CustomStyledSelect from "../select/CustomStyledSelect";
 import { OrderStatus } from "../feedback/OrderStatus";
+import { useQuery } from "react-query";
+import OrderService from "@/services/order-service";
+import { AxiosPromise } from "axios";
 
 type IProps =
   | {
@@ -31,12 +34,14 @@ type IProps =
       className?: string;
       filterType?: "minimal" | "standard" | "status";
       statusType?: IStatus;
+      queryKey?: string;
+      serviceFunc?: () => AxiosPromise<any>;
     }
   | {
       title: string;
       showFilter?: boolean;
       defaultValue?: IBranchData;
-      defaultOptions?: any[];
+      defaultOptions?: ICategory[];
       setValues?: React.Dispatch<React.SetStateAction<any>>;
       value?: string;
       variant: "branch";
@@ -48,6 +53,8 @@ type IProps =
       className?: string;
       filterType?: "minimal" | "standard" | "status";
       statusType?: IStatus;
+      queryKey?: never;
+      serviceFunc?: never;
     };
 
 export function TotalCard({
@@ -63,6 +70,8 @@ export function TotalCard({
   name,
   filterType = "minimal",
   statusType = "new",
+  queryKey,
+  serviceFunc,
 }: IProps) {
   const handleChangeMinimal = (value: string) => {
     setValues?.((prev: any) => ({ ...prev, [name || ""]: value }));
@@ -84,6 +93,19 @@ export function TotalCard({
       : "";
 
   const options = defaultOptions?.map((x) => x) || [];
+
+  // const { data } = useQuery(
+  //   [queryKey],
+  //   () =>
+  //     OrderService.getTotals().then((res) => {
+  //       const data = res.data?.data;
+  //       return data as any;
+  //     }),
+  //   {
+  //     retry: 0,
+  //     refetchOnWindowFocus: false,
+  //   }
+  // );
 
   return (
     <StyledWrapper className={className}>
@@ -175,7 +197,6 @@ export function TotalCard({
 
 const StyledWrapper = styled.div`
   width: 100%;
-  /* max-width: 570px; */
   background: #fbfbfb;
   padding: 20px;
   border-radius: 5px;

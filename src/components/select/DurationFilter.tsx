@@ -8,14 +8,15 @@ import {
   styled,
   IconArrowDownIcon,
 } from "@/lib/index";
+import { ICategory } from "@/types/globalTypes";
 
 const ITEM_HEIGHT = 48;
 
 type Props = Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> & {
-  selectedValue?: string;
+  selectedValue?: any;
   handleOptionSelect?: (value: string) => void;
   onChange?: () => void;
-  options?: any[];
+  options?: ICategory[];
 };
 
 export default function DurationFilter({
@@ -64,15 +65,15 @@ export default function DurationFilter({
         onClose={handleClose}
         PaperProps={{
           style: {
-            maxHeight: ITEM_HEIGHT * 4.5,
-            width: "20ch",
+            maxHeight: ITEM_HEIGHT * 5.5,
+            width: "12ch",
           },
         }}>
         {options?.map((option, index) => (
           <MenuItem
             key={index}
-            selected={selectedValue === option}
-            onClick={(e) => handleMenuItemClick(e, option)}
+            selected={selectedValue === option?.id}
+            onClick={(e) => handleMenuItemClick(e, option?.name)}
             sx={{
               display: "flex",
               justifyContent: "space-between",
@@ -81,7 +82,7 @@ export default function DurationFilter({
               minHeight: "20px",
               borderBottom: "1px solid #eaeaea",
             }}
-            value={option}>
+            value={option?.id}>
             <MuiTypography
               variant="body1"
               style={{
@@ -92,7 +93,7 @@ export default function DurationFilter({
                 color: "#262626",
                 textTransform: "capitalize",
               }}>
-              {option?.toLowerCase()?.replaceAll("_", " ")}
+              {option?.name?.toLowerCase()?.replaceAll("_", " ")}
             </MuiTypography>
           </MenuItem>
         ))}

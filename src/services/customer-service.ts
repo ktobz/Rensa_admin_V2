@@ -5,7 +5,6 @@ import { AxiosPromise } from "axios";
 
 const PATHS = {
   customers: "/admin/users",
-  dashboardMetrics: "/orders/dashboard",
 };
 
 const CustomerService = {
@@ -38,20 +37,32 @@ const CustomerService = {
     });
   },
 
-  getCustomerBalance(id: number | string) {
-    return HTTP.get(`${PATHS.customers}/${id}/wallets`, {
+  getCustomerProducts(id: number | string) {
+    return HTTP.get(`${PATHS.customers}/${id}/products`, {
       headers: {
         Authorization: getToken(),
       },
     });
   },
 
-  dashboardMetrics(data: {
-    totat_sales_period: string;
-    totat_order_period: string;
-    top_selling_branch: string;
-  }) {
-    return HTTP.post(`${PATHS.dashboardMetrics}`, data, {
+  blockUser(id: number | string) {
+    return HTTP.put(`${PATHS.customers}/blockuser/${id}`, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+
+  unblockUser(id: number | string) {
+    return HTTP.put(`${PATHS.customers}/unblockuser/${id}`, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+
+  getCustomerTransactions(id: number | string) {
+    return HTTP.get(`${PATHS.customers}/${id}/transactions`, {
       headers: {
         Authorization: getToken(),
       },

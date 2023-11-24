@@ -16,14 +16,23 @@ import {
   IconNotificationInfo,
 } from "@/lib/mui.lib.icons";
 
-import { INotificationData, IPagination } from "@/types/globalTypes";
+import {
+  IListingData,
+  INotificationData,
+  IPagination,
+} from "@/types/globalTypes";
 import NotificationService from "@/services/notification-service";
 import CustomTabs from "@/components/other/CustomTabs";
 import CustomTab from "@/components/other/CustomTab";
 import { UserDetailCard } from "@/components/card/UserCard";
 import { BidStatus } from "./BidStatus";
 
-export function BidsView() {
+type IProps = {
+  listingData: IListingData | null;
+  isLoading: boolean;
+  isError: boolean;
+};
+export function BidsView({ isLoading, listingData, isError }: IProps) {
   const queryClient = useQueryClient();
 
   const [show, setShow] = React.useState(false);
@@ -40,18 +49,18 @@ export function BidsView() {
     setShow((prev) => !prev);
   };
 
-  const { data, isLoading, isError } = useQuery(
-    ["all-bids"],
-    () =>
-      NotificationService.getAutomatedMessages("").then((res) => {
-        const data = res.data?.result;
-        return data;
-      }),
-    {
-      retry: 0,
-      refetchOnWindowFocus: false,
-    }
-  );
+  // const { data, isLoading, isError } = useQuery(
+  //   ["all-bids"],
+  //   () =>
+  //     NotificationService.getAutomatedMessages("").then((res) => {
+  //       const data = res.data?.result;
+  //       return data;
+  //     }),
+  //   {
+  //     retry: 0,
+  //     refetchOnWindowFocus: false,
+  //   }
+  // );
 
   const handleCloseModal = () => {
     setShow(false);
@@ -98,11 +107,11 @@ export function BidsView() {
 
             <div className="totals">
               <MuiTypography variant="body1" className="total">
-                <b>16</b> bids
+                <b>{listingData?.totalBids || 0}</b> bids
               </MuiTypography>
               <span>|</span>
               <MuiTypography variant="body1" className="total">
-                <b>{data?.length || 0}</b> bidders
+                <b>{listingData?.totalBidders || 0}</b> bidders
               </MuiTypography>
             </div>
           </div>
@@ -112,15 +121,15 @@ export function BidsView() {
               Recent offers
             </MuiTypography>
             <MuiTypography variant="body1" className="total">
-              <b>{data?.length || 0}</b> offers
+              <b>{listingData?.totalOffers || 0}</b> offers
             </MuiTypography>
           </div>
         )}
 
         <SimpleBar className="list-wrapper">
           {!isLoading &&
-            data &&
-            data?.map((row) => (
+            listingData?.catalogueBids &&
+            listingData?.catalogueBids?.map((row) => (
               <div key={row?.id} className="notif-row">
                 <UserDetailCard
                   variant="bidder"
@@ -142,16 +151,19 @@ export function BidsView() {
         </SimpleBar>
       </div>
 
-      {!isLoading && data && data?.length === 0 && !isError && (
-        <div className="no-data-cell">
-          <NoData
-            title="No bids yet"
-            icon={<IconNotificationInfo className="icon" />}
-            message="Bids will show here"></NoData>
-        </div>
-      )}
+      {!isLoading &&
+        listingData?.catalogueBids &&
+        listingData?.catalogueBids?.length === 0 &&
+        !isError && (
+          <div className="no-data-cell">
+            <NoData
+              title="No bids yet"
+              icon={<IconNotificationInfo className="icon" />}
+              message="Bids will show here"></NoData>
+          </div>
+        )}
 
-      {isError && !data && (
+      {/* {isError && !data && (
         <div className="no-data-cell">
           <NoData
             title="An Error Occurred"
@@ -159,7 +171,7 @@ export function BidsView() {
             icon={<IconNotificationInfo className="icon" />}
           />
         </div>
-      )}
+      )} */}
 
       {/* {!data && isLoading && (
                 <CustomTableSkeleton columns={7} rows={10} />

@@ -23,7 +23,7 @@ import {
 } from "@/lib/mui.lib.icons";
 import { useQuery, useQueryClient } from "react-query";
 import OrderService from "@/services/order-service";
-import { IOrderDetails, IStatus } from "@/types/globalTypes";
+import { IListingData, IOrderDetails, IStatus } from "@/types/globalTypes";
 import { UserDetailCard } from "@/components/card/UserCard";
 import VendgramCustomModal from "@/components/modal/Modal";
 import { OrderStatus } from "@/components/feedback/OrderStatus";
@@ -36,6 +36,9 @@ import { ReportedComments } from "../components/ReportedComments";
 import { SellerInfo } from "../components/SellerInfo";
 import { BidsView } from "../components/BidsView";
 import { ActionConfirm } from "../components/ActionConfirm";
+import ListingService from "@/services/listing-service";
+import { getIdName } from "@/utils/helper-funcs";
+import useCachedDataStore from "@/config/store-config/lookup";
 
 const options =
   ["Place On-hold", "Close listing"]?.map((x) => ({
@@ -44,24 +47,27 @@ const options =
   })) || [];
 
 export function ListingDetails() {
+  const { catalogueStatus, deliveryFeePickupMethod } = useCachedDataStore(
+    (state) => state.cache?.lookup
+  );
   const queryClient = useQueryClient();
   const { state } = useLocation();
   const { reportId } = useIds();
   const [action, setAction] = React.useState("");
   const [show, setShow] = React.useState(false);
 
-  const { data } = useQuery(
-    ["order-details", reportId],
+  const { data, isLoading, isError } = useQuery(
+    ["listing-details", reportId],
     () =>
-      OrderService.getOrderDetails(reportId || "").then((res) => {
-        const data = res.data?.data;
-        return data as IOrderDetails;
+      ListingService.getDetails(reportId || "").then((res) => {
+        const data = res.data?.result;
+        return data;
       }),
     {
       retry: 0,
       refetchOnWindowFocus: false,
       enabled: !!reportId,
-      initialData: state as IOrderDetails,
+      initialData: state as IListingData,
     }
   );
 
@@ -136,7 +142,7 @@ export function ListingDetails() {
                 Item name
               </MuiTypography>
               <MuiTypography variant="body2" className="body">
-                1.1 KVA Generator
+                {data?.name || "-"}
               </MuiTypography>
             </div>
           </div>
@@ -146,7 +152,7 @@ export function ListingDetails() {
                 Category
               </MuiTypography>
               <MuiTypography variant="body2" className="body">
-                Appliance
+                {data?.catalogueCategory?.name}
               </MuiTypography>
             </div>
             <div className="group">
@@ -154,7 +160,7 @@ export function ListingDetails() {
                 Condition
               </MuiTypography>
               <MuiTypography variant="body2" className="body">
-                New
+                {data?.catalogueCondition?.name}
               </MuiTypography>
             </div>
             <div className="group">
@@ -162,7 +168,8 @@ export function ListingDetails() {
                 Pickup method
               </MuiTypography>
               <MuiTypography variant="body2" className="body">
-                Van
+                {getIdName(data?.pickupMethod || 1, deliveryFeePickupMethod) ||
+                  ""}
               </MuiTypography>
             </div>
           </div>
@@ -174,21 +181,18 @@ export function ListingDetails() {
                 Description
               </MuiTypography>
               <MuiTypography variant="body2" className="body">
-                2 months old generator. Clean as new without any change of parts
-                or services done2 months old generator. Clean as new without any
-                change of parts or services done....2 months old generator.
-                Clean as new without any change of parts or services done....
+                {data?.description}
               </MuiTypography>
             </div>
           </div>
           <div className="">
             <SimpleBar className="">
               <div className="image-wrapper">
-                {[...Array(4)].map((_, index) => (
+                {data?.catalogueAttachments?.map((file, index) => (
                   <MuiCardMedia
                     key={index}
                     component="img"
-                    src="https://images.unsplash.com/photo-1598688933273-77f7a673845d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1274&q=80"
+                    src={file?.url}
                     className="product"
                   />
                 ))}
@@ -199,7 +203,11 @@ export function ListingDetails() {
       </div>
       <div className="bid-info">
         <div className="bid">
-          <BidsView />
+          <BidsView
+            listingData={data || null}
+            isLoading={isLoading}
+            isError={isError}
+          />
         </div>
         <div className="seller-info">
           <SellerInfo />

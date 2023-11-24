@@ -291,11 +291,32 @@ export function OrderTable({
         </div>
         {showFilter && (
           <div className="action-section">
-            <StatusFilter
-              selectedValue={filter}
-              handleSetValue={handleSetFilter}
-            />
-            <CustomSearch placeholder="Search order ID, customer name, vendor name" />
+            {view === "list" && (
+              <>
+                <StatusFilter
+                  selectedValue={filter}
+                  handleSetValue={handleSetFilter}
+                />
+                <CustomSearch placeholder="Search order ID" />
+              </>
+            )}
+            {view === "grid" && (
+              <div className="calendar-nav">
+                <MuiIconButton
+                  className="nav-btn"
+                  onClick={handleChangeMonth("prev")}>
+                  <IconChevronLeft />
+                </MuiIconButton>
+                <MuiTypography variant="body2" className="nav-date">
+                  {currentDate?.dateString}
+                </MuiTypography>
+                <MuiIconButton
+                  className="nav-btn"
+                  onClick={handleChangeMonth("next")}>
+                  <IconChevronRight />
+                </MuiIconButton>
+              </div>
+            )}
 
             <div className="toggle-mode">
               <MuiIconButton
@@ -315,21 +336,6 @@ export function OrderTable({
 
       {view == "grid" && showFilter ? (
         <>
-          <div className="calendar-nav">
-            <MuiIconButton
-              className="nav-btn"
-              onClick={handleChangeMonth("prev")}>
-              <IconChevronLeft />
-            </MuiIconButton>
-            <MuiTypography variant="body2" className="nav-date">
-              {currentDate?.dateString}
-            </MuiTypography>
-            <MuiIconButton
-              className="nav-btn"
-              onClick={handleChangeMonth("next")}>
-              <IconChevronRight />
-            </MuiIconButton>
-          </div>
           <Calendar
             ref={calendarRef}
             className="calendar"

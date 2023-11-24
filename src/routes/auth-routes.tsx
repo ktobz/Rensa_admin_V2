@@ -55,6 +55,8 @@ export default function MergedModuleRoutes() {
         element={<AddListing />}
       />
 
+      <Route path="/marketplace/:rp_id" element={<ListingDetails />} />
+
       <Route path="/transactions" element={<TransactionsView />} />
       <Route path="/sales-revenue" element={<IncomeView />} />
       <Route path="/users" element={<CustomersView />} />

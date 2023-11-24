@@ -18,7 +18,7 @@ import {
   styled,
 } from "@/lib/index";
 
-import { IPagination } from "@/types/globalTypes";
+import { IPagination, IReportedListingData } from "@/types/globalTypes";
 import CustomTableSkeleton from "@/components/skeleton/CustomTableSkeleton";
 import { createPaginationData, formatCurrency } from "utils/helper-funcs";
 import TableWrapper from "@/components/table/TableWrapper";
@@ -32,78 +32,7 @@ import {
 } from "./OrderStatus";
 import CustomSearch from "@/components/input/CustomSearch";
 import StatusFilter from "@/components/select/StatusFillter";
-
-const data = [
-  {
-    id: "43579",
-    customer: "Timothy Orbik",
-    created_at: new Date().toJSON(),
-    scheduled_at: new Date().toJSON(),
-    branch: "Lekki Branch",
-    amount: 23000,
-    amount_settled: 2000,
-    service_fee: 2300,
-    status: "hold",
-    settlement: "active",
-
-    time: 0,
-  },
-  {
-    id: "4358",
-    customer: "Jame Orbik",
-    created_at: new Date().toJSON(),
-    scheduled_at: new Date().toJSON(),
-    branch: "John Branch",
-    amount: 33000,
-    amount_settled: 1000,
-    service_fee: 2200,
-    status: "sold",
-    settlement: "delivered",
-
-    time: 0,
-  },
-  {
-    id: "43577",
-    customer: "Peter Orbik",
-    created_at: new Date().toJSON(),
-    scheduled_at: new Date().toJSON(),
-    branch: "Ajah Branch",
-    amount: 23000,
-    amount_settled: 2000,
-    service_fee: 2300,
-    status: "closed",
-    settlement: "closed",
-
-    time: 0,
-  },
-  {
-    id: "43570",
-    customer: "Timothy Orbik",
-    created_at: new Date().toJSON(),
-    scheduled_at: new Date().toJSON(),
-    branch: "Lekki Branch",
-    amount: 2300,
-    amount_settled: 2000,
-    service_fee: 2300,
-    status: "error",
-    settlement: "closed",
-
-    time: 20,
-  },
-  {
-    id: "43589",
-    customer: "Timothy OrbJamesik",
-    created_at: new Date().toJSON(),
-    scheduled_at: new Date().toJSON(),
-    branch: "James Branch",
-    amount: 23000,
-    amount_settled: 2000,
-    service_fee: 2300,
-    status: "warning",
-    settlement: "pending",
-    time: 220,
-  },
-];
+import ListingService from "@/services/listing-service";
 
 const defaultQuery: IPagination = {
   pageSize: 15,
@@ -138,42 +67,38 @@ export function ReportTable({
     setFilter(values);
   };
 
-  // const { data, isLoading, isError } = useQuery(
-  //   [
-  //     "all-user-cards-transactions",
-  //     pagination.page,
-  //     pagination.pageSize,
-  //     variant,
-  //   ],
-  //   () =>
-  //     CardService.getAllTransactions(
-  //       `?pgn=${pagination.page}&pgs=${pagination.pageSize}`
-  //     ).then((res) => {
-  //       const data = res.data?.data;
-  //       const { hasNextPage, hasPrevPage, total, totalPages } =
-  //         createPaginationData(data, pagination);
+  const { data, isLoading, isError, error } = useQuery(
+    ["reported-listing", filter, pagination.page, pagination.pageSize],
+    () =>
+      ListingService.getAllReportedListing(
+        `?pageNumber${pagination.page}&pageSize=${pagination?.pageSize}`
+      ).then((res) => {
+        const { data, ...paginationData } = res.data?.result;
+        const { hasNextPage, hasPrevPage, total, totalPages } =
+          createPaginationData(data, paginationData);
 
-  //       setPagination((prev) => ({
-  //         ...prev,
-  //         total,
-  //         totalPages,
-  //         hasNextPage,
-  //         hasPrevPage,
-  //       }));
+        setPagination((prev) => ({
+          ...prev,
+          total,
+          totalPages,
+          hasNextPage,
+          hasPrevPage,
+        }));
 
-  //       return data.data as ITransactionHistoryData[];
-  //     }),
-  //   {
-  //     retry: 0,
-  //   }
-  // );
+        return data;
+      }),
+    {
+      retry: 0,
+      refetchOnWindowFocus: false,
+    }
+  );
 
   const handleChange = (page: number) => {
     setPagination((prev) => ({ ...prev, page }));
   };
 
-  const handleViewDetails = (id: string) => () => {
-    navigate(`${id}`);
+  const handleViewDetails = (data: IReportedListingData) => () => {
+    navigate(`${data?.catalogueCategoryId}`, { state: data });
   };
 
   return (
@@ -228,13 +153,16 @@ export function ReportTable({
                 <MuiTableCell
                   className="heading"
                   align="left"
-                  style={{ minWidth: "250px" }}>
+                  style={{ minWidth: "270px" }}>
                   Listing
                 </MuiTableCell>
                 <MuiTableCell className="heading" align="left">
                   Category
                 </MuiTableCell>
-                <MuiTableCell className="heading" align="left">
+                <MuiTableCell
+                  className="heading"
+                  align="left"
+                  style={{ minWidth: "180px" }}>
                   Reason
                 </MuiTableCell>
                 <MuiTableCell className="heading" align="left">
@@ -248,7 +176,7 @@ export function ReportTable({
             <MuiTableBody>
               {data?.map((row) => (
                 <MuiTableRow
-                  key={row?.id}
+                  key={row?.catalogueId}
                   sx={{
                     "&:last-child td, &:last-child th": { border: 0 },
                   }}>
@@ -257,37 +185,38 @@ export function ReportTable({
                     <div className="info">
                       <MuiCardMedia
                         component="img"
-                        src="https://images.unsplash.com/photo-1580048915913-4f8f5cb481c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y3VycmVuY3l8ZW58MHwxfDB8fHww&auto=format&fit=crop&w=400&q=60"
+                        src={row?.coverPhoto}
                         className="img"
                         width="50px"
                         height="50px"
                       />
-                      <div className="details">
+                      <div className="details" style={{ flex: "1" }}>
                         <MuiTypography variant="body2" className="product-name">
-                          {row?.branch}
+                          {row?.name}
                         </MuiTypography>
                         <MuiTypography variant="body2" className="list-id">
-                          {" "}
-                          Listing ID: #{row?.id}{" "}
+                          Listing ID: {row?.catalogueId}{" "}
                         </MuiTypography>
                       </div>
                     </div>
                   </MuiTableCell>
-                  <MuiTableCell align="left">Appliances</MuiTableCell>
-                  <MuiTableCell align="left">{row?.branch}</MuiTableCell>
                   <MuiTableCell align="left">
-                    <SettlementStatus
+                    {row?.catalogue?.catalogueCategoryName}
+                  </MuiTableCell>
+                  <MuiTableCell align="left">{row?.reason || "-"}</MuiTableCell>
+                  <MuiTableCell align="left">
+                    {/* <SettlementStatus
                       style={{
                         display: "inline-block",
                         width: "100%",
                         border: "none",
                       }}
-                      type={row?.settlement?.toLowerCase() as ISettlementStatus}
-                    />
+                      type={row?.catalogue?.catalogueStatus?.toLowerCase() as ISettlementStatus}
+                    /> */}
                   </MuiTableCell>
                   <MuiTableCell align="left">
                     <MuiIconButton
-                      onClick={handleViewDetails(row?.id)}
+                      onClick={handleViewDetails(row)}
                       className="visible-btn">
                       <IconVisibility />
                     </MuiIconButton>
@@ -295,7 +224,7 @@ export function ReportTable({
                 </MuiTableRow>
               ))}
 
-              {/* {!isLoading && data && data?.length === 0 && !isError && (
+              {!isLoading && data && data?.length === 0 && !isError && (
                 <MuiTableRow>
                   {" "}
                   <MuiTableCell
@@ -304,14 +233,14 @@ export function ReportTable({
                     className="no-data-cell"
                     rowSpan={20}>
                     <NoData
-                      title="No order yet"
-                      message="Recent orders will appear here"
+                      title="No Reported Listing yet"
+                      message="Recent Reported listing will appear here"
                     />
                   </MuiTableCell>
                 </MuiTableRow>
-              )} */}
+              )}
 
-              {/* {isError && !data && (
+              {isError && !data && (
                 <MuiTableRow>
                   {" "}
                   <MuiTableCell
@@ -320,15 +249,15 @@ export function ReportTable({
                     align="center">
                     <NoData
                       title="An Error Occurred"
-                      message="Sorry, we couldn't fetch your orders. Try again later or contact Rensa support."
+                      message="Sorry, we couldn't fetch reported listings. Try again later or contact Rensa support."
                     />
                   </MuiTableCell>
                 </MuiTableRow>
-              )} */}
+              )}
 
-              {/* {!data && isLoading && (
-                <CustomTableSkeleton columns={8} rows={10} />
-              )} */}
+              {!data && isLoading && (
+                <CustomTableSkeleton columns={5} rows={10} />
+              )}
             </MuiTableBody>
           </MuiTable>
         </MuiTableContainer>

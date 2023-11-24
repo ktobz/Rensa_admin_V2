@@ -7,8 +7,12 @@ import { TotalCard } from "@/components/index";
 import { useQuery } from "react-query";
 import OrderService from "@/services/order-service";
 import { IOrderTotalStats } from "@/types/globalTypes";
+import useCachedDataStore from "@/config/store-config/lookup";
 
 export function DashboardView() {
+  const { dashboardFilter } = useCachedDataStore(
+    (state) => state.cache?.lookup
+  );
   const navigate = useNavigate();
 
   const handleViewMore = () => {
@@ -43,6 +47,8 @@ export function DashboardView() {
             action: handleGoTo("orders"),
             name: "View more",
           }}
+          defaultOptions={dashboardFilter}
+          filterType="minimal"
         />
         <TotalCard
           className="card"

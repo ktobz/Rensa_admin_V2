@@ -1,6 +1,6 @@
 import * as React from "react";
 import { format } from "date-fns";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { MuiButton, MuiTypography, styled } from "@/lib/index";
@@ -18,8 +18,10 @@ import CustomTab from "@/components/other/CustomTab";
 import CustomTabPanel from "@/components/other/CustomTabPanel";
 import { CustomerTransactionsView } from "./CustomerTransactionsView";
 import { TransactionTable } from "@/modules/branches copy/components/TransactionTable";
+import { toast } from "react-toastify";
 
 export function CustomerDetailsView() {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { state } = useLocation();
   const { customerId } = useIds();
@@ -39,7 +41,7 @@ export function CustomerDetailsView() {
   };
 
   const { data, isLoading, isError } = useQuery(
-    ["user", customerId],
+    ["user-details", customerId],
     () =>
       CustomerService.getCustomerDetails(customerId || "").then((res) => {
         const data = res.data?.data;
@@ -53,37 +55,26 @@ export function CustomerDetailsView() {
     }
   );
 
-  const { data: walletBalance } = useQuery(
-    ["customers-wallet", customerId],
-    () =>
-      CustomerService.getCustomerBalance(customerId || "").then((res) => {
-        const data = res.data?.data;
-        return data as number;
-      }),
-    {
-      retry: 0,
-      refetchOnWindowFocus: false,
-      enabled: !!customerId,
-    }
-  );
-
   const handleToggleShow = () => {
     setShow((prev) => !prev);
   };
 
+  const handleRefresh = () => {
+    queryClient.invalidateQueries(["user-details", customerId]);
+  };
+
   const handleUpdateStatus = (callback: () => void) => () => {
-    // const ids = updateData.map((data) => data?.id);
-    // RiderService.changeVisibility(ids?.[0] || 0)
-    //   .then((res) => {
-    //     handleRefresh?.();
-    //     toast.success(res.data?.message || "");
-    //   })
-    //   .catch((err) => {
-    //     toast.error(err?.response?.data?.message || "");
-    //   })
-    //   .finally(() => {
-    //     callback();
-    //   });
+    CustomerService.blockUser(customerId || "")
+      .then((res) => {
+        handleRefresh?.();
+        toast.success(res.data?.message || "");
+      })
+      .catch((err) => {
+        toast.error(err?.response?.data?.message || "");
+      })
+      .finally(() => {
+        callback();
+      });
   };
 
   return (
@@ -141,7 +132,7 @@ export function CustomerDetailsView() {
                     borderRadius: "5px",
                     fontSize: "12px",
                   }}
-                  type={data?.emailConfirmed ? "true" : "false"}
+                  type={data?.isVerified ? "true" : "false"}
                 />
               </MuiTypography>
             </div>
@@ -210,13 +201,23 @@ export function CustomerDetailsView() {
           </CustomTabs>
 
           <div className="action-section">
-            <MuiButton
-              color="inherit"
-              variant="contained"
-              className="btn"
-              onClick={handleToggleShow}>
-              Block User
-            </MuiButton>
+            {data?.isActive ? (
+              <MuiButton
+                color="inherit"
+                variant="contained"
+                className="btn"
+                onClick={handleToggleShow}>
+                Block User
+              </MuiButton>
+            ) : (
+              <MuiButton
+                color="inherit"
+                variant="contained"
+                className="btn"
+                onClick={handleToggleShow}>
+                Unblock User
+              </MuiButton>
+            )}
           </div>
         </div>
       </div>

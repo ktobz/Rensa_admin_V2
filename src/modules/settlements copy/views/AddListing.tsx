@@ -1,70 +1,49 @@
 import * as React from "react";
-import { format } from "date-fns";
 import * as Yup from "yup";
 import { useFormik, FormikProvider } from "formik";
+import debounceFunc from "lodash.debounce";
 
-import {
-  MuiButton,
-  MuiCardMedia,
-  MuiDivider,
-  MuiIconButton,
-  MuiSelectChangeEvent,
-  MuiTypography,
-  styled,
-} from "@/lib/index";
-import { useLocation, useParams } from "react-router-dom";
-import {
-  IconBike,
-  IconBranches,
-  IconCopyFilled,
-  IconCreditCard,
-  IconEarning,
-  IconLocation,
-  IconPetrol,
-  IconShipping,
-  IconTicket,
-} from "@/lib/mui.lib.icons";
+import { MuiButton, MuiDivider, MuiTypography, styled } from "@/lib/index";
+import { useLocation } from "react-router-dom";
+
 import { useQuery, useQueryClient } from "react-query";
-import OrderService from "@/services/order-service";
-import {
-  IListingProp,
-  IOrderDetails,
-  IStatus,
-  PlaceType,
-} from "@/types/globalTypes";
-import { UserDetailCard } from "@/components/card/UserCard";
-import VendgramCustomModal from "@/components/modal/Modal";
-import { OrderStatus } from "@/components/feedback/OrderStatus";
-import { SettlementStatus } from "@/modules/settlements/components/OrderStatus";
+import { IListingProp, IUserData, PlaceType } from "@/types/globalTypes";
+
 import { useIds } from "@/utils/hooks";
-import CustomStyledSelect from "@/components/select/CustomStyledSelect";
-import { ActionTimeStatus } from "../components/OrderStatus";
-import SimpleBar from "simplebar-react";
-import { ReportedComments } from "../components/ReportedComments";
-import { SellerInfo } from "../components/SellerInfo";
-import { BidsView } from "../components/BidsView";
-import { ActionConfirm } from "../components/ActionConfirm";
 import VendgramVirtualizedCountriesSelect from "@/components/select/test";
 import VendgramSelect from "@/components/select/autoComplete";
 import VendgramInput from "@/components/input";
 import useCachedDataStore from "@/config/store-config/lookup";
 import GoogleLocationInput from "@/components/select/GoogleLocationInput";
 import NotificationService from "@/services/notification-service";
+import UserService from "@/services/user.service";
+import CustomerService from "@/services/customer-service";
 
 const SCHEMA = Yup.object().shape({
   name: Yup.string().required("required"),
-  branch_manager_id: Yup.string(),
-  availability: Yup.boolean(),
+  description: Yup.string().required("required"),
+  price: Yup.number().required("required"),
   location: Yup.string().required("required"),
+  latitude: Yup.number().required("required"),
+  longitude: Yup.number().required("required"),
+
+  userId: Yup.string().required("required"),
+  pickupMethod: Yup.number().required("Required"),
+  availability: Yup.boolean(),
+  catalogueConditionId: Yup.number().required("required"),
+  catalogueCategoryId: Yup.number().required("required"),
 });
 
 export function AddListing() {
   const {
-    lookup: { pickupMethod, deliveryFeePickupMethod },
+    lookup: { pickupMethod, deliveryFeePickupMethod, durationHours },
   } = useCachedDataStore((state) => state.cache);
   const queryClient = useQueryClient();
   const { state } = useLocation();
   const { reportId } = useIds();
+
+  const [name, setName] = React.useState("");
+  const [compText, setCompText] = React.useState("");
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [locationValue, setLocationValue] = React.useState<PlaceType | null>(
@@ -73,7 +52,7 @@ export function AddListing() {
     }
   );
 
-  const initialData: IListingProp = {
+  const initialData = {
     location: "",
     CatalogueCategoryId: 0,
     CatalogueConditionId: 0,
@@ -86,6 +65,7 @@ export function AddListing() {
     PickupMethod: 0,
     price: 0,
     UserId: "",
+    userId_name: "",
   };
 
   const createListing = (values: any) => {
@@ -107,6 +87,43 @@ export function AddListing() {
 
   const handleCustomChange = (name: string, value: string | number) => {
     setFieldValue(name, value);
+  };
+
+  const users = useQuery(
+    ["all-users", name],
+    () =>
+      CustomerService.getAll(`?searchText=${name}`).then((res) => {
+        return res.data.result?.data;
+      }),
+    {
+      refetchOnWindowFocus: false,
+      retry: 0,
+    }
+  );
+
+  const handleSearch = (value: string) => {
+    setName(value);
+  };
+
+  const throttledChangeHandler = React.useMemo(
+    () => debounceFunc(handleSearch, 700),
+    []
+  );
+
+  const handleChangeCompetitionValue = (value: string) => {
+    setCompText(value);
+    throttledChangeHandler(value);
+  };
+
+  React.useEffect(() => {
+    return () => {
+      throttledChangeHandler.cancel();
+    };
+  }, [throttledChangeHandler]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, name } = e.target;
+    let formatted = value;
   };
 
   const allCategory = useQuery(
@@ -139,6 +156,15 @@ export function AddListing() {
     setFieldValue("location", value?.description);
   };
 
+  const getId = (user: string, options: any) => {
+    const data = options;
+    return data.find(
+      (value: any) =>
+        `${value?.firstName?.toLowerCase()} ${value?.lastName?.toLowerCase()}` ===
+        user?.toLowerCase()
+    )?.id;
+  };
+
   return (
     <FormikProvider value={formik}>
       <PageContent onSubmit={handleSubmit}>
@@ -152,23 +178,47 @@ export function AddListing() {
           <div className="input-wrapper">
             <VendgramVirtualizedCountriesSelect
               label="Select user"
-              placeholder="Select branch manager  "
-              value={values.branch_manager_id}
-              // helperText={errors.branch_manager_id}
-              error={!!errors.branch_manager_id}
-              options={[]}
-              optionValue="id"
-              optionTitle="full_name"
-              updateFieldValue={(value: { id: number; full_name: string }) =>
-                handleCustomChange("branch_manager_id", value.id)
-              }
-              selectedValue={values.branch_manager_id}
-              wrapperStyle={{ width: "auto" }}
-              showCheck={false}
+              updateFieldValue={(value: any) => {
+                setFieldValue("userId", value?.id);
+                setFieldValue("userId_name", value?.firstName);
+              }}
+              selectedValue={values?.userId || ""}
+              options={users?.data || []}
+              placeholder="Search and select user"
+              loading={users.isLoading}
               showPills={false}
-              // iconName="profile_image"
-              // hasImage
-              getOptionLabel={(opt: any) => opt?.full_name}
+              multiple={false}
+              showCheck={false}
+              inputValue={values?.userId_name || ""}
+              optionTitle="firstName"
+              optionValue="id"
+              getOptionLabel={(opt: any) => {
+                console.log(`${opt?.firstName} ${opt?.lastName}`);
+                return `${opt?.firstName} ${opt?.lastName}`;
+              }}
+              error={!!errors.userId}
+              helperText={errors.userId}
+              onInputChange={(event, newInputValue, reason) => {
+                if (event) {
+                  if (reason === "input") {
+                    setFieldValue("userId_name", newInputValue);
+                    handleChangeCompetitionValue(newInputValue);
+                  }
+
+                  if (reason === "clear") {
+                    setFieldValue("userId_name", "");
+                    setFieldValue("userId", "");
+                    handleChangeCompetitionValue("");
+                  }
+                  if (reason === "reset") {
+                    setFieldValue("userId_name", newInputValue);
+                    setFieldValue("userId", getId(newInputValue, users.data));
+                  }
+                }
+              }}
+              isOptionEqualToValue={(option: any, value: any) => {
+                return option?.id === value?.id;
+              }}
             />
           </div>
           <MuiDivider className="" />
@@ -234,15 +284,15 @@ export function AddListing() {
               error={!!errors?.location}
             />
 
-            <VendgramInput
+            <VendgramSelect
               id="durationInHours"
               name="durationInHours"
               label="Auction Duration"
               placeholder="Enter duration"
-              type="number"
               value={values.durationInHours}
               onChange={handleChange}
               helperText={errors.durationInHours}
+              options={durationHours || []}
               error={!!errors.durationInHours}
               required
             />

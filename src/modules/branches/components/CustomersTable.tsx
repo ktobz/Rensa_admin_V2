@@ -41,7 +41,7 @@ export function CustomersTable() {
   const [pagination, setPagination] = React.useState<IPagination>(defaultQuery);
 
   const { data, isLoading, isError } = useQuery(
-    ["all-customers", pagination.page, pagination.pageSize],
+    ["all-users", pagination.page, pagination.pageSize],
     () =>
       CustomerService.getAll(
         `?PageNumber=${pagination.page}&PageSize=${pagination.pageSize}`

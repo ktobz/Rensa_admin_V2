@@ -345,7 +345,9 @@ export function AppReleaseTable() {
                     <MuiTableCell align="left">
                       {row?.versionNumber}
                     </MuiTableCell>
-                    <MuiTableCell align="left">{row?.forceUpdate}</MuiTableCell>
+                    <MuiTableCell align="left">
+                      {row?.forceUpdate ? "Force" : "Optional"}
+                    </MuiTableCell>
                     <MuiTableCell align="left">
                       {row?.releaseNotes || "-"}
                     </MuiTableCell>

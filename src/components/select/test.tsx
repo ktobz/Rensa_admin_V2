@@ -127,7 +127,7 @@ interface MyAutocomplete<
   DisableClearable extends boolean | undefined,
   FreeSolo extends boolean | undefined
 > extends AutocompleteProps<T, Multiple, DisableClearable, FreeSolo> {
-  updateFieldValue: Function;
+  updateFieldValue: (data: any) => void;
   optionTitle?: string;
   optionValue?: string;
   iconName?: string;
@@ -138,7 +138,7 @@ interface MyAutocomplete<
   showPills?: boolean;
   error?: boolean;
   required?: boolean;
-  helperText?: string;
+  helperText?: any;
   wrapperClass?: string;
   wrapperId?: string;
   wrapperStyle?: React.CSSProperties;

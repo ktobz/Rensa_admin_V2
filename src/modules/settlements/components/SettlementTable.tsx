@@ -18,7 +18,7 @@ import {
   styled,
 } from "@/lib/index";
 
-import { IPagination } from "@/types/globalTypes";
+import { IListingData, IPagination } from "@/types/globalTypes";
 import CustomTableSkeleton from "@/components/skeleton/CustomTableSkeleton";
 import { createPaginationData, formatCurrency } from "utils/helper-funcs";
 import TableWrapper from "@/components/table/TableWrapper";
@@ -32,78 +32,7 @@ import {
 } from "./OrderStatus";
 import CustomSearch from "@/components/input/CustomSearch";
 import StatusFilter from "@/components/select/StatusFillter";
-
-const data = [
-  {
-    id: "43579",
-    customer: "Timothy Orbik",
-    created_at: new Date().toJSON(),
-    scheduled_at: new Date().toJSON(),
-    branch: "Lekki Branch",
-    amount: 23000,
-    amount_settled: 2000,
-    service_fee: 2300,
-    status: "hold",
-    settlement: "active",
-
-    time: 0,
-  },
-  {
-    id: "4358",
-    customer: "Jame Orbik",
-    created_at: new Date().toJSON(),
-    scheduled_at: new Date().toJSON(),
-    branch: "John Branch",
-    amount: 33000,
-    amount_settled: 1000,
-    service_fee: 2200,
-    status: "sold",
-    settlement: "delivered",
-
-    time: 0,
-  },
-  {
-    id: "43577",
-    customer: "Peter Orbik",
-    created_at: new Date().toJSON(),
-    scheduled_at: new Date().toJSON(),
-    branch: "Ajah Branch",
-    amount: 23000,
-    amount_settled: 2000,
-    service_fee: 2300,
-    status: "closed",
-    settlement: "closed",
-
-    time: 0,
-  },
-  {
-    id: "43570",
-    customer: "Timothy Orbik",
-    created_at: new Date().toJSON(),
-    scheduled_at: new Date().toJSON(),
-    branch: "Lekki Branch",
-    amount: 2300,
-    amount_settled: 2000,
-    service_fee: 2300,
-    status: "error",
-    settlement: "closed",
-
-    time: 20,
-  },
-  {
-    id: "43589",
-    customer: "Timothy OrbJamesik",
-    created_at: new Date().toJSON(),
-    scheduled_at: new Date().toJSON(),
-    branch: "James Branch",
-    amount: 23000,
-    amount_settled: 2000,
-    service_fee: 2300,
-    status: "warning",
-    settlement: "pending",
-    time: 220,
-  },
-];
+import ListingService from "@/services/listing-service";
 
 const defaultQuery: IPagination = {
   pageSize: 15,
@@ -140,35 +69,31 @@ export function SettlementTable({
     setFilter(values);
   };
 
-  // const { data, isLoading, isError } = useQuery(
-  //   [
-  //     "all-user-cards-transactions",
-  //     pagination.page,
-  //     pagination.pageSize,
-  //     variant,
-  //   ],
-  //   () =>
-  //     CardService.getAllTransactions(
-  //       `?pgn=${pagination.page}&pgs=${pagination.pageSize}`
-  //     ).then((res) => {
-  //       const data = res.data?.data;
-  //       const { hasNextPage, hasPrevPage, total, totalPages } =
-  //         createPaginationData(data, pagination);
+  const { data, isLoading, isError } = useQuery(
+    [filter, pagination.page, pagination.pageSize],
+    () =>
+      ListingService.getAll(
+        `?pageNumber${pagination.page}&pageSize=${pagination?.pageSize}`
+      ).then((res) => {
+        const { data, ...paginationData } = res.data?.result;
+        const { hasNextPage, hasPrevPage, total, totalPages } =
+          createPaginationData(data, paginationData);
 
-  //       setPagination((prev) => ({
-  //         ...prev,
-  //         total,
-  //         totalPages,
-  //         hasNextPage,
-  //         hasPrevPage,
-  //       }));
+        setPagination((prev) => ({
+          ...prev,
+          total,
+          totalPages,
+          hasNextPage,
+          hasPrevPage,
+        }));
 
-  //       return data.data as ITransactionHistoryData[];
-  //     }),
-  //   {
-  //     retry: 0,
-  //   }
-  // );
+        return data;
+      }),
+    {
+      retry: 0,
+      refetchOnWindowFocus: false,
+    }
+  );
 
   const handleAddNew = () => {
     navigate("/app/marketplace/listings/add-listing");
@@ -182,8 +107,10 @@ export function SettlementTable({
     navigate("listings");
   };
 
-  const handleViewDetails = (id: string) => () => {
-    navigate(`/app/reported-listing/${id}`);
+  const handleViewDetails = (data: IListingData) => () => {
+    navigate(`${data?.id}`, {
+      state: data,
+    });
   };
 
   return (
@@ -252,7 +179,7 @@ export function SettlementTable({
                 <MuiTableCell
                   className="heading"
                   align="left"
-                  style={{ minWidth: "250px" }}>
+                  style={{ minWidth: "270px" }}>
                   Listing
                 </MuiTableCell>
                 <MuiTableCell className="heading" align="left">
@@ -267,7 +194,10 @@ export function SettlementTable({
                 <MuiTableCell className="heading" align="left">
                   Offers
                 </MuiTableCell>
-                <MuiTableCell className="heading" align="left">
+                <MuiTableCell
+                  className="heading"
+                  align="left"
+                  style={{ minWidth: "250px" }}>
                   Location
                 </MuiTableCell>
                 <MuiTableCell className="heading" align="left">
@@ -287,69 +217,102 @@ export function SettlementTable({
             </MuiTableHead>
 
             <MuiTableBody>
-              {data?.map((row) => (
-                <MuiTableRow
-                  key={row?.id}
-                  sx={{
-                    "&:last-child td, &:last-child th": { border: 0 },
-                  }}>
-                  {" "}
-                  <MuiTableCell className="order-id" align="left">
-                    <div className="info">
-                      <MuiCardMedia
-                        component="img"
-                        src="https://images.unsplash.com/photo-1580048915913-4f8f5cb481c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y3VycmVuY3l8ZW58MHwxfDB8fHww&auto=format&fit=crop&w=400&q=60"
-                        className="img"
-                        width="50px"
-                        height="50px"
-                      />
-                      <div className="details">
-                        <MuiTypography variant="body2" className="product-name">
-                          {row?.branch}
-                        </MuiTypography>
-                        <MuiTypography variant="body2" className="list-id">
-                          {" "}
-                          Listing ID: #{row?.id}{" "}
-                        </MuiTypography>
-                      </div>
-                    </div>
-                  </MuiTableCell>
-                  <MuiTableCell align="left">Appliances</MuiTableCell>
-                  <MuiTableCell align="left">24</MuiTableCell>
-                  <MuiTableCell align="left">10</MuiTableCell>
-                  <MuiTableCell align="left">12</MuiTableCell>
-                  <MuiTableCell align="left">{row?.branch}</MuiTableCell>
-                  <MuiTableCell align="left">
-                    <ActionTimeStatus
-                      type={row?.status?.toLowerCase() as IStatus}
-                      time={row?.time}
-                    />
-                  </MuiTableCell>
-                  <MuiTableCell align="left">
-                    ₦{" "}
-                    {formatCurrency({ amount: row?.amount, style: "decimal" })}
-                  </MuiTableCell>
-                  <MuiTableCell align="left">
-                    <SettlementStatus
-                      style={{
-                        display: "inline-block",
-                        width: "100%",
-                        border: "none",
-                      }}
-                      type={row?.settlement?.toLowerCase() as ISettlementStatus}
-                    />
-                  </MuiTableCell>
-                  <MuiTableCell align="left">
-                    <MuiIconButton
-                      onClick={handleViewDetails(row?.id)}
-                      className="visible-btn">
-                      <IconVisibility />
-                    </MuiIconButton>
-                  </MuiTableCell>
-                </MuiTableRow>
-              ))}
+              {!isLoading &&
+                data?.map((row) => {
+                  const time = row?.creationTime;
+                  const duration = row?.durationInHours;
+                  const date = new Date(time);
+                  const today = new Date().getTime();
 
-              {/* {!isLoading && data && data?.length === 0 && !isError && (
+                  const endTime = date.setTime(
+                    date.getTime() + duration * 60 * 60 * 1000
+                  );
+
+                  const timeRemaining =
+                    endTime > today ? (endTime - today) / 1000 : 0;
+
+                  return (
+                    <MuiTableRow
+                      key={row?.id}
+                      sx={{
+                        "&:last-child td, &:last-child th": { border: 0 },
+                      }}>
+                      {" "}
+                      <MuiTableCell className="order-id" align="left">
+                        <div className="info">
+                          <MuiCardMedia
+                            component="img"
+                            src={row?.coverPhoto}
+                            className="img"
+                            width="50px"
+                            height="50px"
+                          />
+                          <div className="details" style={{ flex: "1" }}>
+                            <MuiTypography
+                              variant="body2"
+                              className="product-name">
+                              {row?.name}
+                            </MuiTypography>
+                            <MuiTypography variant="body2" className="list-id">
+                              <b>Listing ID:</b> {row?.id}
+                            </MuiTypography>
+                          </div>
+                        </div>
+                      </MuiTableCell>
+                      <MuiTableCell align="left">
+                        {row?.catalogueCategoryName}
+                      </MuiTableCell>
+                      <MuiTableCell align="left">{row?.totalBids}</MuiTableCell>
+                      <MuiTableCell align="left">
+                        {row?.totalBidders}
+                      </MuiTableCell>
+                      <MuiTableCell align="left">
+                        ₦
+                        {formatCurrency({
+                          amount: row?.totalOffers,
+                          style: "decimal",
+                        })}
+                      </MuiTableCell>
+                      <MuiTableCell align="left">{row?.location}</MuiTableCell>
+                      <MuiTableCell align="left">
+                        <ActionTimeStatus
+                          type={
+                            row?.catalogueStatusDescription?.toLowerCase() as IStatus
+                          }
+                          time={timeRemaining}
+                        />
+                      </MuiTableCell>
+                      <MuiTableCell align="left">
+                        ₦
+                        {formatCurrency({
+                          amount: row?.price,
+                          style: "decimal",
+                        })}
+                      </MuiTableCell>
+                      <MuiTableCell align="left">
+                        <SettlementStatus
+                          style={{
+                            display: "inline-block",
+                            width: "100%",
+                            border: "none",
+                          }}
+                          type={
+                            row?.catalogueStatusDescription?.toLowerCase() as ISettlementStatus
+                          }
+                        />
+                      </MuiTableCell>
+                      <MuiTableCell align="left">
+                        <MuiIconButton
+                          onClick={handleViewDetails(row)}
+                          className="visible-btn">
+                          <IconVisibility />
+                        </MuiIconButton>
+                      </MuiTableCell>
+                    </MuiTableRow>
+                  );
+                })}
+
+              {!isLoading && data && data?.length === 0 && !isError && (
                 <MuiTableRow>
                   {" "}
                   <MuiTableCell
@@ -358,14 +321,14 @@ export function SettlementTable({
                     className="no-data-cell"
                     rowSpan={20}>
                     <NoData
-                      title="No order yet"
-                      message="Recent orders will appear here"
+                      title="No Listings yet"
+                      message="Recent Listings will appear here"
                     />
                   </MuiTableCell>
                 </MuiTableRow>
-              )} */}
+              )}
 
-              {/* {isError && !data && (
+              {isError && !data && (
                 <MuiTableRow>
                   {" "}
                   <MuiTableCell
@@ -374,15 +337,15 @@ export function SettlementTable({
                     align="center">
                     <NoData
                       title="An Error Occurred"
-                      message="Sorry, we couldn't fetch your orders. Try again later or contact Rensa support."
+                      message="Sorry, we couldn't fetch all Listing. Try again later or contact Rensa support."
                     />
                   </MuiTableCell>
                 </MuiTableRow>
-              )} */}
+              )}
 
-              {/* {!data && isLoading && (
-                <CustomTableSkeleton columns={8} rows={10} />
-              )} */}
+              {!data && isLoading && (
+                <CustomTableSkeleton columns={10} rows={10} />
+              )}
             </MuiTableBody>
           </MuiTable>
         </MuiTableContainer>
