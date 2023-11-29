@@ -60,12 +60,15 @@ export default function MergedModuleRoutes() {
 
       <Route path="/transactions" element={<TransactionsView />} />
       <Route path="/sales-revenue" element={<IncomeView />} />
-      <Route path="/users" element={<CustomersView />} />
-      <Route path="/users/:c_id" element={<CustomerDetailsView />} />
 
       <Route path="/notification-center" element={<NotificationCenterView />} />
       <Route path="/app-release" element={<AppReleaseView />} />
       <Route path="/configurations" element={<ConfigurationView />} />
+
+      <Route path="/users" element={<CustomersView />} />
+      <Route path="/users/:c_id" element={<CustomerDetailsView />} />
+      <Route path="/users/:c_id/:rp_id" element={<ListingDetails />} />
+      <Route path="/users/:c_id/:orderId" element={<OrderDetails />} />
 
       <Route path="/customers/:id/orders" element={<CustomerOrdersView />} />
       <Route

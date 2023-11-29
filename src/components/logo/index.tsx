@@ -22,7 +22,6 @@ export const Logo = ({ type = "black", className, sx, style }: TLogoType) => {
       style={{
         cursor: "pointer",
         width: "70%",
-        marginTop: "13px",
         ...style,
         userSelect: "none",
       }}
@@ -31,7 +30,6 @@ export const Logo = ({ type = "black", className, sx, style }: TLogoType) => {
       sx={sx}
       alt="logo"
       width="120px"
-      // {...otherProps}
     />
   );
 };

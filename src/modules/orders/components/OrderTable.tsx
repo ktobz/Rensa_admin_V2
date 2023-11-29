@@ -82,7 +82,7 @@ type IProps = {
 
 const defaultQuery: IPagination = {
   pageSize: 15,
-  page: 0,
+  page: 1,
   total: 0,
   hasNextPage: false,
   hasPrevPage: false,
@@ -151,15 +151,15 @@ export function OrderTable({
         const { hasNextPage, hasPrevPage, total, totalPages } =
           createPaginationData(data, paginationData);
 
-        const orderSortedByDate = data?.reduce((acc, val) => {
-          const constructedKey = constructOrderKey(val?.creationTime || "");
-          if (constructedKey in acc) {
-            acc[constructedKey] += 1;
-          } else {
-            acc[constructedKey] = 1;
-          }
-          return acc;
-        }, {} as { [key: string]: number });
+        // const orderSortedByDate = data?.reduce((acc, val) => {
+        //   const constructedKey = constructOrderKey(val?.creationTime || "");
+        //   if (constructedKey in acc) {
+        //     acc[constructedKey] += 1;
+        //   } else {
+        //     acc[constructedKey] = 1;
+        //   }
+        //   return acc;
+        // }, {} as { [key: string]: number });
 
         setPagination((prev) => ({
           ...prev,
@@ -169,10 +169,7 @@ export function OrderTable({
           hasPrevPage,
         }));
 
-        return {
-          orderList: data,
-          orderSortedByDate,
-        };
+        return data;
       }),
     {
       retry: 0,
@@ -378,23 +375,23 @@ export function OrderTable({
             onClickDay={handleNavigateToSchedule}
             // showNeighboringMonth={false}
             tileContent={(v) => {
-              const orderKey = constructOrderKey(v.date);
-              const numberOfOrders = data
-                ? data?.orderSortedByDate?.[orderKey]
-                : 0;
-              if (!!numberOfOrders) {
-                return (
-                  <MuiTypography
-                    variant="body2"
-                    className={`orders ${
-                      v?.date?.getTime() + ONE_DAY_TIME < new Date()?.getTime()
-                        ? "old"
-                        : ""
-                    }`}>
-                    {numberOfOrders}
-                  </MuiTypography>
-                );
-              }
+              // const orderKey = constructOrderKey(v.date);
+              // const numberOfOrders = data
+              //   ? data?.orderSortedByDate?.[orderKey]
+              //   : 0;
+              // if (!!numberOfOrders) {
+              //   return (
+              //     <MuiTypography
+              //       variant="body2"
+              //       className={`orders ${
+              //         v?.date?.getTime() + ONE_DAY_TIME < new Date()?.getTime()
+              //           ? "old"
+              //           : ""
+              //       }`}>
+              //       {numberOfOrders}
+              //     </MuiTypography>
+              //   );
+              // }
 
               return null;
             }}
@@ -405,13 +402,13 @@ export function OrderTable({
           <MuiTableContainer
             sx={{
               maxWidth: "100%",
-              minHeight: data?.orderList?.length === 0 ? "inherit" : "unset",
+              minHeight: data?.length === 0 ? "inherit" : "unset",
               flex: 1,
             }}>
             <MuiTable
               sx={{
                 minWidth: 750,
-                minHeight: data?.orderList?.length === 0 ? "inherit" : "unset",
+                minHeight: data?.length === 0 ? "inherit" : "unset",
               }}
               aria-label="simple table">
               <MuiTableHead>
@@ -458,7 +455,7 @@ export function OrderTable({
               <MuiTableBody>
                 {!isLoading &&
                   data &&
-                  data?.orderList?.map((row) => (
+                  data?.map((row) => (
                     <MuiTableRow
                       key={row?.id}
                       sx={{
@@ -505,23 +502,20 @@ export function OrderTable({
                     </MuiTableRow>
                   ))}
 
-                {!isLoading &&
-                  data &&
-                  data?.orderList?.length === 0 &&
-                  !isError && (
-                    <MuiTableRow>
-                      <MuiTableCell
-                        colSpan={9}
-                        align="center"
-                        className="no-data-cell"
-                        rowSpan={15}>
-                        <NoData
-                          title="No order yet"
-                          message="Recent orders will appear here"
-                        />
-                      </MuiTableCell>
-                    </MuiTableRow>
-                  )}
+                {!isLoading && data && data?.length === 0 && !isError && (
+                  <MuiTableRow>
+                    <MuiTableCell
+                      colSpan={9}
+                      align="center"
+                      className="no-data-cell"
+                      rowSpan={15}>
+                      <NoData
+                        title="No order yet"
+                        message="Recent orders will appear here"
+                      />
+                    </MuiTableCell>
+                  </MuiTableRow>
+                )}
 
                 {isError && !data && (
                   <MuiTableRow>

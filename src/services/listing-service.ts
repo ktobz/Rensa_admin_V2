@@ -50,6 +50,15 @@ const ListingService = {
       }
     );
   },
+  getUserListing(id: string) {
+    return function (query?: string): AxiosPromise<IReportedListingResponse> {
+      return HTTP.get(`${PATHS.orders}/user/${id}${query ? `${query}` : ""}`, {
+        headers: {
+          Authorization: getToken(),
+        },
+      });
+    };
+  },
   getListingReportComments(
     id: string,
     query?: string

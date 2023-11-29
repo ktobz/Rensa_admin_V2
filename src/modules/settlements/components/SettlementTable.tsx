@@ -18,7 +18,11 @@ import {
   styled,
 } from "@/lib/index";
 
-import { IListingData, IPagination } from "@/types/globalTypes";
+import {
+  IListingData,
+  IListingResponse,
+  IPagination,
+} from "@/types/globalTypes";
 import CustomTableSkeleton from "@/components/skeleton/CustomTableSkeleton";
 import { createPaginationData, formatCurrency } from "utils/helper-funcs";
 import TableWrapper from "@/components/table/TableWrapper";
@@ -33,6 +37,7 @@ import {
 import CustomSearch from "@/components/input/CustomSearch";
 import StatusFilter from "@/components/select/StatusFillter";
 import ListingService from "@/services/listing-service";
+import { AxiosPromise } from "axios";
 
 const defaultQuery: IPagination = {
   pageSize: 15,
@@ -48,6 +53,9 @@ type IProps = {
   showFilter?: boolean;
   showMoreText?: boolean;
   showAddNew?: boolean;
+  id?: string;
+  apiFunc?: (query?: string) => AxiosPromise<IListingResponse>;
+  queryKey?: string;
 };
 
 export function SettlementTable({
@@ -55,6 +63,9 @@ export function SettlementTable({
   showFilter = false,
   showPagination = false,
   showAddNew = false,
+  id = "",
+  apiFunc = ListingService.getAll,
+  queryKey = "all-orders",
 }: IProps) {
   const navigate = useNavigate();
   const [pagination, setPagination] = React.useState<IPagination>(defaultQuery);
@@ -70,9 +81,9 @@ export function SettlementTable({
   };
 
   const { data, isLoading, isError } = useQuery(
-    [filter, pagination.page, pagination.pageSize],
+    [queryKey, id, filter, pagination.page, pagination.pageSize],
     () =>
-      ListingService.getAll(
+      apiFunc(
         `?pageNumber=${pagination.page}&pageSize=${pagination?.pageSize}`
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;

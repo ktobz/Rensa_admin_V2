@@ -16,15 +16,18 @@ import { BlockUserConfirm } from "../components/BlockUserConfirm";
 import CustomTabs from "@/components/other/CustomTabs";
 import CustomTab from "@/components/other/CustomTab";
 import CustomTabPanel from "@/components/other/CustomTabPanel";
-import { CustomerTransactionsView } from "./CustomerTransactionsView";
-import { TransactionTable } from "@/modules/branches copy/components/TransactionTable";
+
 import { toast } from "react-toastify";
+import { SettlementTable } from "@/modules/settlements/components/SettlementTable";
+import { TransactionTable } from "@/modules/branches copy/components/TransactionTable";
+import ListingService from "@/services/listing-service";
 
 export function CustomerDetailsView() {
+  const { c_id } = useParams<{ c_id: string }>();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { state } = useLocation();
-  const { customerId } = useIds();
+  const customerId = c_id || "";
 
   const [show, setShow] = React.useState(false);
 
@@ -44,8 +47,8 @@ export function CustomerDetailsView() {
     ["user-details", customerId],
     () =>
       CustomerService.getCustomerDetails(customerId || "").then((res) => {
-        const data = res.data?.data;
-        return data as IUserData;
+        const data = res.data?.result;
+        return data;
       }),
     {
       retry: 0,
@@ -189,7 +192,7 @@ export function CustomerDetailsView() {
             <CustomTab
               onClick={handleChangeIndex(1)}
               value={1}
-              label="Products"
+              label="Listings"
               current={current}
             />
             <CustomTab
@@ -221,22 +224,25 @@ export function CustomerDetailsView() {
           </div>
         </div>
       </div>
-      {/* <CustomTabPanel index={current} value={0}>
+      <CustomTabPanel index={current} value={0}>
         <OrderTable
           variant="section"
           page="branches"
-          apiFunc={CustomerService.getCustomerOrders}
+          apiFunc={CustomerService.getCustomerOrders(customerId)}
           id={customerId}
-          queryKey="all-customer-orders"
+          queryKey="all-users-orders"
+          showPagination
+          viewMode="list"
         />
       </CustomTabPanel>
       <CustomTabPanel index={current} value={1}>
-        <OrderTable
-          variant="section"
-          page="branches"
-          apiFunc={CustomerService.getCustomerOrders}
+        <SettlementTable
+          showPagination
+          showFilter={false}
+          showMoreText={false}
+          apiFunc={ListingService.getUserListing(customerId)}
           id={customerId}
-          queryKey="all-customer-orders"
+          queryKey="all-customer-listing"
         />
       </CustomTabPanel>
       <CustomTabPanel index={current} value={2}>
@@ -245,7 +251,7 @@ export function CustomerDetailsView() {
           showActionTab={false}
           customerId={customerId}
         />
-      </CustomTabPanel> */}
+      </CustomTabPanel>
 
       <VendgramCustomModal
         handleClose={handleToggleShow}

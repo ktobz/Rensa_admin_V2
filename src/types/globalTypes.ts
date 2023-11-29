@@ -448,6 +448,10 @@ export type IUsersResponse = {
   };
 };
 
+export type IUserDetailResponse = {
+  result: IUserData;
+};
+
 // APP RELEASE
 export type IAppReleaseData = {
   versionNumber: string;

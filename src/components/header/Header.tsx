@@ -33,7 +33,7 @@ export default function Header() {
 
       <div className="mobile">
         <div className="logo-section">
-          <Logo />
+          <Logo className="logo" />
         </div>
         <div className="right">
           <MuiIconButton
@@ -50,7 +50,7 @@ export default function Header() {
 
 const StyledWrapper = styled.header`
   width: 100%;
-  height: 100px;
+  height: 80px;
   display: flex;
   justify-content: space-between;
   gap: 30px;
@@ -116,6 +116,12 @@ const StyledWrapper = styled.header`
     align-items: center;
     width: 100%;
     position: relative;
+
+    & .logo {
+      margin-top: 0;
+      max-width: 220px !important;
+      /* height: 40px; */
+    }
 
     & .menu-wrapper {
       position: absolute;

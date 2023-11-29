@@ -72,9 +72,9 @@ export default function AppContentLayout() {
               background: "#fff",
               "& .mobile-logo": {
                 width: "50%",
-                maxWidth: "120px",
-                textALign: "center",
-                margin: "auto auto 10px auto",
+                maxWidth: "100px",
+                textALign: "left",
+                margin: "auto 0 10px 15px",
               },
             },
           }}
@@ -113,7 +113,7 @@ export default function AppContentLayout() {
         <div className="content-area">
           <Header />
           <SimpleBar
-            style={{ maxHeight: "calc(100vh - 56px)", position: "relative" }}>
+            style={{ maxHeight: "calc(100vh - 80px)", position: "relative" }}>
             <PageContent>
               <Container>
                 <BreadCrumbs />

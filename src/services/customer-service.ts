@@ -1,10 +1,12 @@
 import { getToken } from "utils/helper-funcs";
 import HTTP from "./Http";
-import { IOrderQuery, IUsersResponse } from "@/types/globalTypes";
+import { IUserDetailResponse, IUsersResponse } from "@/types/globalTypes";
 import { AxiosPromise } from "axios";
 
 const PATHS = {
   customers: "/admin/users",
+  findUser: "/admin/find-user",
+  userOrders: "/admin/order",
 };
 
 const CustomerService = {
@@ -16,21 +18,18 @@ const CustomerService = {
     });
   },
 
-  getCustomerOrders(id: number | string, query?: IOrderQuery) {
-    return HTTP.get(
-      `${PATHS.customers}/${id}/orders${
-        query?.currentPage ? `?page=${query?.currentPage}` : ""
-      }`,
-      {
+  getCustomerOrders(id: number | string) {
+    return function (query?: string) {
+      return HTTP.get(`${PATHS.userOrders}/${id}${query ? query : ""}`, {
         headers: {
           Authorization: getToken(),
         },
-      }
-    );
+      });
+    };
   },
 
-  getCustomerDetails(id: number | string) {
-    return HTTP.get(`${PATHS.customers}/${id}`, {
+  getCustomerDetails(id: number | string): AxiosPromise<IUserDetailResponse> {
+    return HTTP.get(`${PATHS.findUser}/${id}`, {
       headers: {
         Authorization: getToken(),
       },

@@ -34,7 +34,7 @@ export default function PageTitle({
         fontFamily="Helvetica"
         // className="page-title"
         fontWeight={600}
-        fontSize={32}
+        fontSize={28}
         variant="h1">
         {title} {titleAction && titleAction}
       </MuiTypography>

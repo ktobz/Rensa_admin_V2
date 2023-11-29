@@ -7,7 +7,7 @@ export default function DesktopMenu() {
   return (
     <StyledWrapper>
       <div className="logo-section">
-        <Logo style={{ width: "130px", margin: "10px auto 0 auto " }} />
+        <Logo style={{ width: "100px" }} />
       </div>
       <CustomMenu />
     </StyledWrapper>
@@ -18,10 +18,10 @@ const StyledWrapper = styled.header`
   width: 100%;
   height: 100%;
   min-height: 100vh;
-  padding: 5px 5px 20px 20px;
+  padding: 40px 5px 20px 20px;
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 10px;
 
   & .logo-section {
     width: 100%;
