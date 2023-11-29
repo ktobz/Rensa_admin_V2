@@ -114,24 +114,6 @@ export default function StatusFilter({
   options = [],
   ...otherProps
 }: VendgramSelectProps) {
-  // const [personName, setPersonName] = React.useState<number[]>([]);
-
-  const { data, isLoading, isError } = useQuery(
-    ["status-filter"],
-    () =>
-      OtherService.getStatuses().then((res) => {
-        const data = res.data?.data;
-        return data as IStatusObject;
-      }),
-    {
-      retry: 0,
-      refetchOnWindowFocus: false,
-      enabled: !!options?.length,
-    }
-  );
-
-  const filterOptions = !!options?.length ? options : data;
-
   const handleChange = (event: MuiSelectChangeEvent<any>, node: any) => {
     const {
       target: { value },
@@ -191,11 +173,8 @@ export default function StatusFilter({
         renderValue={(selected: any) => (
           <MuiBox sx={{ display: "flex", gap: 0.5 }}>
             {selected?.map((value: any) => {
-              const statusName = filterOptions?.find(
-                (x) => x?.id === value
-              )?.name;
+              const statusName = options?.find((x) => x?.id === value)?.name;
               return (
-                // <MuiChip key={value} label={value} />
                 <OrderStatus
                   type={statusName?.toLowerCase() as IStatus}
                   style={{
@@ -210,8 +189,8 @@ export default function StatusFilter({
           </MuiBox>
         )}
         {...otherProps}>
-        {filterOptions &&
-          filterOptions?.map((opt, index) => (
+        {options &&
+          options?.map((opt, index) => (
             <MenuItem
               key={index}
               sx={{

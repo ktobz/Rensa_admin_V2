@@ -35,7 +35,7 @@ type IProps =
       filterType?: "minimal" | "standard" | "status";
       statusType?: IStatus;
       queryKey?: string;
-      serviceFunc?: () => AxiosPromise<any>;
+      serviceFunc?: ({ filter }: { filter: number }) => AxiosPromise<any>;
     }
   | {
       title: string;
@@ -66,15 +66,23 @@ export function TotalCard({
   defaultValue = "",
   defaultOptions,
   setValues,
-  value,
+  // value,
   name,
   filterType = "minimal",
   statusType = "new",
   queryKey,
   serviceFunc,
 }: IProps) {
-  const handleChangeMinimal = (value: string) => {
-    setValues?.((prev: any) => ({ ...prev, [name || ""]: value }));
+  const options = defaultOptions?.map((x) => x) || [];
+
+  const [value, setValue] = React.useState<number>(options?.[0]?.id);
+  const [valueString, setValueString] = React.useState<string>(
+    options?.[0]?.name
+  );
+
+  const handleChangeMinimal = (val: ICategory) => {
+    setValueString(val?.name);
+    setValue(val?.id);
   };
 
   const handleChangeStandard = (
@@ -85,27 +93,26 @@ export function TotalCard({
     setValues?.((prev: any) => ({ ...prev, [name || ""]: value }));
   };
 
+  const { data } = useQuery(
+    [queryKey, valueString],
+    () =>
+      serviceFunc?.({ filter: value }).then((res) => {
+        const data = res.data?.result?.data || 0;
+        return data as number;
+      }),
+    {
+      retry: 0,
+      refetchOnWindowFocus: false,
+      enabled: typeof serviceFunc === "function",
+    }
+  );
+
   const totalValue =
-    typeof defaultValue === "number"
-      ? formatCurrency({ amount: defaultValue, style: "decimal" })
-      : typeof defaultValue === "string"
-      ? defaultValue
+    typeof data === "number"
+      ? formatCurrency({ amount: data, style: "decimal" })
+      : typeof data === "string"
+      ? data
       : "";
-
-  const options = defaultOptions?.map((x) => x) || [];
-
-  // const { data } = useQuery(
-  //   [queryKey],
-  //   () =>
-  //     OrderService.getTotals().then((res) => {
-  //       const data = res.data?.data;
-  //       return data as any;
-  //     }),
-  //   {
-  //     retry: 0,
-  //     refetchOnWindowFocus: false,
-  //   }
-  // );
 
   return (
     <StyledWrapper className={className}>
@@ -179,7 +186,7 @@ export function TotalCard({
         <MuiTypography variant="body1" className="balance">
           ₦ {totalValue || 0}{" "}
           {showFilter && filterType === "minimal" && (
-            <span className="duration">({value?.replaceAll("_", " ")})</span>
+            <span className="duration">({valueString})</span>
           )}
         </MuiTypography>
       )}
@@ -187,7 +194,7 @@ export function TotalCard({
         <MuiTypography variant="body1" className="balance">
           {totalValue || 0}{" "}
           {showFilter && filterType === "minimal" && (
-            <span className="duration">({value?.replaceAll("_", " ")})</span>
+            <span className="duration">({valueString})</span>
           )}
         </MuiTypography>
       )}

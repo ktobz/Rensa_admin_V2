@@ -8,6 +8,7 @@ import { useQuery } from "react-query";
 import OrderService from "@/services/order-service";
 import { IOrderTotalStats } from "@/types/globalTypes";
 import useCachedDataStore from "@/config/store-config/lookup";
+import DashboardService from "@/services/dashboard-service";
 
 export function DashboardView() {
   const { dashboardFilter } = useCachedDataStore(
@@ -19,19 +20,6 @@ export function DashboardView() {
     navigate("/app/orders");
   };
 
-  const { data } = useQuery(
-    ["all-orders-stats"],
-    () =>
-      OrderService.getTotals().then((res) => {
-        const data = res.data?.data;
-        return data as IOrderTotalStats;
-      }),
-    {
-      retry: 0,
-      refetchOnWindowFocus: false,
-    }
-  );
-
   const handleGoTo = (path: string) => () => {
     navigate(`/app/${path}`);
   };
@@ -42,53 +30,62 @@ export function DashboardView() {
           className="card"
           title="New Orders"
           variant="order"
-          defaultValue={data?.new_orders}
           subAction={{
             action: handleGoTo("orders"),
             name: "View more",
           }}
           defaultOptions={dashboardFilter}
           filterType="minimal"
+          queryKey="dashboard-new-orders"
+          serviceFunc={DashboardService.orders}
         />
         <TotalCard
           className="card"
           title="Marketplace"
           variant="order"
-          defaultValue={data?.on_going_orders}
           subAction={{
             action: handleGoTo("marketplace"),
             name: "View more",
           }}
+          defaultOptions={dashboardFilter}
+          serviceFunc={DashboardService.getMarketplace}
+          queryKey="dashboard-marketplace"
         />
         <TotalCard
           className="card"
           title="Users"
           variant="order"
-          defaultValue={data?.total_orders}
           subAction={{
             action: handleGoTo("users"),
             name: "View more",
           }}
+          defaultOptions={dashboardFilter}
+          serviceFunc={DashboardService.users}
+          queryKey="dashboard-users"
         />
         <TotalCard
           className="card"
           title="Sales"
           variant="order"
-          defaultValue={"-"}
           subAction={{
             action: handleGoTo("transactions"),
             name: "View more",
           }}
+          defaultOptions={dashboardFilter}
+          serviceFunc={DashboardService.getSales}
+          queryKey="dashboard-transactions"
         />
         <TotalCard
           className="card"
           title="Revenue"
           variant="order"
-          defaultValue={"-"}
           subAction={{
             action: handleGoTo("revenue"),
             name: "View more",
           }}
+          defaultOptions={dashboardFilter}
+          serviceFunc={DashboardService.revenue}
+          queryKey="dashboard-revenue"
         />
       </div>
 

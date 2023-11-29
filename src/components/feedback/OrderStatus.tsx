@@ -66,6 +66,26 @@ const statusData: {
     color: "#FFC502",
     text: "Pending",
   },
+  reported: {
+    bg: "#FFC5021A",
+    color: "#FFC502",
+    text: "Reported",
+  },
+  active: {
+    bg: "#E8FFF3",
+    color: "#05A357",
+    text: "Active",
+  },
+  rejected: {
+    bg: "#EF50501A",
+    color: "#EF5050",
+    text: "Rejected",
+  },
+  resolved: {
+    bg: "#64748B1A",
+    color: "#64748B",
+    text: "Resolved",
+  },
 };
 
 export const OrderStatus = ({

@@ -20,7 +20,11 @@ import {
 
 import { IPagination, IReportedListingData } from "@/types/globalTypes";
 import CustomTableSkeleton from "@/components/skeleton/CustomTableSkeleton";
-import { createPaginationData, formatCurrency } from "utils/helper-funcs";
+import {
+  createPaginationData,
+  formatCurrency,
+  getIdName,
+} from "utils/helper-funcs";
 import TableWrapper from "@/components/table/TableWrapper";
 import { IconVisibility } from "@/lib/mui.lib.icons";
 
@@ -33,6 +37,8 @@ import {
 import CustomSearch from "@/components/input/CustomSearch";
 import StatusFilter from "@/components/select/StatusFillter";
 import ListingService from "@/services/listing-service";
+import useCachedDataStore from "@/config/store-config/lookup";
+import { OrderStatus } from "@/components/feedback/OrderStatus";
 
 const defaultQuery: IPagination = {
   pageSize: 15,
@@ -55,6 +61,9 @@ export function ReportTable({
   showPagination = false,
 }: IProps) {
   const navigate = useNavigate();
+  const { reportedListingStatus } = useCachedDataStore(
+    (state) => state.cache?.lookup
+  );
   const [pagination, setPagination] = React.useState<IPagination>(defaultQuery);
 
   const handleNavigate = (path: string) => () => {
@@ -98,7 +107,7 @@ export function ReportTable({
   };
 
   const handleViewDetails = (data: IReportedListingData) => () => {
-    navigate(`${data?.catalogueCategoryId}`, { state: data });
+    navigate(`${data?.catalogueId}`, { state: data });
   };
 
   return (
@@ -129,13 +138,14 @@ export function ReportTable({
             <StatusFilter
               selectedValue={filter}
               handleSetValue={handleSetFilter}
+              options={reportedListingStatus}
             />
             <CustomSearch placeholder="Search product name, product ID" />
           </div>
         )}
       </div>
 
-      <TableWrapper showPagination={showPagination}>
+      <TableWrapper showPagination={showPagination} pagination={pagination}>
         <MuiTableContainer
           sx={{
             maxWidth: "100%",
@@ -192,10 +202,10 @@ export function ReportTable({
                       />
                       <div className="details" style={{ flex: "1" }}>
                         <MuiTypography variant="body2" className="product-name">
-                          {row?.name}
+                          {row?.catalogueName}
                         </MuiTypography>
                         <MuiTypography variant="body2" className="list-id">
-                          Listing ID: {row?.catalogueId}{" "}
+                          <b>Listing ID:</b> {row?.catalogueId}{" "}
                         </MuiTypography>
                       </div>
                     </div>
@@ -205,14 +215,16 @@ export function ReportTable({
                   </MuiTableCell>
                   <MuiTableCell align="left">{row?.reason || "-"}</MuiTableCell>
                   <MuiTableCell align="left">
-                    {/* <SettlementStatus
+                    <OrderStatus
                       style={{
                         display: "inline-block",
                         width: "100%",
                         border: "none",
                       }}
-                      type={row?.catalogue?.catalogueStatus?.toLowerCase() as ISettlementStatus}
-                    /> */}
+                      type={
+                        getIdName(row?.status, reportedListingStatus) as any
+                      }
+                    />
                   </MuiTableCell>
                   <MuiTableCell align="left">
                     <MuiIconButton

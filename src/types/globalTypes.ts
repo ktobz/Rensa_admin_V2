@@ -286,6 +286,10 @@ export type IStatus =
   | "abandoned"
   | "completed"
   | "successful"
+  | "rejected"
+  | "active"
+  | "resolved"
+  | "reported"
   | "failed";
 
 export type IVerifyStatus = "true" | "false";
@@ -608,6 +612,14 @@ export type IListingData = {
     url: string;
   }[];
   description: string;
+  sellerInfo: {
+    userId: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+    profilePictureUrl: string;
+  };
 };
 
 export type IReportedListingData = {
@@ -634,6 +646,7 @@ export type IReportedListingData = {
   price: number;
   userId: string;
   totalCount: number;
+  catalogueName: string;
 };
 export type IListingResponse = {
   result: IPaginationResponse & {

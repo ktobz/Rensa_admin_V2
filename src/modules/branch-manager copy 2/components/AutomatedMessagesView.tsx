@@ -172,30 +172,30 @@ export function AutomatedMessagesView() {
                 style={{ background: "#fbfbfb", margin: "10px 0" }}
               />
             ))}
+
+          {isError && !data?.[current] && (
+            <div className="no-data-cell">
+              <NoData
+                title="An Error Occurred"
+                message="Sorry, we couldn't fetch automated message. Try again later or contact Rensa support."
+                icon={<IconNotificationInfo className="icon" />}
+              />
+            </div>
+          )}
+
+          {!isLoading &&
+            data?.[current] &&
+            data?.[current]?.length === 0 &&
+            !isError && (
+              <div className="no-data-cell">
+                <NoData
+                  title="No automated messages yet"
+                  icon={<IconNotificationInfo className="icon" />}
+                  message="Create one and start sending to users"></NoData>
+              </div>
+            )}
         </div>
       </SimpleBar>
-
-      {!isLoading &&
-        data?.[current] &&
-        data?.[current]?.length === 0 &&
-        !isError && (
-          <div className="no-data-cell">
-            <NoData
-              title="No automated messages yet"
-              icon={<IconNotificationInfo className="icon" />}
-              message="Create one and start sending to users"></NoData>
-          </div>
-        )}
-
-      {isError && !data?.[current] && (
-        <div className="no-data-cell">
-          <NoData
-            title="An Error Occurred"
-            message="Sorry, we couldn't fetch automated message. Try again later or contact Rensa support."
-            icon={<IconNotificationInfo className="icon" />}
-          />
-        </div>
-      )}
 
       <VendgramCustomModal
         handleClose={handleToggleShow}

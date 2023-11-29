@@ -184,7 +184,7 @@ export function TransactionTable({
                     <MuiTableCell>{row?.userId || "-"}</MuiTableCell>
                     <MuiTableCell align="left">{row?.catalogueId}</MuiTableCell>
                     <MuiTableCell align="left">
-                      ₦{" "}
+                      ₦
                       {formatCurrency({
                         amount: Math.abs(row?.itemAmount),
                         style: "decimal",

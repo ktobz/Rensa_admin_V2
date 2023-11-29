@@ -42,18 +42,19 @@ export default function MergedModuleRoutes() {
       />
       <Route path="/orders/:orderId" element={<OrderDetails />} />
 
-      <Route path="/marketplace" element={<SettlementsView />} />
       <Route path="/reported-listing" element={<ReportedListingPageView />} />
       <Route path="/reported-listing/:rp_id" element={<ListingDetails />} />
+
+      <Route path="/marketplace" element={<SettlementsView />} />
       <Route
         path="/marketplace/listings"
         element={<MarketPlaceListingsView />}
       />
-
       <Route
         path="/marketplace/listings/add-listing"
         element={<AddListing />}
       />
+      <Route path="/marketplace/listings/:rp_id" element={<ListingDetails />} />
 
       <Route path="/marketplace/:rp_id" element={<ListingDetails />} />
 
@@ -66,11 +67,6 @@ export default function MergedModuleRoutes() {
       <Route path="/app-release" element={<AppReleaseView />} />
       <Route path="/configurations" element={<ConfigurationView />} />
 
-      {/* <Route path="/partners" element={<PartnersView />} />
-      <Route path="/partners/:p_id" element={<PartnerDetailsView />} />
-      <Route path="/partners/:p_id/:b_id" element={<BranchDetailsView />} />
-      <Route path="/partners/:p_id/:b_id/:orderId" element={<OrderDetails />} /> */}
-
       <Route path="/customers/:id/orders" element={<CustomerOrdersView />} />
       <Route
         path="/customers/:c_id/transactions"
@@ -80,11 +76,7 @@ export default function MergedModuleRoutes() {
         path="/customers/:c_id/orders/:orderId"
         element={<OrderDetails />}
       />
-      {/* 
-      <Route path="/riders" element={<RidersView />} />
-      <Route path="/riders/:r_id" element={<RiderOrders />} />
-      <Route path="/riders/:r_id/orders" element={<RiderOrders />} />
-      <Route path="/riders/:r_id/orders/:orderId" element={<OrderDetails />} /> */}
+
       {/* <Route path="*" element={<NotFound />} /> */}
     </Routes>
   );

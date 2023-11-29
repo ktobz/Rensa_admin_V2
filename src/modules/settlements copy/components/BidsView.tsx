@@ -148,20 +148,20 @@ export function BidsView({ isLoading, listingData, isError }: IProps) {
                 </MuiBox>
               </div>
             ))}
+
+          {!isLoading &&
+            listingData?.catalogueBids &&
+            listingData?.catalogueBids?.length === 0 &&
+            !isError && (
+              <div className="no-data-cell">
+                <NoData
+                  title="No bids yet"
+                  icon={<IconNotificationInfo className="icon" />}
+                  message="Bids will show here"></NoData>
+              </div>
+            )}
         </SimpleBar>
       </div>
-
-      {!isLoading &&
-        listingData?.catalogueBids &&
-        listingData?.catalogueBids?.length === 0 &&
-        !isError && (
-          <div className="no-data-cell">
-            <NoData
-              title="No bids yet"
-              icon={<IconNotificationInfo className="icon" />}
-              message="Bids will show here"></NoData>
-          </div>
-        )}
 
       {/* {isError && !data && (
         <div className="no-data-cell">

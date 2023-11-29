@@ -14,7 +14,7 @@ const ITEM_HEIGHT = 48;
 
 type Props = Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> & {
   selectedValue?: any;
-  handleOptionSelect?: (value: string) => void;
+  handleOptionSelect?: (value: ICategory) => void;
   onChange?: () => void;
   options?: ICategory[];
 };
@@ -37,7 +37,7 @@ export default function DurationFilter({
 
   const handleMenuItemClick = (
     event: React.MouseEvent<HTMLElement>,
-    value: string
+    value: ICategory
   ) => {
     handleOptionSelect?.(value);
     setAnchorEl(null);
@@ -73,7 +73,7 @@ export default function DurationFilter({
           <MenuItem
             key={index}
             selected={selectedValue === option?.id}
-            onClick={(e) => handleMenuItemClick(e, option?.name)}
+            onClick={(e) => handleMenuItemClick(e, option)}
             sx={{
               display: "flex",
               justifyContent: "space-between",

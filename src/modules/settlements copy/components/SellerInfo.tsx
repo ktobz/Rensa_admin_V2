@@ -6,8 +6,15 @@ import {
   MuiTypography,
   styled,
 } from "@/lib/index";
+import { IListingData } from "@/types/globalTypes";
 
-export const SellerInfo = ({}: {}) => {
+type IProps = {
+  listingData: IListingData | null;
+  isLoading: boolean;
+  isError: boolean;
+};
+
+export const SellerInfo = ({ listingData }: IProps) => {
   return (
     <StyledWrapper>
       <div className="group-heading">
@@ -17,8 +24,13 @@ export const SellerInfo = ({}: {}) => {
       </div>
       <UserDetailCard
         variant="user"
-        data={{ title: "Chioma Udom", body: "chioma123@gmail.com" }}
-        viewDetailsLink="#"
+        data={{
+          title: `${listingData?.sellerInfo?.firstName || "-"} ${
+            listingData?.sellerInfo?.lastName || "-"
+          }`,
+          body: `${listingData?.sellerInfo?.email || "-"}`,
+        }}
+        viewDetailsLink={`/app/users/${listingData?.sellerInfo?.userId}`}
         className="user-card"
       />
       <MuiDivider className="divider" />
@@ -29,7 +41,7 @@ export const SellerInfo = ({}: {}) => {
             Contact number
           </MuiTypography>
           <MuiTypography variant="body1" className="body">
-            0813889558
+            {listingData?.sellerInfo?.phoneNumber || "-"}
           </MuiTypography>
         </div>
       </div>
@@ -42,7 +54,7 @@ export const SellerInfo = ({}: {}) => {
             Item Pickup location
           </MuiTypography>
           <MuiTypography variant="body1" className="body">
-            11 Adekunle Sule, Majek Firsy gate
+            {listingData?.location || "-"}
           </MuiTypography>
         </div>
       </div>

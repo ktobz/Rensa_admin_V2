@@ -210,7 +210,11 @@ export function ListingDetails() {
           />
         </div>
         <div className="seller-info">
-          <SellerInfo />
+          <SellerInfo
+            listingData={data || null}
+            isLoading={isLoading}
+            isError={isError}
+          />
         </div>
       </div>
       <ReportedComments />
@@ -294,6 +298,7 @@ const PageContent = styled.section`
         width: 90px;
         height: 90px;
         border-radius: 10px;
+        border: 1px solid #e8e8e870;
       }
     }
   }
