@@ -5,6 +5,7 @@ import {
   IListingResponse,
   IListingDetailsResponse,
   IReportedListingResponse,
+  IListingStatsResponse,
 } from "@/types/globalTypes";
 import { AxiosPromise } from "axios";
 
@@ -51,7 +52,7 @@ const ListingService = {
     );
   },
   getUserListing(id: string) {
-    return function (query?: string): AxiosPromise<IReportedListingResponse> {
+    return function (query?: string): AxiosPromise<IListingResponse> {
       return HTTP.get(`${PATHS.orders}/user/${id}${query ? `${query}` : ""}`, {
         headers: {
           Authorization: getToken(),
@@ -76,6 +77,14 @@ const ListingService = {
     id: number | string
   ): AxiosPromise<IListingDetailsResponse> {
     return HTTP.get(`${PATHS.listing}/${id}`, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+
+  getTotals(): AxiosPromise<IListingStatsResponse> {
+    return HTTP.get(`${PATHS.orders}/summary`, {
       headers: {
         Authorization: getToken(),
       },

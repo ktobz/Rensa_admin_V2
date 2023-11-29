@@ -1,6 +1,10 @@
 import { getToken } from "utils/helper-funcs";
 import HTTP from "./Http";
-import { IOrderQuery, IOrderResponse } from "@/types/globalTypes";
+import {
+  IOrderQuery,
+  IOrderResponse,
+  IOrderStatsResponse,
+} from "@/types/globalTypes";
 import { AxiosPromise } from "axios";
 
 const PATHS = {
@@ -71,7 +75,7 @@ const OrderService = {
       },
     });
   },
-  getTotals() {
+  getTotals(): AxiosPromise<IOrderStatsResponse> {
     return HTTP.get(`${PATHS.orders}/summary`, {
       headers: {
         Authorization: getToken(),

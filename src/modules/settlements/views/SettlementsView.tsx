@@ -5,6 +5,8 @@ import PageTitle from "components/text/PageTitle";
 import { useNavigate } from "react-router-dom";
 import { TotalCard } from "@/components/index";
 import { SettlementTable } from "../components/SettlementTable";
+import ListingService from "@/services/listing-service";
+import { useQuery } from "react-query";
 
 export function SettlementsView() {
   const navigate = useNavigate();
@@ -12,18 +14,54 @@ export function SettlementsView() {
   const handleViewMore = () => {
     navigate("/app/orders");
   };
+
+  const { data: listingStatsData } = useQuery(
+    ["all-listing-stats"],
+    () =>
+      ListingService.getTotals().then((res) => {
+        const data = res.data?.result;
+
+        return data;
+      }),
+    {
+      retry: 0,
+      refetchOnWindowFocus: false,
+    }
+  );
+
   return (
     <PageContent>
       <div className="cards">
-        <TotalCard title="Active listing" variant="order" showFilter={false} />
-        <TotalCard title="Pending Payment" variant="order" showFilter={false} />
+        <TotalCard
+          title="Active listing"
+          variant="order"
+          showFilter={false}
+          defaultValue={listingStatsData?.active}
+        />
+        <TotalCard
+          title="Pending Payment"
+          variant="order"
+          showFilter={false}
+          defaultValue={listingStatsData?.pendingPayment}
+        />
         <TotalCard
           title="Pending Delivery"
           variant="order"
           showFilter={false}
+          defaultValue={listingStatsData?.pending}
         />
-        <TotalCard title="Closed Listing" variant="order" showFilter={false} />
-        <TotalCard title="Total Listing" variant="order" showFilter={false} />
+        <TotalCard
+          title="Closed Listing"
+          variant="order"
+          showFilter={false}
+          defaultValue={listingStatsData?.expired}
+        />
+        <TotalCard
+          title="Total Listing"
+          variant="order"
+          showFilter={false}
+          defaultValue={listingStatsData?.active}
+        />
       </div>
       <div className="activities">
         <SettlementTable showMoreText showAddNew />

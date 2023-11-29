@@ -199,9 +199,9 @@ export function OrderTable({
     ["all-orders-stats"],
     () =>
       OrderService.getTotals().then((res) => {
-        const data = res.data?.data;
+        const data = res.data?.result;
 
-        return data as IOrderTotalStats;
+        return data;
       }),
     {
       retry: 0,
@@ -277,7 +277,7 @@ export function OrderTable({
             title="New Orders"
             variant="order"
             // showFilter={false}
-            defaultValue={orderStatsData?.new_orders}
+            defaultValue={orderStatsData?.pending}
             filterType="status"
             statusType="new"
           />
@@ -286,7 +286,7 @@ export function OrderTable({
             title="Cancelled Orders"
             variant="order"
             // showFilter={false}
-            defaultValue={orderStatsData?.confirmed_orders}
+            defaultValue={orderStatsData?.cancelled}
             filterType="status"
             statusType="cancelled"
           />
@@ -295,7 +295,7 @@ export function OrderTable({
             title="Delivered Orders"
             variant="order"
             // showFilter={false}
-            defaultValue={orderStatsData?.pickup_orders}
+            defaultValue={orderStatsData?.delivered}
             filterType="status"
             statusType="delivered"
           />

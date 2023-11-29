@@ -10,7 +10,7 @@ import { IconBlock, IconUnblock } from "lib/mui.lib.icons";
 
 type IProps = {
   handleClose: () => void;
-  data: any[];
+  data: any;
   handleAction: (callback: () => void) => () => void;
   action: "block" | "unblock";
 };
@@ -21,12 +21,12 @@ export const BlockUserConfirm = ({
   handleAction,
   action = "unblock",
 }: IProps) => {
+  console.log(action);
   const [isUpdating, setIsUpdating] = React.useState(false);
 
-  const userData = data?.[0];
+  // const userData = data?.[0];
 
-  const isToClose =
-    data?.length === 1 ? userData?.status : action === "unblock";
+  const isToClose = action === "block";
 
   const callback = () => {
     setIsUpdating(false);

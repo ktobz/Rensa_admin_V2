@@ -40,7 +40,7 @@ type IProps =
   | {
       title: string;
       showFilter?: boolean;
-      defaultValue?: IBranchData;
+      defaultValue?: string;
       defaultOptions?: ICategory[];
       setValues?: React.Dispatch<React.SetStateAction<any>>;
       value?: string;
@@ -108,10 +108,10 @@ export function TotalCard({
   );
 
   const totalValue =
-    typeof data === "number"
-      ? formatCurrency({ amount: data, style: "decimal" })
-      : typeof data === "string"
-      ? data
+    typeof (defaultValue || data) === "number"
+      ? formatCurrency({ amount: +defaultValue || data || 0, style: "decimal" })
+      : typeof (defaultValue || data) === "string"
+      ? defaultValue || data
       : "";
 
   return (
@@ -153,24 +153,6 @@ export function TotalCard({
           </div>
         )}
       </div>
-      {variant === "branch" && (
-        <div className="branch">
-          {defaultValue ? (
-            <>
-              <Title className="branch-name">
-                {(defaultValue as IBranchData)?.name || ""}
-              </Title>
-              <MuiTypography variant="body2" className="location">
-                <IconLocation /> {(defaultValue as IBranchData)?.location || ""}
-              </MuiTypography>
-            </>
-          ) : (
-            <MuiTypography variant="body2" className="no-data">
-              Top selling branch will appear here
-            </MuiTypography>
-          )}
-        </div>
-      )}
 
       {subAction && (
         <MuiButton

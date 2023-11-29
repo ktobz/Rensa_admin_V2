@@ -1,6 +1,10 @@
 import { getToken } from "utils/helper-funcs";
 import HTTP from "./Http";
-import { IUserDetailResponse, IUsersResponse } from "@/types/globalTypes";
+import {
+  IUserDetailResponse,
+  IUsersResponse,
+  IUserStatusUpdateResponse,
+} from "@/types/globalTypes";
 import { AxiosPromise } from "axios";
 
 const PATHS = {
@@ -34,6 +38,21 @@ const CustomerService = {
         Authorization: getToken(),
       },
     });
+  },
+
+  updateUserActiveStatus(
+    id: number | string,
+    status: "unblock" | "block"
+  ): AxiosPromise<IUserStatusUpdateResponse> {
+    return HTTP.put(
+      `/admin/${status}user/${id}`,
+      {},
+      {
+        headers: {
+          Authorization: getToken(),
+        },
+      }
+    );
   },
 
   getCustomerProducts(id: number | string) {

@@ -27,12 +27,18 @@ import { IconVisibility } from "@/lib/mui.lib.icons";
 import CustomSearch from "@/components/input/CustomSearch";
 
 import VendgramCustomModal from "@/components/modal/Modal";
-import { IPagination, IStatus, ITransactionData } from "@/types/globalTypes";
+import {
+  IPagination,
+  IStatus,
+  ITransactionData,
+  ITransactionsResponse,
+} from "@/types/globalTypes";
 import { TransactionDetails } from "./TransactionDetails";
 import TransactionService from "@/services/transaction-service";
 import { OrderStatus } from "@/components/feedback/OrderStatus";
 import StatusFilter from "@/components/select/StatusFillter";
 import useCachedDataStore from "@/config/store-config/lookup";
+import { AxiosPromise } from "axios";
 
 const defaultQuery: IPagination = {
   pageSize: 15,
@@ -47,14 +53,18 @@ type TShowMode = "branch" | "setPrice" | "info" | "delete";
 type IProps = {
   variant?: "all" | "customer";
   title?: string;
-  customerId?: string;
   showActionTab?: boolean;
+  id?: string;
+  apiFunc?: (query?: string) => AxiosPromise<ITransactionsResponse>;
+  queryKey?: string;
 };
 export function TransactionTable({
   variant = "all",
   title = "Transactions",
-  customerId,
+  id,
   showActionTab = true,
+  apiFunc = TransactionService.getAll,
+  queryKey = "all-transactions",
 }: IProps) {
   const {
     lookup: { catalogueTransactionStatus },
@@ -72,9 +82,9 @@ export function TransactionTable({
   };
 
   const { data, isLoading, isError } = useQuery(
-    ["all-transactions", customerId, pagination.page, pagination.pageSize],
+    [queryKey, id, pagination.page, pagination.pageSize],
     () =>
-      TransactionService.getAll(
+      apiFunc(
         `?pageNumber=${pagination.page}&pageSize=${pagination.pageSize}`
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;

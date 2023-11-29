@@ -18,6 +18,16 @@ const TransactionService = {
     });
   },
 
+  getUserTransactions(id: string) {
+    return function (query?: string): AxiosPromise<ITransactionsResponse> {
+      return HTTP.get(`${PATHS.transactions}/${id}${query ? query : ""}`, {
+        headers: {
+          Authorization: getToken(),
+        },
+      });
+    };
+  },
+
   getOrderDetails(id: number | string) {
     return HTTP.get(`${PATHS.transactions}/${id}`, {
       headers: {

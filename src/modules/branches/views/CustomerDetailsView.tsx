@@ -21,6 +21,9 @@ import { toast } from "react-toastify";
 import { SettlementTable } from "@/modules/settlements/components/SettlementTable";
 import { TransactionTable } from "@/modules/branches copy/components/TransactionTable";
 import ListingService from "@/services/listing-service";
+import TransactionService from "@/services/transaction-service";
+
+type TStatus = "block" | "unblock";
 
 export function CustomerDetailsView() {
   const { c_id } = useParams<{ c_id: string }>();
@@ -30,6 +33,7 @@ export function CustomerDetailsView() {
   const customerId = c_id || "";
 
   const [show, setShow] = React.useState(false);
+  const [status, setStatus] = React.useState<TStatus>("unblock");
 
   const [current, setCurrent] = React.useState(() => {
     return 0;
@@ -62,15 +66,21 @@ export function CustomerDetailsView() {
     setShow((prev) => !prev);
   };
 
+  const handleToggleUserActiveStatus = (status: TStatus) => () => {
+    setStatus(status);
+    setShow(true);
+  };
+
   const handleRefresh = () => {
     queryClient.invalidateQueries(["user-details", customerId]);
   };
 
   const handleUpdateStatus = (callback: () => void) => () => {
-    CustomerService.blockUser(customerId || "")
+    CustomerService.updateUserActiveStatus(customerId || "", status)
       .then((res) => {
         handleRefresh?.();
-        toast.success(res.data?.message || "");
+        toast.success(res.data?.result?.message || "");
+        setShow(false);
       })
       .catch((err) => {
         toast.error(err?.response?.data?.message || "");
@@ -209,7 +219,7 @@ export function CustomerDetailsView() {
                 color="inherit"
                 variant="contained"
                 className="btn"
-                onClick={handleToggleShow}>
+                onClick={handleToggleUserActiveStatus("block")}>
                 Block User
               </MuiButton>
             ) : (
@@ -217,7 +227,7 @@ export function CustomerDetailsView() {
                 color="inherit"
                 variant="contained"
                 className="btn"
-                onClick={handleToggleShow}>
+                onClick={handleToggleUserActiveStatus("unblock")}>
                 Unblock User
               </MuiButton>
             )}
@@ -249,7 +259,9 @@ export function CustomerDetailsView() {
         <TransactionTable
           variant="customer"
           showActionTab={false}
-          customerId={customerId}
+          id={customerId}
+          apiFunc={TransactionService.getUserTransactions(customerId)}
+          queryKey="all-customer-transactions"
         />
       </CustomTabPanel>
 
@@ -259,10 +271,10 @@ export function CustomerDetailsView() {
         showClose
         closeOnOutsideClick={false}>
         <BlockUserConfirm
-          data={[data]}
+          data={data}
           handleAction={handleUpdateStatus}
           handleClose={handleToggleShow}
-          action="unblock"
+          action={status}
         />
       </VendgramCustomModal>
     </PageContent>

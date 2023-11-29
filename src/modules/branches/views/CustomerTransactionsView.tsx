@@ -7,7 +7,7 @@ export function CustomerTransactionsView() {
 
   return (
     <PageContent>
-      <TransactionTable title="Recent transactions" customerId={customerId} />
+      <TransactionTable title="Recent transactions" id={customerId} />
     </PageContent>
   );
 }

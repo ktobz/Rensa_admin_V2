@@ -452,6 +452,12 @@ export type IUserDetailResponse = {
   result: IUserData;
 };
 
+export type IUserStatusUpdateResponse = {
+  result: {
+    message: string;
+  };
+};
+
 // APP RELEASE
 export type IAppReleaseData = {
   versionNumber: string;
@@ -484,6 +490,14 @@ export type IOrderResponse = {
   };
 };
 
+export type IOrderStatsResponse = {
+  result: {
+    pending: number;
+    inTransit: number;
+    delivered: number;
+    cancelled: number;
+  };
+};
 // DELIVERY SETTINGS
 
 export type IDeliverySettingsResponse = {
@@ -661,6 +675,18 @@ export type IListingResponse = {
 export type IReportedListingResponse = {
   result: IPaginationResponse & {
     data: IReportedListingData[];
+  };
+};
+
+export type IListingStatsResponse = {
+  result: {
+    pending: number;
+    pendingPickup: number;
+    pendingPayment: number;
+    active: number;
+    sold: number;
+    processing: number;
+    expired: number;
   };
 };
 
