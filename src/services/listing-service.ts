@@ -13,6 +13,7 @@ const PATHS = {
   dashboardMetrics: "/orders/dashboard",
   period: "/admin/periods",
   listing: "/admin/reportedlisting/reported-listing",
+  listingComments: "/admin/reportedlisting",
 };
 
 const ListingService = {
@@ -42,6 +43,19 @@ const ListingService = {
     return HTTP.get(
       `${PATHS.listing}${query ? `${query}` : ""}`,
 
+      {
+        headers: {
+          Authorization: getToken(),
+        },
+      }
+    );
+  },
+  getListingReportComments(
+    id: string,
+    query?: string
+  ): AxiosPromise<IReportedListingResponse> {
+    return HTTP.get(
+      `${PATHS.listingComments}/${id}${query ? `${query}` : ""}`,
       {
         headers: {
           Authorization: getToken(),

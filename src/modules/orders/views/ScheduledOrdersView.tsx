@@ -1,11 +1,14 @@
 import { styled } from "@/lib/index";
 import { OrderTable } from "@/modules/orders";
+import OrderService from "@/services/order-service";
 import { useURLQuery } from "@/utils/query";
 
 export function ScheduledOrdersView() {
   const urlQuery = useURLQuery();
   const date = useURLQuery()?.get("date") || "";
-  const convertedDate = new Date(date).toDateString();
+  const orderDate = new Date(date);
+  const convertedDate = orderDate.toDateString();
+
   return (
     <PageContent>
       <OrderTable
@@ -14,7 +17,13 @@ export function ScheduledOrdersView() {
         queryKey={`scheduled-query`}
         title={convertedDate}
         showPagination
+        apiFunc={OrderService.getByDate({
+          day: orderDate.getDate(),
+          month: orderDate.getMonth(),
+          year: orderDate.getFullYear(),
+        })}
         viewMode="list"
+        orderDate={date}
       />
     </PageContent>
   );

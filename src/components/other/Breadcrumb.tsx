@@ -25,6 +25,9 @@ const getCustomerName = (path: string) => {
   if (path.includes("cid__") || path.includes("ptnid__")) {
     return path?.split("__")[2]?.replace("_", " ");
   }
+  if (path?.includes("-") && path?.length > 18) {
+    return `... ${path?.substring(path.length - 8, path.length)}`;
+  }
   return path;
 };
 

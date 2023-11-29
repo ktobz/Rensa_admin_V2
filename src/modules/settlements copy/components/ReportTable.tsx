@@ -76,11 +76,11 @@ export function ReportTable({
     setFilter(values);
   };
 
-  const { data, isLoading, isError, error } = useQuery(
+  const { data, isLoading, isError } = useQuery(
     ["reported-listing", filter, pagination.page, pagination.pageSize],
     () =>
       ListingService.getAllReportedListing(
-        `?pageNumber${pagination.page}&pageSize=${pagination?.pageSize}`
+        `?pageNumber=${pagination.page}&pageSize=${pagination?.pageSize}`
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
         const { hasNextPage, hasPrevPage, total, totalPages } =
@@ -211,7 +211,7 @@ export function ReportTable({
                     </div>
                   </MuiTableCell>
                   <MuiTableCell align="left">
-                    {row?.catalogue?.catalogueCategoryName}
+                    {row?.category || "-"}
                   </MuiTableCell>
                   <MuiTableCell align="left">{row?.reason || "-"}</MuiTableCell>
                   <MuiTableCell align="left">

@@ -659,6 +659,13 @@ export type IReportedListingResponse = {
     data: IReportedListingData[];
   };
 };
+
+export type IReportedListingCommentsResponse = {
+  result: IPaginationResponse & {
+    data: IReportedListingData;
+  };
+};
+
 export type IListingDetailsResponse = {
   result: IListingData;
 };

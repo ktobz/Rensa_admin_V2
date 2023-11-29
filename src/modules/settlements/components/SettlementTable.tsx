@@ -73,7 +73,7 @@ export function SettlementTable({
     [filter, pagination.page, pagination.pageSize],
     () =>
       ListingService.getAll(
-        `?pageNumber${pagination.page}&pageSize=${pagination?.pageSize}`
+        `?pageNumber=${pagination.page}&pageSize=${pagination?.pageSize}`
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
         const { hasNextPage, hasPrevPage, total, totalPages } =

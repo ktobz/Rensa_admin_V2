@@ -77,15 +77,16 @@ type IProps = {
   showFilter?: boolean;
   showViewMore?: boolean;
   showMetrics?: boolean;
+  orderDate?: string;
 };
 
 const defaultQuery: IPagination = {
   pageSize: 15,
-  page: 1,
-  total: 1,
+  page: 0,
+  total: 0,
   hasNextPage: false,
   hasPrevPage: false,
-  totalPages: 1,
+  totalPages: 0,
 };
 const ONE_DAY_TIME = 1000 * 60 * 60 * 24;
 
@@ -108,6 +109,7 @@ export function OrderTable({
   showPagination = false,
   showViewMore = false,
   showMetrics = false,
+  orderDate = "",
 }: IProps) {
   const navigate = useNavigate();
   const [pagination, setPagination] = React.useState<IPagination>(defaultQuery);
@@ -116,6 +118,15 @@ export function OrderTable({
 
   const calendarRef = React.useRef<any>();
   const [filter, setFilter] = React.useState<number[]>([]);
+  const [date, setDate] = React.useState<{ year: number; month: number }>(
+    () => {
+      const today = new Date();
+      return {
+        month: today.getMonth(),
+        year: today.getFullYear(),
+      };
+    }
+  );
   const [view, setView] = React.useState(viewMode);
   const [currentDate, setCurrentDate] = React.useState(() => {
     const today = new Date();
@@ -134,7 +145,7 @@ export function OrderTable({
     [queryKey, id, filter, pagination.page, pagination.pageSize],
     () =>
       apiFunc(
-        `?pageNumber${pagination.page}&pageSize=${pagination?.pageSize}`
+        `?pageNumber=${pagination.page}&pageSize=${pagination?.pageSize}`
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
         const { hasNextPage, hasPrevPage, total, totalPages } =
@@ -166,6 +177,24 @@ export function OrderTable({
     {
       retry: 0,
       refetchOnWindowFocus: false,
+    }
+  );
+
+  const { data: calendarOrders, isLoading: calendarOrdersLoading } = useQuery(
+    [queryKey, id, date.month, date.year],
+    () =>
+      OrderService.getByMonthAndYear(
+        `?month=${date.month}&year=${date?.year}`
+      ).then((res) => {
+        const { data } = res.data?.result;
+        console.log(data);
+
+        return data;
+      }),
+    {
+      retry: 0,
+      refetchOnWindowFocus: false,
+      enabled: view === "grid",
     }
   );
 
@@ -235,6 +264,7 @@ export function OrderTable({
       date: new Date(selectedYear, selectedMonth, 1),
       dateString: `${DATE_LIST[selectedMonth]} ${selectedYear}`,
     }));
+    setDate({ month: selectedMonth, year: selectedYear });
   };
 
   const handleViewMore = () => {
@@ -371,7 +401,7 @@ export function OrderTable({
           />
         </>
       ) : (
-        <TableWrapper showPagination={showPagination}>
+        <TableWrapper showPagination={showPagination} pagination={pagination}>
           <MuiTableContainer
             sx={{
               maxWidth: "100%",

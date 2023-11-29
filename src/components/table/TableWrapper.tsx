@@ -15,11 +15,11 @@ type IProps = {
 
 const paginationData: IPagination = {
   pageSize: 15,
-  page: 1,
-  total: 20,
+  page: 0,
+  total: 0,
   hasNextPage: false,
   hasPrevPage: false,
-  totalPages: 20,
+  totalPages: 0,
 };
 
 export default function TableWrapper({

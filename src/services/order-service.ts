@@ -23,6 +23,40 @@ const OrderService = {
     );
   },
 
+  getByDate({
+    day,
+    month,
+    year,
+  }: {
+    month: number;
+    day: number;
+    year: number;
+  }) {
+    return function (query?: string): AxiosPromise<IOrderResponse> {
+      return HTTP.get(
+        `${PATHS.orders}/get-orders-by-date/${year}/${month}/${day}${
+          query ? `${query}` : ""
+        }`,
+        {
+          headers: {
+            Authorization: getToken(),
+          },
+        }
+      );
+    };
+  },
+
+  getByMonthAndYear(query?: string): AxiosPromise<IOrderResponse> {
+    return HTTP.get(
+      `${PATHS.orders}/summary-by-month${query ? `${query}` : ""}`,
+
+      {
+        headers: {
+          Authorization: getToken(),
+        },
+      }
+    );
+  },
   getOrderDetails(id: number | string) {
     return HTTP.get(`${PATHS.orders}/${id}`, {
       headers: {
@@ -38,18 +72,7 @@ const OrderService = {
     });
   },
   getTotals() {
-    return HTTP.get(`${PATHS.orders}/total`, {
-      headers: {
-        Authorization: getToken(),
-      },
-    });
-  },
-  dashboardMetrics(data: {
-    totat_sales_period: string;
-    totat_order_period: string;
-    top_selling_branch: string;
-  }) {
-    return HTTP.post(`${PATHS.dashboardMetrics}`, data, {
+    return HTTP.get(`${PATHS.orders}/summary`, {
       headers: {
         Authorization: getToken(),
       },

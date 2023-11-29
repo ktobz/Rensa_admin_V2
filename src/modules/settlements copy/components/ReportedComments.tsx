@@ -17,6 +17,8 @@ import {
 import { IPagination } from "@/types/globalTypes";
 import CustomTableSkeleton from "@/components/skeleton/CustomTableSkeleton";
 import TableWrapper from "@/components/table/TableWrapper";
+import ListingService from "@/services/listing-service";
+import { createPaginationData, formatDate } from "@/utils/helper-funcs";
 
 const data = [
   {
@@ -101,9 +103,13 @@ const defaultQuery: IPagination = {
 
 type IProps = {
   showPagination?: boolean;
+  listingId: string;
 };
 
-export function ReportedComments({ showPagination = false }: IProps) {
+export function ReportedComments({
+  showPagination = false,
+  listingId,
+}: IProps) {
   const navigate = useNavigate();
   const [pagination, setPagination] = React.useState<IPagination>(defaultQuery);
 
@@ -113,39 +119,32 @@ export function ReportedComments({ showPagination = false }: IProps) {
 
   const [filter, setFilter] = React.useState<number[]>([]);
 
-  const handleSetFilter = (values: number[]) => {
-    setFilter(values);
-  };
+  const { data, isLoading, isError } = useQuery(
+    ["single-listing-reports", listingId, pagination.page, pagination.pageSize],
+    () =>
+      ListingService.getListingReportComments(
+        listingId,
+        `?pageNumber=${pagination.page}&pageSize=${pagination?.pageSize}`
+      ).then((res) => {
+        const { data, ...paginationData } = res.data?.result;
+        const { hasNextPage, hasPrevPage, total, totalPages } =
+          createPaginationData(data, paginationData);
 
-  // const { data, isLoading, isError } = useQuery(
-  //   [
-  //     "all-user-cards-transactions",
-  //     pagination.page,
-  //     pagination.pageSize,
-  //     variant,
-  //   ],
-  //   () =>
-  //     CardService.getAllTransactions(
-  //       `?pgn=${pagination.page}&pgs=${pagination.pageSize}`
-  //     ).then((res) => {
-  //       const data = res.data?.data;
-  //       const { hasNextPage, hasPrevPage, total, totalPages } =
-  //         createPaginationData(data, pagination);
+        setPagination((prev) => ({
+          ...prev,
+          total,
+          totalPages,
+          hasNextPage,
+          hasPrevPage,
+        }));
 
-  //       setPagination((prev) => ({
-  //         ...prev,
-  //         total,
-  //         totalPages,
-  //         hasNextPage,
-  //         hasPrevPage,
-  //       }));
-
-  //       return data.data as ITransactionHistoryData[];
-  //     }),
-  //   {
-  //     retry: 0,
-  //   }
-  // );
+        return data;
+      }),
+    {
+      retry: 0,
+      refetchOnWindowFocus: false,
+    }
+  );
 
   const handleChange = (page: number) => {
     setPagination((prev) => ({ ...prev, page }));
@@ -201,20 +200,20 @@ export function ReportedComments({ showPagination = false }: IProps) {
             </MuiTableHead>
 
             <MuiTableBody>
-              {data?.map((row) => (
+              {data?.map((row, index) => (
                 <MuiTableRow
-                  key={row?.id}
+                  key={index}
                   sx={{
                     "&:last-child td, &:last-child th": { border: 0 },
                   }}>
                   {" "}
                   <MuiTableCell className="order-id" align="left">
-                    thur, 5 march 2023
+                    {/* {formatDate(row?.)} */}
                   </MuiTableCell>
                   <MuiTableCell align="left">Appliances</MuiTableCell>
                   <MuiTableCell align="left">
                     <Link to="#" className="reporter">
-                      {row?.branch}
+                      {/* {row?.branch} */}
                     </Link>{" "}
                   </MuiTableCell>
                   <MuiTableCell align="left">
@@ -224,40 +223,38 @@ export function ReportedComments({ showPagination = false }: IProps) {
                 </MuiTableRow>
               ))}
 
-              {/* {!isLoading && data && data?.length === 0 && !isError && (
+              {!isLoading && data && data?.length === 0 && !isError && (
                 <MuiTableRow>
-                  {" "}
                   <MuiTableCell
-                    colSpan={8}
+                    colSpan={4}
                     align="center"
                     className="no-data-cell"
                     rowSpan={20}>
                     <NoData
-                      title="No order yet"
-                      message="Recent orders will appear here"
+                      title="No Reported comments"
+                      message="Reported comments will appear here"
                     />
                   </MuiTableCell>
                 </MuiTableRow>
-              )} */}
+              )}
 
-              {/* {isError && !data && (
+              {isError && !data && (
                 <MuiTableRow>
-                  {" "}
                   <MuiTableCell
                     colSpan={8}
                     className="no-data-cell"
                     align="center">
                     <NoData
                       title="An Error Occurred"
-                      message="Sorry, we couldn't fetch your orders. Try again later or contact Rensa support."
+                      message="Sorry, we couldn't fetch reported comments. Try again later or contact Rensa support."
                     />
                   </MuiTableCell>
                 </MuiTableRow>
-              )} */}
+              )}
 
-              {/* {!data && isLoading && (
-                <CustomTableSkeleton columns={8} rows={10} />
-              )} */}
+              {!data && isLoading && (
+                <CustomTableSkeleton columns={4} rows={8} />
+              )}
             </MuiTableBody>
           </MuiTable>
         </MuiTableContainer>

@@ -46,6 +46,13 @@ const options =
     name: x,
   })) || [];
 
+const trimText = (text: string) => {
+  if (typeof text === "string") {
+    return `... ${text?.substring(text.length - 8, text.length)}`;
+  }
+  return "";
+};
+
 export function ListingDetails() {
   const { catalogueStatus, deliveryFeePickupMethod } = useCachedDataStore(
     (state) => state.cache?.lookup
@@ -55,6 +62,7 @@ export function ListingDetails() {
   const { reportId } = useIds();
   const [action, setAction] = React.useState("");
   const [show, setShow] = React.useState(false);
+  const trimmedId = trimText(reportId);
 
   const { data, isLoading, isError } = useQuery(
     ["listing-details", reportId],
@@ -108,7 +116,7 @@ export function ListingDetails() {
       <div className="top-section">
         <div className="listing-heading">
           <MuiTypography variant="h3" className="title">
-            Listing ID: <b style={{ color: "#1E75BB" }}>#{reportId}</b>
+            Listing ID: <b style={{ color: "#1E75BB" }}>#{trimmedId}</b>
           </MuiTypography>
           <CustomStyledSelect
             // value={value}
@@ -217,7 +225,7 @@ export function ListingDetails() {
           />
         </div>
       </div>
-      <ReportedComments />
+      <ReportedComments listingId={reportId} />
 
       <VendgramCustomModal
         closeOnOutsideClick={false}
