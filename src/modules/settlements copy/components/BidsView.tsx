@@ -20,12 +20,17 @@ import {
   IListingData,
   INotificationData,
   IPagination,
+  ISettlementStatus,
 } from "@/types/globalTypes";
 import NotificationService from "@/services/notification-service";
 import CustomTabs from "@/components/other/CustomTabs";
 import CustomTab from "@/components/other/CustomTab";
 import { UserDetailCard } from "@/components/card/UserCard";
 import { BidStatus } from "./BidStatus";
+import useCachedDataStore from "@/config/store-config/lookup";
+import { off } from "process";
+import { IStatus } from "./OrderStatus";
+import { formatCurrency, formatDate } from "@/utils/helper-funcs";
 
 type IProps = {
   listingData: IListingData | null;
@@ -34,6 +39,7 @@ type IProps = {
 };
 export function BidsView({ isLoading, listingData, isError }: IProps) {
   const queryClient = useQueryClient();
+  const { bidType } = useCachedDataStore((state) => state.cache.lookup);
 
   const [show, setShow] = React.useState(false);
 
@@ -49,19 +55,6 @@ export function BidsView({ isLoading, listingData, isError }: IProps) {
     setShow((prev) => !prev);
   };
 
-  // const { data, isLoading, isError } = useQuery(
-  //   ["all-bids"],
-  //   () =>
-  //     NotificationService.getAutomatedMessages("").then((res) => {
-  //       const data = res.data?.result;
-  //       return data;
-  //     }),
-  //   {
-  //     retry: 0,
-  //     refetchOnWindowFocus: false,
-  //   }
-  // );
-
   const handleCloseModal = () => {
     setShow(false);
   };
@@ -70,6 +63,21 @@ export function BidsView({ isLoading, listingData, isError }: IProps) {
     queryClient.invalidateQueries(["all-bids"]);
     handleCloseModal();
   };
+
+  console.log(bidType);
+  const bids = listingData?.catalogueBids?.filter((x) => x?.bidType === 2);
+  const offers = listingData?.catalogueBids?.filter((x) => x?.bidType === 1);
+
+  const biddersAndCount = bids?.reduce((acc, v) => {
+    if (v?.userId in acc) {
+      acc[v.userId] += 1;
+    } else {
+      acc[v.userId] = 1;
+    }
+    return acc;
+  }, {} as { [key: string]: number });
+
+  const numberOfBidders = Object.values(biddersAndCount || {})?.length || 0;
 
   return (
     <StyledPage>
@@ -107,11 +115,11 @@ export function BidsView({ isLoading, listingData, isError }: IProps) {
 
             <div className="totals">
               <MuiTypography variant="body1" className="total">
-                <b>{listingData?.totalBids || 0}</b> bids
+                <b>{bids?.length || 0}</b> bids
               </MuiTypography>
               <span>|</span>
               <MuiTypography variant="body1" className="total">
-                <b>{listingData?.totalBidders || 0}</b> bidders
+                <b>{numberOfBidders || 0}</b> bidders
               </MuiTypography>
             </div>
           </div>
@@ -121,38 +129,41 @@ export function BidsView({ isLoading, listingData, isError }: IProps) {
               Recent offers
             </MuiTypography>
             <MuiTypography variant="body1" className="total">
-              <b>{listingData?.totalOffers || 0}</b> offers
+              <b>{offers?.length || 0}</b> offers
             </MuiTypography>
           </div>
         )}
+        {current === 0 && (
+          <SimpleBar className="list-wrapper">
+            {!isLoading &&
+              bids &&
+              bids?.map((row) => (
+                <div key={row?.id} className="notif-row">
+                  <UserDetailCard
+                    variant="bidder"
+                    data={{
+                      fullName: " - -",
+                      date: formatDate(
+                        row?.creationTime || "",
+                        "do LLLL yyyy, HH:MM:ss"
+                      ),
+                      image: "",
+                      verStatus: true,
+                    }}
+                  />
+                  <MuiBox className="bid-value">
+                    <MuiTypography variant="body1" className="amount">
+                      ₦
+                      {formatCurrency({
+                        amount: row?.bidPrice,
+                        style: "decimal",
+                      })}
+                    </MuiTypography>
+                  </MuiBox>
+                </div>
+              ))}
 
-        <SimpleBar className="list-wrapper">
-          {!isLoading &&
-            listingData?.catalogueBids &&
-            listingData?.catalogueBids?.map((row) => (
-              <div key={row?.id} className="notif-row">
-                <UserDetailCard
-                  variant="bidder"
-                  data={{
-                    fullName: "Kenchi K",
-                    date: "9 Jul 2023, 11:34 PM",
-                    image: "",
-                    verStatus: true,
-                  }}
-                />
-                <MuiBox className="bid-value">
-                  <MuiTypography variant="body1" className="amount">
-                    ₦451,000
-                  </MuiTypography>
-                  {current == 1 && <BidStatus status="pending" />}
-                </MuiBox>
-              </div>
-            ))}
-
-          {!isLoading &&
-            listingData?.catalogueBids &&
-            listingData?.catalogueBids?.length === 0 &&
-            !isError && (
+            {!isLoading && bids && bids?.length === 0 && !isError && (
               <div className="no-data-cell">
                 <NoData
                   title="No bids yet"
@@ -160,7 +171,53 @@ export function BidsView({ isLoading, listingData, isError }: IProps) {
                   message="Bids will show here"></NoData>
               </div>
             )}
-        </SimpleBar>
+          </SimpleBar>
+        )}
+        {current === 1 && (
+          <SimpleBar className="list-wrapper">
+            {!isLoading &&
+              offers &&
+              offers?.map((row) => (
+                <div key={row?.id} className="notif-row">
+                  <UserDetailCard
+                    variant="bidder"
+                    data={{
+                      fullName: " - -",
+                      date: formatDate(
+                        row?.creationTime || "",
+                        "do LLLL yyyy, HH:MM:ss"
+                      ),
+                      image: "",
+                      verStatus: true,
+                    }}
+                  />
+                  <MuiBox className="bid-value">
+                    <MuiTypography variant="body1" className="amount">
+                      ₦
+                      {formatCurrency({
+                        amount: row?.bidPrice,
+                        style: "decimal",
+                      })}
+                    </MuiTypography>
+                    {current == 1 && (
+                      <BidStatus
+                        status={row?.bidStatusDescription as ISettlementStatus}
+                      />
+                    )}
+                  </MuiBox>
+                </div>
+              ))}
+
+            {!isLoading && offers && offers?.length === 0 && !isError && (
+              <div className="no-data-cell">
+                <NoData
+                  title="No offers yet"
+                  icon={<IconNotificationInfo className="icon" />}
+                  message="Offers will show here"></NoData>
+              </div>
+            )}
+          </SimpleBar>
+        )}
       </div>
 
       {/* {isError && !data && (

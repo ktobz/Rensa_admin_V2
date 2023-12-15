@@ -17,10 +17,10 @@ import {
   styled,
 } from "@/lib/index";
 
-import { IPagination, IStatus } from "@/types/globalTypes";
+import { IPagination, ISalesData, IStatus } from "@/types/globalTypes";
 
 import CustomTableSkeleton from "components/skeleton/CustomTableSkeleton";
-import { formatCurrency } from "utils/helper-funcs";
+import { createPaginationData, formatCurrency } from "utils/helper-funcs";
 import { format } from "date-fns";
 import TableWrapper from "@/components/table/TableWrapper";
 import { IconOrder, IconVisibility } from "@/lib/mui.lib.icons";
@@ -29,64 +29,12 @@ import CustomTab from "@/components/other/CustomTab";
 import CustomSearch from "@/components/input/CustomSearch";
 import { TotalCard } from "@/components/index";
 import { OrderIcon } from "@/components/feedback/OrderStatus";
+import TransactionService from "@/services/transaction-service";
 
 type IProps = {
   variant?: "page" | "section" | "home" | "cards";
   page: "orders" | "dashboard" | "branches" | "branch-order";
 };
-
-const data = [
-  {
-    id: "43579",
-    customer: "Timothy Orbik",
-    created_at: new Date().toJSON(),
-    scheduled_at: new Date().toJSON(),
-    branch: "Lekki Branch",
-    amount: 23000,
-    status: "new",
-    scheduled: true,
-  },
-  {
-    id: "4358",
-    customer: "Jame Orbik",
-    created_at: new Date().toJSON(),
-    scheduled_at: new Date().toJSON(),
-    branch: "John Branch",
-    amount: 23000,
-    status: "picked-up",
-    scheduled: false,
-  },
-  {
-    id: "43577",
-    customer: "Peter Orbik",
-    created_at: new Date().toJSON(),
-    scheduled_at: new Date().toJSON(),
-    branch: "Ajah Branch",
-    amount: 23000,
-    status: "cancelled",
-    scheduled: true,
-  },
-  {
-    id: "43570",
-    customer: "Timothy Orbik",
-    created_at: new Date().toJSON(),
-    scheduled_at: new Date().toJSON(),
-    branch: "Lekki Branch",
-    amount: 2300,
-    status: "delivered",
-    scheduled: true,
-  },
-  {
-    id: "43589",
-    customer: "Timothy OrbJamesik",
-    created_at: new Date().toJSON(),
-    scheduled_at: new Date().toJSON(),
-    branch: "James Branch",
-    amount: 23000,
-    status: "confirmed",
-    scheduled: false,
-  },
-];
 
 const defaultQuery: IPagination = {
   pageSize: 15,
@@ -115,42 +63,37 @@ export function IncomeTable() {
     setCurrent(index);
   };
 
-  // const { data, isLoading, isError } = useQuery(
-  //   [
-  //     "all-user-cards-transactions",
-  //     pagination.page,
-  //     pagination.pageSize,
-  //     variant,
-  //   ],
-  //   () =>
-  //     CardService.getAllTransactions(
-  //       `?pgn=${pagination.page}&pgs=${pagination.pageSize}`
-  //     ).then((res) => {
-  //       const data = res.data?.data;
-  //       const { hasNextPage, hasPrevPage, total, totalPages } =
-  //         createPaginationData(data, pagination);
+  const { data, isLoading, isError } = useQuery(
+    ["sales-revenue", pagination.page, pagination.pageSize],
+    () =>
+      TransactionService.getAllSales(
+        `?pageNumber=${pagination.page}&pageSize=${pagination.pageSize}`
+      ).then((res) => {
+        const { data, ...paginationData } = res.data?.result;
+        const { hasNextPage, hasPrevPage, total, totalPages } =
+          createPaginationData(data, paginationData);
 
-  //       setPagination((prev) => ({
-  //         ...prev,
-  //         total,
-  //         totalPages,
-  //         hasNextPage,
-  //         hasPrevPage,
-  //       }));
+        setPagination((prev) => ({
+          ...prev,
+          total,
+          totalPages,
+          hasNextPage,
+          hasPrevPage,
+        }));
 
-  //       return data.data as ITransactionHistoryData[];
-  //     }),
-  //   {
-  //     retry: 0,
-  //   }
-  // );
+        return data;
+      }),
+    {
+      retry: 0,
+    }
+  );
 
   const handleChange = (page: number) => {
     setPagination((prev) => ({ ...prev, page }));
   };
 
-  const handleViewDetails = (id: string) => () => {
-    return;
+  const handleViewDetails = (sales: ISalesData) => () => {
+    navigate(`/app/orders/${sales?.id}`);
   };
 
   return (
@@ -189,11 +132,7 @@ export function IncomeTable() {
         </div>
       </div>
 
-      {/* 
-        <CustomTabPanel index={current} value={0}></CustomTabPanel>
-        <CustomTabPanel index={current} value={3}></CustomTabPanel>
-        <CustomTabPanel index={current} value={4}></CustomTabPanel> */}
-      <TableWrapper showPagination>
+      <TableWrapper showPagination pagination={pagination}>
         <MuiTableContainer
           sx={{
             maxWidth: "100%",
@@ -243,34 +182,51 @@ export function IncomeTable() {
                     "&:last-child td, &:last-child th": { border: 0 },
                   }}>
                   <MuiTableCell align="left">
-                    <OrderIcon type={row?.status as IStatus} />
+                    {/* <OrderIcon type={row?. as IStatus} /> */} -
                   </MuiTableCell>
                   <MuiTableCell className="order-id" align="left">
                     Order <b>#{row?.id}</b>
                   </MuiTableCell>
                   <MuiTableCell>
-                    {format(new Date(row?.created_at || ""), "LL MMMM, yyyy")}
+                    {format(new Date(row?.creationTime || ""), "LL MMMM, yyyy")}
                   </MuiTableCell>
                   <MuiTableCell align="left">
-                    ₦{formatCurrency({ amount: row?.amount, style: "decimal" })}
+                    ₦
+                    {formatCurrency({
+                      amount: row?.itemAmount,
+                      style: "decimal",
+                    })}
                   </MuiTableCell>
                   <MuiTableCell align="left">
-                    ₦{formatCurrency({ amount: row?.amount, style: "decimal" })}
+                    ₦
+                    {formatCurrency({
+                      amount: row?.maxDeliveryFee,
+                      style: "decimal",
+                    })}
                   </MuiTableCell>
                   <MuiTableCell align="left">
-                    ₦{formatCurrency({ amount: row?.amount, style: "decimal" })}
+                    ₦
+                    {formatCurrency({
+                      amount: row?.buyerServiceFee,
+                      style: "decimal",
+                    })}
                   </MuiTableCell>
                   <MuiTableCell align="left">
-                    ₦{formatCurrency({ amount: row?.amount, style: "decimal" })}
+                    ₦
+                    {formatCurrency({
+                      amount: row?.sellerSettlement,
+                      style: "decimal",
+                    })}
                   </MuiTableCell>
                   <MuiTableCell
                     align="left"
                     style={{ color: "#45B26B", fontWeight: "700" }}>
-                    ₦{formatCurrency({ amount: row?.amount, style: "decimal" })}
+                    ₦
+                    {formatCurrency({ amount: row?.revenue, style: "decimal" })}
                   </MuiTableCell>
                   <MuiTableCell align="left">
                     <MuiIconButton
-                      onClick={handleViewDetails(row?.id)}
+                      onClick={handleViewDetails(row)}
                       className="visible-btn">
                       <IconVisibility />
                     </MuiIconButton>
@@ -278,7 +234,7 @@ export function IncomeTable() {
                 </MuiTableRow>
               ))}
 
-              {/* {!isLoading && data && data?.length === 0 && !isError && (
+              {!isLoading && data && data?.length === 0 && !isError && (
                 <MuiTableRow>
                   {" "}
                   <MuiTableCell
@@ -287,14 +243,14 @@ export function IncomeTable() {
                     className="no-data-cell"
                     rowSpan={20}>
                     <NoData
-                      title="No order yet"
-                      message="Recent orders will appear here"
+                      title="No sales yet"
+                      message="Recent sales will appear here"
                     />
                   </MuiTableCell>
                 </MuiTableRow>
-              )} */}
+              )}
 
-              {/* {isError && !data && (
+              {isError && !data && (
                 <MuiTableRow>
                   {" "}
                   <MuiTableCell
@@ -303,15 +259,15 @@ export function IncomeTable() {
                     align="center">
                     <NoData
                       title="An Error Occurred"
-                      message="Sorry, we couldn't fetch your orders. Try again later or contact Rensa support."
+                      message="Sorry, we couldn't fetch sales revenue. Try again later or contact Rensa support."
                     />
                   </MuiTableCell>
                 </MuiTableRow>
-              )} */}
+              )}
 
-              {/* {!data && isLoading && (
+              {!data && isLoading && (
                 <CustomTableSkeleton columns={8} rows={10} />
-              )} */}
+              )}
             </MuiTableBody>
           </MuiTable>
         </MuiTableContainer>

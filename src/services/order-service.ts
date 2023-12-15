@@ -4,6 +4,9 @@ import {
   IOrderQuery,
   IOrderResponse,
   IOrderStatsResponse,
+  IOrderDetailsResponse,
+  ICancelOrderProps,
+  ICalendarOrderResponse,
 } from "@/types/globalTypes";
 import { AxiosPromise } from "axios";
 
@@ -12,6 +15,7 @@ const PATHS = {
   dashboardMetrics: "/orders/dashboard",
   assignRider: "/admin/orders",
   period: "/admin/periods",
+  cancelOrder: "/admin/cancelledorder/cancel-order",
 };
 
 const OrderService = {
@@ -50,7 +54,7 @@ const OrderService = {
     };
   },
 
-  getByMonthAndYear(query?: string): AxiosPromise<IOrderResponse> {
+  getByMonthAndYear(query?: string): AxiosPromise<ICalendarOrderResponse> {
     return HTTP.get(
       `${PATHS.orders}/summary-by-month${query ? `${query}` : ""}`,
 
@@ -61,13 +65,22 @@ const OrderService = {
       }
     );
   },
-  getOrderDetails(id: number | string) {
-    return HTTP.get(`${PATHS.orders}/${id}`, {
+  getOrderDetails(id: number | string): AxiosPromise<IOrderDetailsResponse> {
+    return HTTP.get(`${PATHS.orders}/id/${id}`, {
       headers: {
         Authorization: getToken(),
       },
     });
   },
+
+  cancelOrder(data: ICancelOrderProps): AxiosPromise<any> {
+    return HTTP.get(`${PATHS.cancelOrder}/`, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+
   assignRider(id: number | string, data: any) {
     return HTTP.put(`${PATHS.orders}/${id}/assign-rider`, data, {
       headers: {

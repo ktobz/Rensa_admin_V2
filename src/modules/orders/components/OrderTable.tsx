@@ -92,7 +92,9 @@ const ONE_DAY_TIME = 1000 * 60 * 60 * 24;
 
 const constructOrderKey = (date: Date | string) => {
   const _date = new Date(date || "");
-  const constructedKey = `${_date?.getDate()}_${_date?.getMonth()}_${_date?.getFullYear()}`;
+  const constructedKey = `${_date?.getDate()}_${
+    _date?.getMonth() + 1
+  }_${_date?.getFullYear()}`;
 
   return constructedKey;
 };
@@ -151,16 +153,6 @@ export function OrderTable({
         const { hasNextPage, hasPrevPage, total, totalPages } =
           createPaginationData(data, paginationData);
 
-        // const orderSortedByDate = data?.reduce((acc, val) => {
-        //   const constructedKey = constructOrderKey(val?.creationTime || "");
-        //   if (constructedKey in acc) {
-        //     acc[constructedKey] += 1;
-        //   } else {
-        //     acc[constructedKey] = 1;
-        //   }
-        //   return acc;
-        // }, {} as { [key: string]: number });
-
         setPagination((prev) => ({
           ...prev,
           total,
@@ -181,12 +173,19 @@ export function OrderTable({
     [queryKey, id, date.month, date.year],
     () =>
       OrderService.getByMonthAndYear(
-        `?month=${date.month}&year=${date?.year}`
+        `?month=${date.month + 1}&year=${date?.year}`
       ).then((res) => {
-        const { data } = res.data?.result;
-        console.log(data);
+        const data = res.data?.result;
 
-        return data;
+        const orderSortedByDate = data?.reduce((acc, val) => {
+          const constructedKey = `${val.day}_${val?.month}_${val?.year}`;
+
+          acc[constructedKey] = val?.totalCount;
+
+          return acc;
+        }, {} as { [key: string]: number });
+
+        return orderSortedByDate;
       }),
     {
       retry: 0,
@@ -214,7 +213,7 @@ export function OrderTable({
     setPagination((prev: any) => ({ ...prev, page }));
   };
 
-  const handleViewDetails = (data: any) => () => {
+  const handleViewDetails = (data: IOrderData) => () => {
     if (page === "dashboard") {
       navigate(`/app/orders/${data?.id}`, {
         state: data,
@@ -375,23 +374,24 @@ export function OrderTable({
             onClickDay={handleNavigateToSchedule}
             // showNeighboringMonth={false}
             tileContent={(v) => {
-              // const orderKey = constructOrderKey(v.date);
-              // const numberOfOrders = data
-              //   ? data?.orderSortedByDate?.[orderKey]
-              //   : 0;
-              // if (!!numberOfOrders) {
-              //   return (
-              //     <MuiTypography
-              //       variant="body2"
-              //       className={`orders ${
-              //         v?.date?.getTime() + ONE_DAY_TIME < new Date()?.getTime()
-              //           ? "old"
-              //           : ""
-              //       }`}>
-              //       {numberOfOrders}
-              //     </MuiTypography>
-              //   );
-              // }
+              const orderKey = constructOrderKey(v.date);
+              const numberOfOrders = calendarOrders
+                ? calendarOrders?.[orderKey]
+                : 0;
+
+              if (!!numberOfOrders) {
+                return (
+                  <MuiTypography
+                    variant="body2"
+                    className={`orders ${
+                      v?.date?.getTime() + ONE_DAY_TIME < new Date()?.getTime()
+                        ? "old"
+                        : ""
+                    }`}>
+                    {numberOfOrders}
+                  </MuiTypography>
+                );
+              }
 
               return null;
             }}
@@ -461,37 +461,35 @@ export function OrderTable({
                       sx={{
                         "&:last-child td, &:last-child th": { border: 0 },
                       }}>
-                      {/* <MuiTableCell align="left">
-                        <OrderIcon type={row?.status as IStatus} />
+                      <MuiTableCell align="left">
+                        {/* <OrderIcon type={row?.status as IStatus} /> */}
                       </MuiTableCell>
                       <MuiTableCell className="order-id" align="left">
-                        Order <b>#{row?.order_id}</b>
+                        <b>{row?.catalogueId}</b>
                       </MuiTableCell>
-                      <MuiTableCell>
-                        {row?.user?.first_name || "-"}
+                      <MuiTableCell>{row?.catalogueName || "-"}</MuiTableCell>
+                      <MuiTableCell align="left">
+                        {row?.firstName} {row?.lastName}
                       </MuiTableCell>
                       <MuiTableCell align="left">
-                        {row?.user?.full_name || "-"}
+                        {formatDate(row?.creationTime)}
                       </MuiTableCell>
                       <MuiTableCell align="left">
-                        {formatDate(row?.created_at)}
-                      </MuiTableCell>
-                      <MuiTableCell align="left">
-                        {row?.delivery_pickup_date}
+                        {formatDate(row?.deliveryDate)}
                       </MuiTableCell>
                       <MuiTableCell align="left">
                         ₦
                         {formatCurrency({
-                          amount: row?.total_product_price,
+                          amount: row?.itemAmount,
                           style: "decimal",
                         })}
                       </MuiTableCell>
 
                       <MuiTableCell align="left">
-                        <OrderStatus
+                        {/* <OrderStatus
                           type={row?.status?.toLowerCase() as IStatus}
-                        />
-                      </MuiTableCell> */}
+                        /> */}
+                      </MuiTableCell>
                       <MuiTableCell align="left">
                         <MuiIconButton
                           onClick={handleViewDetails(row)}

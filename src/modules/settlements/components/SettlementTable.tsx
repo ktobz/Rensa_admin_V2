@@ -278,11 +278,7 @@ export function SettlementTable({
                         {row?.totalBidders}
                       </MuiTableCell>
                       <MuiTableCell align="left">
-                        ₦
-                        {formatCurrency({
-                          amount: row?.totalOffers,
-                          style: "decimal",
-                        })}
+                        {row?.totalOffers}
                       </MuiTableCell>
                       <MuiTableCell align="left">{row?.location}</MuiTableCell>
                       <MuiTableCell align="left">

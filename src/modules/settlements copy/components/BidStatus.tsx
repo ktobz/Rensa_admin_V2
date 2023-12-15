@@ -1,7 +1,6 @@
 import { IconOrder } from "@/lib/mui.lib.icons";
+import { ISettlementStatus } from "@/types/globalTypes";
 import { useTimer } from "react-timer-hook";
-
-export type ISettlementStatus = "accepted" | "pending" | "rejected";
 
 const settleStatusData: {
   [key in ISettlementStatus]: {

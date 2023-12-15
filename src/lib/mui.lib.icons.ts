@@ -103,8 +103,10 @@ import { ReactComponent as IconVerification } from "assets/icon/verificaton.svg"
 
 import { ReactComponent as IconAttachment } from "assets/icon/attachment.svg";
 import { ReactComponent as IconAppRelease } from "assets/icon/app_release.svg";
+import { ReactComponent as IconConfirm } from "assets/icon/confirm.svg";
 
 export {
+  IconConfirm,
   IconAppRelease,
   IconVerification,
   IconLocationBig,

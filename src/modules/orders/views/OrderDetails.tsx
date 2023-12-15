@@ -22,31 +22,40 @@ import {
 } from "@/lib/mui.lib.icons";
 import { useQuery, useQueryClient } from "react-query";
 import OrderService from "@/services/order-service";
-import { IOrderDetails, IStatus } from "@/types/globalTypes";
+import { IOrderData, IOrderDetails, IStatus } from "@/types/globalTypes";
 import { UserDetailCard } from "@/components/card/UserCard";
 import VendgramCustomModal from "@/components/modal/Modal";
 import { AssignRiderForm } from "../components/AssignRiderForm";
 import { OrderStatus } from "@/components/feedback/OrderStatus";
 import { SettlementStatus } from "@/modules/settlements/components/OrderStatus";
+import { formatCurrency, formatDate, getIdName } from "@/utils/helper-funcs";
+import useCachedDataStore from "@/config/store-config/lookup";
+import { OrderConfirmation } from "../components/OrderConfirmation";
 
 export function OrderDetails() {
   const queryClient = useQueryClient();
   const { state } = useLocation();
+  const [orderAction, setOrderAction] = React.useState<"confirm" | "cancel">(
+    "confirm"
+  );
   const { orderId } = useParams<{ orderId: string }>();
+  const { catalogueOrderStatus } = useCachedDataStore(
+    (state) => state.cache.lookup
+  );
   const [show, setShow] = React.useState(false);
 
   const { data } = useQuery(
     ["order-details", orderId],
     () =>
       OrderService.getOrderDetails(orderId || "").then((res) => {
-        const data = res.data?.data;
-        return data as IOrderDetails;
+        const data = res.data.result;
+        return data;
       }),
     {
       retry: 0,
       refetchOnWindowFocus: false,
       enabled: !!orderId,
-      initialData: state as IOrderDetails,
+      // initialData: state as any,
     }
   );
 
@@ -58,17 +67,30 @@ export function OrderDetails() {
     setShow(false);
   };
 
+  const handleSetAction = (status: "cancel" | "confirm") => () => {
+    setOrderAction(status);
+    handleToggleShow();
+  };
+
+  const handleCancelOrder = (cb: () => void) => () => {
+    // OrderService.cancelOrder();
+  };
+
+  const handleConfirmOrder = (cb: () => void) => () => {};
+
   return (
     <PageContent>
       <div className="left">
         <div className="heading">
           <MuiTypography variant="h3" className="title">
-            Order <b style={{ color: "#1E75BB" }}>#{data?.order_id}</b>
+            Order <b style={{ color: "#1E75BB" }}>#{data?.id}</b>
           </MuiTypography>
           <div className="status">
             <span className="text">Status</span>{" "}
             <OrderStatus
-              type={(data?.status?.toLowerCase() || "new") as IStatus}
+              type={
+                getIdName(data?.status || 1, catalogueOrderStatus) as IStatus
+              }
             />
           </div>
         </div>
@@ -82,9 +104,7 @@ export function OrderDetails() {
               Date Created
             </MuiTypography>
             <MuiTypography variant="body2" className="body">
-              {data
-                ? format(new Date(data?.created_at || ""), "LL MMMM, yyyy")
-                : ""}
+              {/* {data ? formatDate(data?.) : ""} */} 'no date'
             </MuiTypography>
           </div>
           <div className="group">
@@ -93,7 +113,7 @@ export function OrderDetails() {
             </MuiTypography>
             <MuiTypography variant="body2" className="body">
               <IconShipping style={{ color: "#F05B2A" }} />
-              {data?.delivery_pickup_date}
+              {data ? formatDate(data?.deliveryDate) : ""}
             </MuiTypography>
           </div>
           {/* <div className="group">
@@ -126,7 +146,7 @@ export function OrderDetails() {
                 Full name
               </MuiTypography>
               <MuiTypography variant="body2" className="body">
-                Timothy Obrik
+                {data?.buyerInfo?.firstName} {data?.buyerInfo?.lastName}
               </MuiTypography>
             </div>
             <div className="group">
@@ -134,7 +154,7 @@ export function OrderDetails() {
                 Email
               </MuiTypography>
               <MuiTypography variant="body2" className="body">
-                janecooper@gmail.com
+                {data?.buyerInfo?.emailAddress}
               </MuiTypography>
             </div>
             <div className="group">
@@ -142,7 +162,7 @@ export function OrderDetails() {
                 Username
               </MuiTypography>
               <MuiTypography variant="body2" className="body">
-                udkio
+                {data?.buyerInfo?.username}
               </MuiTypography>
             </div>
             <div className="group">
@@ -150,7 +170,7 @@ export function OrderDetails() {
                 Phone number
               </MuiTypography>
               <MuiTypography variant="body2" className="body">
-                08131889558
+                {data?.buyerInfo?.phoneNumber}
               </MuiTypography>
             </div>
           </div>
@@ -170,7 +190,7 @@ export function OrderDetails() {
                 Full name
               </MuiTypography>
               <MuiTypography variant="body2" className="body">
-                Timothy Obrik
+                {data?.sellerInfo?.firstName} {data?.sellerInfo?.lastName}
               </MuiTypography>
             </div>
             <div className="group">
@@ -178,7 +198,7 @@ export function OrderDetails() {
                 Email
               </MuiTypography>
               <MuiTypography variant="body2" className="body">
-                janecooper@gmail.com
+                {data?.sellerInfo?.emailAddress}
               </MuiTypography>
             </div>
             <div className="group">
@@ -186,7 +206,7 @@ export function OrderDetails() {
                 Username
               </MuiTypography>
               <MuiTypography variant="body2" className="body">
-                Udokay
+                {data?.sellerInfo?.username}
               </MuiTypography>
             </div>
             <div className="group">
@@ -194,7 +214,7 @@ export function OrderDetails() {
                 Phone number
               </MuiTypography>
               <MuiTypography variant="body2" className="body">
-                08131889558
+                {data?.sellerInfo?.phoneNumber}
               </MuiTypography>
             </div>
           </div>
@@ -219,7 +239,7 @@ export function OrderDetails() {
                     Pickup location
                   </MuiTypography>
                   <MuiTypography variant="body2" className="body">
-                    11 Adekunle Sule, Majek First gate
+                    {data?.pickUpLocation?.location}
                   </MuiTypography>
                 </div>
                 <MuiIconButton>
@@ -232,7 +252,7 @@ export function OrderDetails() {
                     Drop-off location
                   </MuiTypography>
                   <MuiTypography variant="body2" className="body">
-                    11 Adekunle Sule, Majek First gate
+                    {data?.dropOffLocation?.location}
                   </MuiTypography>
                 </div>
                 <MuiIconButton>
@@ -251,7 +271,11 @@ export function OrderDetails() {
               Order Items
             </MuiTypography>
             <div className="status">
-              <MuiButton variant="text" className="view-btn" color="primary">
+              <MuiButton
+                variant="text"
+                className="view-btn"
+                // onClick={}
+                color="primary">
                 {" "}
                 View listing details{" "}
               </MuiButton>
@@ -263,7 +287,7 @@ export function OrderDetails() {
               <div className="img-wrapper">
                 <MuiCardMedia
                   component="img"
-                  src={data?.rider?.profile_image}
+                  src={data?.catalogueCoverPhoto}
                   className="product-img"
                 />
               </div>
@@ -275,10 +299,17 @@ export function OrderDetails() {
                   variant="secondary"
                 />
                 <MuiTypography variant="body1" className="name">
-                  {data?.branch?.name}
+                  {data?.catalogueName}
                 </MuiTypography>
                 <MuiTypography variant="body1" className="price">
-                  Final bid: <span>₦{data?.total_product_price}</span>
+                  Final bid:{" "}
+                  <span>
+                    ₦
+                    {formatCurrency({
+                      amount: data?.buyerPayment?.buyerPayment || 0,
+                      style: "decimal",
+                    })}{" "}
+                  </span>
                 </MuiTypography>
               </div>
             </div>
@@ -287,7 +318,7 @@ export function OrderDetails() {
               <div className="line" />
               <div className="price-line">
                 <MuiTypography variant="body1" className="entry">
-                  <IconTicket /> Buyer's Settlement{" "}
+                  <IconTicket /> Buyer's Payment{" "}
                   <SettlementStatus
                     type="active"
                     size="small"
@@ -295,7 +326,11 @@ export function OrderDetails() {
                   />
                 </MuiTypography>
                 <MuiTypography variant="body1" className="vendor-total">
-                  ₦{data ? data?.total_product_price - data?.service_fee : 0}
+                  ₦
+                  {formatCurrency({
+                    amount: data?.buyerPayment?.buyerPayment || 0,
+                    style: "decimal",
+                  })}
                 </MuiTypography>
               </div>
               <div className="price-line">
@@ -303,7 +338,11 @@ export function OrderDetails() {
                   Item Amount:
                 </MuiTypography>
                 <MuiTypography variant="body1" className="entry">
-                  ₦{data?.total_product_price}
+                  ₦
+                  {formatCurrency({
+                    amount: data?.buyerPayment?.itemAmount || 0,
+                    style: "decimal",
+                  })}
                 </MuiTypography>
               </div>
               <div className="price-line">
@@ -311,7 +350,11 @@ export function OrderDetails() {
                   Service fee (2%):
                 </MuiTypography>
                 <MuiTypography variant="body1" className="entry">
-                  ₦{data?.delivery_fee}
+                  ₦
+                  {formatCurrency({
+                    amount: data?.buyerPayment?.buyerServiceFee || 0,
+                    style: "decimal",
+                  })}
                 </MuiTypography>
               </div>
               <div className="price-line">
@@ -319,7 +362,11 @@ export function OrderDetails() {
                   Delivery fee (10%):
                 </MuiTypography>
                 <MuiTypography variant="body1" className="entry">
-                  ₦-
+                  ₦
+                  {formatCurrency({
+                    amount: data?.buyerPayment?.maxDeliveryFee || 0,
+                    style: "decimal",
+                  })}
                 </MuiTypography>
               </div>
 
@@ -334,7 +381,11 @@ export function OrderDetails() {
                   />
                 </MuiTypography>
                 <MuiTypography variant="body1" className="vendor-total">
-                  ₦{data ? data?.total_product_price - data?.service_fee : 0}
+                  ₦
+                  {formatCurrency({
+                    amount: data?.sellerPayment?.sellerSettlement || 0,
+                    style: "decimal",
+                  })}
                 </MuiTypography>
               </div>
               <div className="price-line">
@@ -342,7 +393,11 @@ export function OrderDetails() {
                   Item Amount:
                 </MuiTypography>
                 <MuiTypography variant="body1" className="entry">
-                  ₦{data?.total_product_price}
+                  ₦
+                  {formatCurrency({
+                    amount: data?.sellerPayment?.itemAmount || 0,
+                    style: "decimal",
+                  })}
                 </MuiTypography>
               </div>
               <div className="price-line">
@@ -350,17 +405,25 @@ export function OrderDetails() {
                   Service fee:
                 </MuiTypography>
                 <MuiTypography variant="body1" className="entry">
-                  ₦{data?.delivery_fee}
+                  ₦
+                  {formatCurrency({
+                    amount: data?.sellerPayment?.sellerServiceFee || 0,
+                    style: "decimal",
+                  })}
                 </MuiTypography>
               </div>
 
               <div className="line" />
               <div className="price-line earnings">
                 <MuiTypography variant="body1" className="entry">
-                  <IconEarning /> Earnings
+                  <IconEarning /> Sales Revenue
                 </MuiTypography>
                 <MuiTypography variant="body1" className="grand-total">
-                  ₦{data ? data?.delivery_fee + data?.service_fee : 0}
+                  ₦
+                  {formatCurrency({
+                    amount: data?.salesRevenue || 0,
+                    style: "decimal",
+                  })}
                 </MuiTypography>
               </div>
               <div className="price-line">
@@ -370,6 +433,44 @@ export function OrderDetails() {
                 <MuiTypography variant="body1" className="entry">
                   Yes
                 </MuiTypography>
+              </div>
+
+              <div className="line" />
+
+              <div className="delivery-status">
+                <div className="section delivery">
+                  <MuiTypography variant="body1" className="title">
+                    Delivery status
+                  </MuiTypography>
+                  <MuiTypography variant="body2" className="body">
+                    -
+                  </MuiTypography>
+                </div>
+                <div className="section reason">
+                  <MuiTypography variant="body1" className="title">
+                    Reason
+                  </MuiTypography>
+                  <MuiTypography variant="body2" className="body">
+                    -
+                  </MuiTypography>
+                </div>
+              </div>
+
+              <div className="actions">
+                <MuiButton
+                  className="btn"
+                  onClick={handleSetAction("cancel")}
+                  color="primary"
+                  variant="outlined">
+                  Cancel order
+                </MuiButton>
+                <MuiButton
+                  className="btn"
+                  onClick={handleSetAction("confirm")}
+                  color="success"
+                  variant="contained">
+                  Confirm order
+                </MuiButton>
               </div>
             </div>
           </div>
@@ -381,13 +482,21 @@ export function OrderDetails() {
         handleClose={handleToggleShow}
         open={show}
         alignTitle="left"
-        title="Assign rider"
+        title=""
         showClose>
-        <AssignRiderForm
+        <OrderConfirmation
+          data={data}
+          handleClose={handleToggleShow}
+          action={orderAction}
+          handleAction={
+            orderAction === "cancel" ? handleCancelOrder : handleConfirmOrder
+          }
+        />
+        {/* <AssignRiderForm
           mode={data?.rider ? "re-assign" : "assign"}
           orderId={orderId || ""}
           refreshQuery={handleRefresh}
-        />
+        /> */}
       </VendgramCustomModal>
     </PageContent>
   );
@@ -400,6 +509,35 @@ const PageContent = styled.section`
   display: flex;
   gap: 20px;
   height: auto;
+
+  & .delivery-status {
+    border-left: 7px solid tomato;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    padding-left: 10px;
+
+    & .section {
+      display: flex;
+      gap: 10px;
+      flex-direction: column;
+      & .title {
+        color: #64748b;
+        font-size: 14px;
+      }
+    }
+  }
+
+  & .actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 30px;
+
+    & .btn {
+      height: fit-content;
+    }
+  }
 
   .delivery-data {
     display: grid;

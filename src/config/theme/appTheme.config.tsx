@@ -36,6 +36,9 @@ const theme = createTheme({
     secondary: {
       main: "#1E75BB",
     },
+    success: {
+      main: "#30ab5b",
+    },
     // font: {
     //   main: "#616161",
     // },
@@ -50,7 +53,7 @@ const theme = createTheme({
     danger: "#EF5050",
     info: blue[300],
     warning: orange[300],
-    success: "#39B54A",
+    success: "#30ab5b",
     ghost: grey[400],
   },
   breakpoints: {

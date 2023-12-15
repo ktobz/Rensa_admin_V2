@@ -54,7 +54,7 @@ export const SellerInfo = ({ listingData }: IProps) => {
             Item Pickup location
           </MuiTypography>
           <MuiTypography variant="body1" className="body">
-            {listingData?.location || "-"}
+            {listingData?.city || "-"}, {listingData?.state || "-"}
           </MuiTypography>
         </div>
       </div>

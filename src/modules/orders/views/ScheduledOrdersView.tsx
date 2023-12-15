@@ -19,7 +19,7 @@ export function ScheduledOrdersView() {
         showPagination
         apiFunc={OrderService.getByDate({
           day: orderDate.getDate(),
-          month: orderDate.getMonth(),
+          month: orderDate.getMonth() + 1,
           year: orderDate.getFullYear(),
         })}
         viewMode="list"

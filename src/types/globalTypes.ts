@@ -1,3 +1,5 @@
+export type ISettlementStatus = "accepted" | "pending" | "rejected";
+
 export interface ILoginReq {
   username: string;
   password: string;
@@ -475,19 +477,108 @@ export type IAppReleaseResponse = {
 };
 
 // ORDERS
+
+export type ICancelOrderProps = {
+  orderNumber: string;
+  cancellationReason: string;
+};
+
 export type IOrderData = {
-  versionNumber: string;
-  releaseNotes: string;
-  forceUpdate: boolean;
-  devicePlatform: number;
-  id?: string;
-  creationTime?: string;
+  orderNumber: string;
+  transactionReference: string;
+  itemAmount: number;
+  serviceFee: number;
+  minDeliveryFee: number;
+  maxDeliveryFee: number;
+  minTotalAmount: number;
+  maxTotalAmount: number;
+  catalogueId: string;
+  catalogue: null;
+  catalogueName: string;
+  userId: string;
+  firstName: string;
+  lastName: string;
+  emailAddress: string;
+  destinationLongitude: number;
+  destinationLatitude: number;
+  destinationLocation: string;
+  phoneNumber: string;
+  deliveryDate: string;
+  status: number;
+  id: number;
+  creatorUserId: string;
+  lastModifierUserId: null;
+  deleterUserId: null;
+  creationTime: string;
+  lastModificationTime: null;
+  deletionTime: null;
+  isDeleted: boolean;
+};
+
+export type IOrderFullDetails = {
+  id: 2;
+  orderNumber: string;
+  transactionReference: string;
+  buyerInfo: {
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+    emailAddress: string;
+    username: string;
+  };
+  sellerInfo: {
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+    emailAddress: string;
+    username: string;
+  };
+  buyerPayment: {
+    itemAmount: number;
+    buyerServiceFee: number;
+    maxDeliveryFee: number;
+    buyerPayment: number;
+  };
+  sellerPayment: {
+    itemAmount: number;
+    sellerServiceFee: number;
+    sellerSettlement: number;
+  };
+  salesRevenue: number;
+  pickUpLocation: {
+    longitude: number;
+    latitude: number;
+    location: string;
+  };
+  dropOffLocation: {
+    longitude: number;
+    latitude: number;
+    location: string;
+  };
+  catalogueId: string;
+  catalogueName: string;
+  catalogueCoverPhoto: string;
+  deliveryDate: string;
+  status: number;
 };
 
 export type IOrderResponse = {
   result: IPaginationResponse & {
     data: IOrderData[];
   };
+};
+
+export type ICalendarOrderResponse = {
+  result: {
+    day: number;
+    month: number;
+    totalCount: number;
+    year: number;
+  }[];
+};
+
+export type IOrderDetailsResponse = {
+  result: IOrderFullDetails;
 };
 
 export type IOrderStatsResponse = {
@@ -587,6 +678,31 @@ export type ITransactionsResponse = {
   };
 };
 
+// SALES
+
+export type ISalesData = {
+  id: number;
+  orderNumber: string;
+  creationTime: string;
+  deliveryDate: string;
+  itemAmount: number;
+  buyerServiceFee: number;
+  sellerServiceFee: number;
+  minDeliveryFee: number;
+  maxDeliveryFee: number;
+  minTotalAmount: number;
+  maxTotalAmount: number;
+  totalCount: number;
+  sellerSettlement: number;
+  revenue: number;
+};
+
+export type ISalesResponse = {
+  result: IPaginationResponse & {
+    data: ISalesData[];
+  };
+};
+
 // LISTING
 
 export type ICatalogueBid = {
@@ -598,6 +714,7 @@ export type ICatalogueBid = {
   bidStatus: number;
   bidStatusDescription: string;
   bidTypeDescription: string;
+  creationTime: string;
 };
 
 export type IListingData = {
@@ -638,6 +755,8 @@ export type IListingData = {
     phoneNumber: string;
     profilePictureUrl: string;
   };
+  state: string;
+  city: string;
 };
 
 export type IReportedListingData = {
