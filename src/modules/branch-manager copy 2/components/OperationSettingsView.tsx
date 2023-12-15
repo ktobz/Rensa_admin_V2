@@ -106,6 +106,19 @@ export function OperationSettingsView() {
     }
   );
 
+  const { data: termiiBalance, isLoading: termiiBalanceIsLoading } = useQuery(
+    ["termii-balance"],
+    () =>
+      ConfigService.getTermiBalance().then((res) => {
+        const data = res.data?.result;
+        return data;
+      }),
+    {
+      retry: 0,
+      refetchOnWindowFocus: false,
+    }
+  );
+
   const handleCloseModal = () => {
     setShow({
       delivery: false,
@@ -316,10 +329,10 @@ export function OperationSettingsView() {
               </MuiTypography>
               <MuiTypography variant="body1" className="value">
                 ₦
-                {/* {formatCurrency({
-                  amount: deliverySetting?.base_fare || 0,
+                {formatCurrency({
+                  amount: termiiBalance?.balance || 0,
                   style: "decimal",
-                })} */}
+                })}
               </MuiTypography>
             </div>
           </div>

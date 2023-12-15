@@ -631,6 +631,14 @@ export type IServiceFeeResponse = {
   result: IServiceFeeReq[];
 };
 
+export type ITermiiResponse = {
+  result: {
+    user: string;
+    balance: number;
+    currency: string;
+  };
+};
+
 export type IPayoutDataResponse = {
   result: IPayoutData[];
 };

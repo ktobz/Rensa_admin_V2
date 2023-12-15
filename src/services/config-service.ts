@@ -7,6 +7,7 @@ import {
   IServiceFeeResponse,
   IPayoutDataResponse,
   IPayoutData,
+  ITermiiResponse,
 } from "@/types/globalTypes";
 import { AxiosPromise } from "axios";
 const PATHS = {
@@ -14,6 +15,7 @@ const PATHS = {
   service: "/admin/configuration/service-fee",
   delivery: "/admin/configuration/delivery-fee",
   payout: "/admin/configuration/payout",
+  balance: "/admin/termii/balance",
 };
 
 const ConfigService = {
@@ -42,6 +44,14 @@ const ConfigService = {
 
   getServiceFeeSettings(): AxiosPromise<IServiceFeeResponse> {
     return HTTP.get(`${PATHS.service}`, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+
+  getTermiBalance(): AxiosPromise<ITermiiResponse> {
+    return HTTP.get(`${PATHS.balance}`, {
       headers: {
         Authorization: getToken(),
       },
