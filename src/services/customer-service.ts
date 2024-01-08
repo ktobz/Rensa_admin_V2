@@ -9,6 +9,7 @@ import { AxiosPromise } from "axios";
 
 const PATHS = {
   customers: "/admin/users",
+  admin: "/admin",
   findUser: "/admin/find-user",
   userOrders: "/admin/order",
 };
@@ -64,19 +65,38 @@ const CustomerService = {
   },
 
   blockUser(id: number | string) {
-    return HTTP.put(`${PATHS.customers}/blockuser/${id}`, {
-      headers: {
-        Authorization: getToken(),
-      },
-    });
+    return HTTP.put(
+      `${PATHS.admin}/blockuser/${id}`,
+      {},
+      {
+        headers: {
+          Authorization: getToken(),
+        },
+      }
+    );
+  },
+  deactivate(id: number | string) {
+    return HTTP.put(
+      `${PATHS.admin}/deactivateuser/${id}`,
+      {},
+      {
+        headers: {
+          Authorization: getToken(),
+        },
+      }
+    );
   },
 
   unblockUser(id: number | string) {
-    return HTTP.put(`${PATHS.customers}/unblockuser/${id}`, {
-      headers: {
-        Authorization: getToken(),
-      },
-    });
+    return HTTP.put(
+      `${PATHS.admin}/unblockuser/${id}`,
+      {},
+      {
+        headers: {
+          Authorization: getToken(),
+        },
+      }
+    );
   },
 
   getCustomerTransactions(id: number | string) {

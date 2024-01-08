@@ -133,7 +133,7 @@ export function IncomeTable() {
         <TotalCard
           className="card"
           title="Total Sales (Count)"
-          variant="sales"
+          variant="order"
           showFilter
           filterType="minimal"
           defaultOptions={transformedFilter}

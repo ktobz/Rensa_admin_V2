@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { format } from "date-fns";
 
 import { NoData } from "@/components/feedback/NoData";
@@ -19,13 +19,16 @@ import {
 } from "@/lib/index";
 import CustomTableSkeleton from "components/skeleton/CustomTableSkeleton";
 import TableWrapper from "@/components/table/TableWrapper";
-import { IconVisibility } from "@/lib/mui.lib.icons";
+import { IconDelete, IconVisibility } from "@/lib/mui.lib.icons";
 
 import CustomSearch from "@/components/input/CustomSearch";
 import { IUserData, IPagination } from "@/types/globalTypes";
 import CustomerService from "@/services/customer-service";
 import { VerificationStatus } from "@/components/feedback/VerfiedStatus";
 import { createPaginationData } from "@/utils/helper-funcs";
+import { DeleteUserConfirm } from "./DeleteProductConfirm";
+import { toast } from "react-toastify";
+import VendgramCustomModal from "@/components/modal/Modal";
 
 const defaultQuery: IPagination = {
   pageSize: 15,
@@ -38,7 +41,14 @@ const defaultQuery: IPagination = {
 
 export function CustomersTable() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   const [pagination, setPagination] = React.useState<IPagination>(defaultQuery);
+
+  const [deleteData, setDeleteData] = React.useState<IUserData[]>([]);
+  const [show, setShow] = React.useState({
+    delete: false,
+  });
 
   const { data, isLoading, isError } = useQuery(
     ["all-users", pagination.page, pagination.pageSize],
@@ -73,6 +83,41 @@ export function CustomersTable() {
     navigate(`${data?.id}`, {
       state: data,
     });
+  };
+
+  const handleCloseModal = () => {
+    setShow((prev) => ({
+      delete: false,
+    }));
+  };
+
+  const handleSetDeleteData = (data: IUserData) => () => {
+    setDeleteData(() => [data]);
+    setShow((prev) => ({ ...prev, delete: true }));
+  };
+
+  const handleRefresh = () => {
+    queryClient.invalidateQueries([
+      "all-users",
+      pagination.page,
+      pagination.pageSize,
+    ]);
+    handleCloseModal();
+  };
+
+  const handleDelete = (callback: () => void) => () => {
+    const ids = deleteData.map((data) => data?.id);
+    CustomerService.deactivate(ids?.[0] || "")
+      .then((res) => {
+        handleRefresh?.();
+        toast.success(res.data?.message || "");
+      })
+      .catch((err) => {
+        toast.error(err?.response?.data?.message || "");
+      })
+      .finally(() => {
+        callback();
+      });
   };
 
   return (
@@ -172,6 +217,12 @@ export function CustomersTable() {
                     <MuiTableCell align="left">
                       <MuiBox className="action-group">
                         <MuiIconButton
+                          color="error"
+                          onClick={handleSetDeleteData(row)}
+                          className="action-btn delete-btn">
+                          <IconDelete />
+                        </MuiIconButton>
+                        <MuiIconButton
                           onClick={handleViewDetails(row)}
                           className="visible-btn">
                           <IconVisibility />
@@ -216,6 +267,17 @@ export function CustomersTable() {
           </MuiTable>
         </MuiTableContainer>
       </TableWrapper>
+
+      <VendgramCustomModal
+        handleClose={handleCloseModal}
+        open={show.delete}
+        showClose>
+        <DeleteUserConfirm
+          data={deleteData}
+          handleClose={handleCloseModal}
+          handleDelete={handleDelete}
+        />
+      </VendgramCustomModal>
     </StyledPage>
   );
 }
