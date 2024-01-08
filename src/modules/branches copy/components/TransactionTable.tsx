@@ -31,6 +31,7 @@ import {
   IPagination,
   IStatus,
   ITransactionData,
+  ITransactions,
   ITransactionsResponse,
 } from "@/types/globalTypes";
 import { TransactionDetails } from "./TransactionDetails";
@@ -39,6 +40,7 @@ import { OrderStatus } from "@/components/feedback/OrderStatus";
 import StatusFilter from "@/components/select/StatusFillter";
 import useCachedDataStore from "@/config/store-config/lookup";
 import { AxiosPromise } from "axios";
+import { useNavigate } from "react-router-dom";
 
 const defaultQuery: IPagination = {
   pageSize: 15,
@@ -69,6 +71,8 @@ export function TransactionTable({
   const {
     lookup: { catalogueTransactionStatus },
   } = useCachedDataStore((state) => state.cache);
+  const navigate = useNavigate();
+
   const [show, setShow] = React.useState(false);
   const [filter, setFilter] = React.useState<number[]>([]);
 
@@ -110,9 +114,8 @@ export function TransactionTable({
     setPagination((prev: any) => ({ ...prev, page }));
   };
 
-  const handleViewDetails = (data: ITransactionData) => () => {
-    setCurrentData(data);
-    setShow(true);
+  const handleViewDetails = (data: ITransactions) => () => {
+    navigate(`/app/orders/${data?.id}`);
   };
 
   const handleSetFilter = (values: number[]) => {
@@ -225,7 +228,7 @@ export function TransactionTable({
                     <MuiTableCell align="left">
                       <MuiBox className="action-group">
                         <MuiIconButton
-                          // onClick={handleViewDetails(row)}
+                          onClick={handleViewDetails(row)}
                           className="visible-btn">
                           <IconVisibility />
                         </MuiIconButton>

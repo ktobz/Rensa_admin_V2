@@ -75,7 +75,7 @@ export const DeliverySettingsForm = ({
             <VendgramInput
               id="baseFee"
               name="baseFee"
-              label="Bike  fee"
+              label="Bike base fee"
               placeholder="₦0.00"
               type="number"
               value={values.baseFee}
@@ -88,7 +88,7 @@ export const DeliverySettingsForm = ({
             <VendgramInput
               id="baseFee"
               name="baseFee"
-              label="Van fee"
+              label="Van base fee"
               placeholder="₦0.00"
               type="number"
               value={values.baseFee}
@@ -102,7 +102,11 @@ export const DeliverySettingsForm = ({
           <VendgramInput
             id="pricePerKm"
             name="pricePerKm"
-            label="Base fare"
+            label={
+              initData?.deliveryPickupMethod === 1
+                ? "Bike fee per km"
+                : "Van fee per km"
+            }
             placeholder="₦0.00"
             type="number"
             value={values.pricePerKm}

@@ -39,6 +39,7 @@ import StatusFilter from "@/components/select/StatusFillter";
 import ListingService from "@/services/listing-service";
 import useCachedDataStore from "@/config/store-config/lookup";
 import { OrderStatus } from "@/components/feedback/OrderStatus";
+import throttle from "lodash.throttle";
 
 const defaultQuery: IPagination = {
   pageSize: 15,
@@ -61,7 +62,7 @@ export function ReportTable({
   showPagination = false,
 }: IProps) {
   const navigate = useNavigate();
-  const { reportedListingStatus } = useCachedDataStore(
+  const { reportedListingStatus, reportedListingCategory } = useCachedDataStore(
     (state) => state.cache?.lookup
   );
   const [pagination, setPagination] = React.useState<IPagination>(defaultQuery);
@@ -71,6 +72,8 @@ export function ReportTable({
   };
 
   const [filter, setFilter] = React.useState<number[]>([]);
+  const [searchText, setSearchText] = React.useState("");
+  const [text, setText] = React.useState("");
 
   const handleSetFilter = (values: number[]) => {
     setFilter(values);
@@ -80,7 +83,16 @@ export function ReportTable({
     ["reported-listing", filter, pagination.page, pagination.pageSize],
     () =>
       ListingService.getAllReportedListing(
-        `?pageNumber=${pagination.page}&pageSize=${pagination?.pageSize}`
+        `?pageNumber=${pagination.page}&pageSize=${
+          pagination?.pageSize
+        }&searchText=${searchText}${
+          filter?.length > 0
+            ? `${filter.reduce((acc, val) => {
+                acc += `&status=${val}`;
+                return acc;
+              }, "")}`
+            : ""
+        }`
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
         const { hasNextPage, hasPrevPage, total, totalPages } =
@@ -108,6 +120,23 @@ export function ReportTable({
 
   const handleViewDetails = (data: IReportedListingData) => () => {
     navigate(`${data?.catalogueId}`, { state: data });
+  };
+
+  const handleSetSearchText = (value: string) => () => {
+    if (value) {
+      setSearchText(value);
+    }
+  };
+
+  const throttledChangeHandler = React.useMemo(
+    () => throttle(handleSetSearchText(text), 600),
+    [text]
+  );
+
+  const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setText(value);
+    throttledChangeHandler();
   };
 
   return (
@@ -140,7 +169,11 @@ export function ReportTable({
               handleSetValue={handleSetFilter}
               options={reportedListingStatus}
             />
-            <CustomSearch placeholder="Search product name, product ID" />
+            <CustomSearch
+              placeholder="Search listing ID, name or description"
+              value={text}
+              onChange={handleChangeText}
+            />{" "}
           </div>
         )}
       </div>
@@ -211,7 +244,10 @@ export function ReportTable({
                     </div>
                   </MuiTableCell>
                   <MuiTableCell align="left">
-                    {row?.category || "-"}
+                    {getIdName(
+                      row?.category || 0,
+                      reportedListingCategory
+                    )?.replaceAll("_", " ")}
                   </MuiTableCell>
                   <MuiTableCell align="left">{row?.reason || "-"}</MuiTableCell>
                   <MuiTableCell align="left">

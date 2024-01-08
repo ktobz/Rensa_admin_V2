@@ -55,6 +55,31 @@ const TransactionService = {
       },
     });
   },
+
+  salesCount(data: { filter: number }) {
+    return HTTP.get(`${PATHS.sales}/count`, {
+      headers: {
+        Authorization: getToken(),
+      },
+      params: data,
+    });
+  },
+  salesRevenue(data: { filter: number }) {
+    return HTTP.get(`${PATHS.sales}/revenue`, {
+      headers: {
+        Authorization: getToken(),
+      },
+      params: data,
+    });
+  },
+  salesAmount(data: { filter: number }) {
+    return HTTP.get(`${PATHS.sales}/amount`, {
+      headers: {
+        Authorization: getToken(),
+      },
+      params: data,
+    });
+  },
 };
 
 export default TransactionService;

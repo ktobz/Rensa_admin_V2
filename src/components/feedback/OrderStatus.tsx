@@ -97,6 +97,36 @@ const statusData: {
     color: "#64748B",
     text: "Pending cancellation",
   },
+  pending_payment: {
+    bg: "#64748B1A",
+    color: "#64748B",
+    text: "Pending Payment",
+  },
+  sold: {
+    bg: "#64748B1A",
+    color: "#64748B",
+    text: "Sold",
+  },
+  expired: {
+    bg: "#64748B1A",
+    color: "#64748B",
+    text: "Expired",
+  },
+  processing: {
+    bg: "#64748B1A",
+    color: "#64748B",
+    text: "Processing",
+  },
+  pending_pickup: {
+    bg: "#64748B1A",
+    color: "#64748B",
+    text: "Pending pickup",
+  },
+  pending_delivery: {
+    bg: "#64748B1A",
+    color: "#64748B",
+    text: "Pending delivery",
+  },
 };
 
 export const OrderStatus = ({

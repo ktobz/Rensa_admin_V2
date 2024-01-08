@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
+import throttle from "lodash.throttle";
 
 import { NoData } from "@/components/feedback/NoData";
 import {
@@ -22,25 +23,28 @@ import {
   IListingData,
   IListingResponse,
   IPagination,
+  IStatus,
 } from "@/types/globalTypes";
 import CustomTableSkeleton from "@/components/skeleton/CustomTableSkeleton";
-import { createPaginationData, formatCurrency } from "utils/helper-funcs";
+import {
+  createPaginationData,
+  formatCurrency,
+  getIdName,
+} from "utils/helper-funcs";
 import TableWrapper from "@/components/table/TableWrapper";
 import { IconAdd, IconVisibility } from "@/lib/mui.lib.icons";
 
-import {
-  ActionTimeStatus,
-  IStatus,
-  SettlementStatus,
-  ISettlementStatus,
-} from "./OrderStatus";
+import { ActionTimeStatus, IActiveStatus } from "./OrderStatus";
+
 import CustomSearch from "@/components/input/CustomSearch";
 import StatusFilter from "@/components/select/StatusFillter";
 import ListingService from "@/services/listing-service";
 import { AxiosPromise } from "axios";
+import useCachedDataStore from "@/config/store-config/lookup";
+import { OrderStatus } from "@/components/feedback/OrderStatus";
 
 const defaultQuery: IPagination = {
-  pageSize: 15,
+  pageSize: 10,
   page: 1,
   total: 1,
   hasNextPage: false,
@@ -67,6 +71,9 @@ export function SettlementTable({
   apiFunc = ListingService.getAll,
   queryKey = "all-orders",
 }: IProps) {
+  const { catalogueStatus } = useCachedDataStore(
+    (state) => state.cache?.lookup
+  );
   const navigate = useNavigate();
   const [pagination, setPagination] = React.useState<IPagination>(defaultQuery);
 
@@ -75,16 +82,27 @@ export function SettlementTable({
   };
 
   const [filter, setFilter] = React.useState<number[]>([]);
+  const [searchText, setSearchText] = React.useState("");
+  const [text, setText] = React.useState("");
 
   const handleSetFilter = (values: number[]) => {
     setFilter(values);
   };
 
   const { data, isLoading, isError } = useQuery(
-    [queryKey, id, filter, pagination.page, pagination.pageSize],
+    [queryKey, id, filter, pagination.page, pagination.pageSize, searchText],
     () =>
       apiFunc(
-        `?pageNumber=${pagination.page}&pageSize=${pagination?.pageSize}`
+        `?pageNumber=${pagination.page}&pageSize=${
+          pagination?.pageSize
+        }&searchText=${searchText}${
+          filter?.length > 0
+            ? `${filter.reduce((acc, val) => {
+                acc += `&status=${val}`;
+                return acc;
+              }, "")}`
+            : ""
+        }`
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
         const { hasNextPage, hasPrevPage, total, totalPages } =
@@ -124,6 +142,23 @@ export function SettlementTable({
     });
   };
 
+  const handleSetSearchText = (value: string) => () => {
+    if (value) {
+      setSearchText(value);
+    }
+  };
+
+  const throttledChangeHandler = React.useMemo(
+    () => throttle(handleSetSearchText(text), 600),
+    [text]
+  );
+
+  const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setText(value);
+    throttledChangeHandler();
+  };
+
   return (
     <StyledPage>
       <div className="tab-section">
@@ -136,43 +171,43 @@ export function SettlementTable({
             fontWeight="600"
             color="secondary"
             variant="body2">
-            {data?.length || 0}
+            {pagination?.total || 0}
           </MuiTypography>
-          {showMoreText && (
+          {/* {showMoreText && (
             <MuiButton
               onClick={handleViewMore}
               className="view-all"
               variant="text">
               View all
             </MuiButton>
-          )}
+          )} */}
         </div>
 
         <div className="action-section">
-          {showFilter && (
-            <>
-              <StatusFilter
-                selectedValue={filter}
-                handleSetValue={handleSetFilter}
-              />
-              <CustomSearch placeholder="Search order ID" />
-            </>
-          )}
-          {showAddNew && (
-            <MuiButton
-              startIcon={<IconAdd />}
-              variant="contained"
-              color="primary"
-              style={{ whiteSpace: "nowrap" }}
-              onClick={handleAddNew}
-              className="btn">
-              Add New
-            </MuiButton>
-          )}
+          <StatusFilter
+            selectedValue={filter}
+            handleSetValue={handleSetFilter}
+            options={catalogueStatus}
+          />
+          <CustomSearch
+            placeholder="Search catalogue ID, name or description"
+            value={text}
+            onChange={handleChangeText}
+          />
+
+          <MuiButton
+            startIcon={<IconAdd />}
+            variant="contained"
+            color="primary"
+            style={{ whiteSpace: "nowrap" }}
+            onClick={handleAddNew}
+            className="btn">
+            Add New
+          </MuiButton>
         </div>
       </div>
 
-      <TableWrapper showPagination={showPagination} pagination={pagination}>
+      <TableWrapper showPagination pagination={pagination}>
         <MuiTableContainer
           sx={{
             maxWidth: "100%",
@@ -284,7 +319,7 @@ export function SettlementTable({
                       <MuiTableCell align="left">
                         <ActionTimeStatus
                           type={
-                            row?.catalogueStatusDescription?.toLowerCase() as IStatus
+                            row?.catalogueStatusDescription?.toLowerCase() as IActiveStatus
                           }
                           time={timeRemaining}
                         />
@@ -297,14 +332,16 @@ export function SettlementTable({
                         })}
                       </MuiTableCell>
                       <MuiTableCell align="left">
-                        <SettlementStatus
+                        <OrderStatus
                           style={{
                             display: "inline-block",
-                            width: "100%",
-                            border: "none",
+                            whiteSpace: "nowrap",
                           }}
                           type={
-                            row?.catalogueStatusDescription?.toLowerCase() as ISettlementStatus
+                            getIdName(
+                              row?.catalogueStatus,
+                              catalogueStatus
+                            )?.toLowerCase() as IStatus
                           }
                         />
                       </MuiTableCell>

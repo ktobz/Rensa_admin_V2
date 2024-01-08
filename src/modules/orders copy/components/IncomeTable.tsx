@@ -30,6 +30,8 @@ import CustomSearch from "@/components/input/CustomSearch";
 import { TotalCard } from "@/components/index";
 import { OrderIcon } from "@/components/feedback/OrderStatus";
 import TransactionService from "@/services/transaction-service";
+import useCachedDataStore from "@/config/store-config/lookup";
+import throttle from "lodash.throttle";
 
 type IProps = {
   variant?: "page" | "section" | "home" | "cards";
@@ -48,8 +50,20 @@ const defaultQuery: IPagination = {
 export function IncomeTable() {
   const navigate = useNavigate();
   const [pagination, setPagination] = React.useState<IPagination>(defaultQuery);
-
   const { pathname } = useLocation();
+
+  const { dashboardFilter } = useCachedDataStore(
+    (state) => state.cache?.lookup
+  );
+  const transformedFilter = dashboardFilter
+    ?.map((x) => ({
+      ...x,
+      name: x?.name?.replace(/([a-z])([A-Z])/g, "$1 $2"),
+    }))
+    ?.filter((x) => x?.name?.toLowerCase() !== "active");
+
+  const [searchText, setSearchText] = React.useState("");
+  const [text, setText] = React.useState("");
 
   const handleNavigate = (path: string) => () => {
     navigate(path);
@@ -64,10 +78,10 @@ export function IncomeTable() {
   };
 
   const { data, isLoading, isError } = useQuery(
-    ["sales-revenue", pagination.page, pagination.pageSize],
+    ["sales-revenue", pagination.page, pagination.pageSize, searchText],
     () =>
       TransactionService.getAllSales(
-        `?pageNumber=${pagination.page}&pageSize=${pagination.pageSize}`
+        `?pageNumber=${pagination.page}&pageSize=${pagination.pageSize}&searchText=${searchText}`
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
         const { hasNextPage, hasPrevPage, total, totalPages } =
@@ -96,6 +110,23 @@ export function IncomeTable() {
     navigate(`/app/orders/${sales?.id}`);
   };
 
+  const handleSetSearchText = (value: string) => () => {
+    if (value) {
+      setSearchText(value);
+    }
+  };
+
+  const throttledChangeHandler = React.useMemo(
+    () => throttle(handleSetSearchText(text), 600),
+    [text]
+  );
+
+  const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setText(value);
+    throttledChangeHandler();
+  };
+
   return (
     <StyledPage>
       <div className="cards">
@@ -104,21 +135,30 @@ export function IncomeTable() {
           title="Total Sales (Count)"
           variant="sales"
           showFilter
-          filterType="standard"
+          filterType="minimal"
+          defaultOptions={transformedFilter}
+          queryKey="sales-total"
+          serviceFunc={TransactionService.salesCount}
         />
         <TotalCard
           className="card"
           title="Total Sales (Amount)"
           variant="sales"
           showFilter
-          filterType="standard"
+          filterType="minimal"
+          defaultOptions={transformedFilter}
+          queryKey="sales-amount"
+          serviceFunc={TransactionService.salesAmount}
         />
         <TotalCard
           className="card"
           title="Revenue"
           variant="sales"
           showFilter
-          filterType="standard"
+          filterType="minimal"
+          defaultOptions={transformedFilter}
+          queryKey="sales-revenue"
+          serviceFunc={TransactionService.salesRevenue}
         />
       </div>
       <div className="tab-section">
@@ -128,7 +168,11 @@ export function IncomeTable() {
           </MuiTypography>
         </div>
         <div className="action-section">
-          <CustomSearch placeholder="Search order ID" />
+          <CustomSearch
+            placeholder="Search order ID"
+            value={text}
+            onChange={handleChangeText}
+          />
         </div>
       </div>
 
@@ -147,7 +191,7 @@ export function IncomeTable() {
             aria-label="simple table">
             <MuiTableHead>
               <MuiTableRow>
-                <MuiTableCell className="heading" align="left"></MuiTableCell>
+                {/* <MuiTableCell className="heading" align="left"></MuiTableCell> */}
                 <MuiTableCell className="heading" align="left">
                   Order ID
                 </MuiTableCell>
@@ -181,11 +225,11 @@ export function IncomeTable() {
                   sx={{
                     "&:last-child td, &:last-child th": { border: 0 },
                   }}>
-                  <MuiTableCell align="left">
-                    {/* <OrderIcon type={row?. as IStatus} /> */} -
-                  </MuiTableCell>
+                  {/* <MuiTableCell align="left">
+                    <OrderIcon type={row?. as IStatus} /> -
+                  </MuiTableCell> */}
                   <MuiTableCell className="order-id" align="left">
-                    Order <b>#{row?.id}</b>
+                    Order <b>#{row?.orderNumber}</b>
                   </MuiTableCell>
                   <MuiTableCell>
                     {format(new Date(row?.creationTime || ""), "LL MMMM, yyyy")}

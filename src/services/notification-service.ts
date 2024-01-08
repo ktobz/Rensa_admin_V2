@@ -9,7 +9,7 @@ import {
 } from "@/types/globalTypes";
 import { AxiosPromise } from "axios";
 const PATHS = {
-  all: "/admin/push-notifications",
+  all: "/pushnotification",
   category: "/admin/cataloguecategory",
   messages: "/admin/automatedmessages",
   conditions: "/admin/cataloguecondition",
@@ -48,16 +48,12 @@ const NotificationService = {
     });
   },
 
-  sendNotification(id: number) {
-    return HTTP.post(
-      `${PATHS.all}/send/${id}`,
-      {},
-      {
-        headers: {
-          Authorization: getToken(),
-        },
-      }
-    );
+  sendNotification(data: { message: string; title: string }) {
+    return HTTP.post(`${PATHS.all}/admin/send-to-general`, data, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
   },
 
   delete(id: string) {

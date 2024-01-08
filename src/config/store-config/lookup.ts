@@ -31,6 +31,7 @@ const defaultLookup: ILookups = {
   verificationType: [],
   dashboardFilter: [],
   durationHours: [],
+  reportedListingCategory: [],
 };
 
 const useCachedDataStore = create(

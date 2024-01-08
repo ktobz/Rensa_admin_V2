@@ -53,10 +53,14 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 type ISearchProps = {
   placeholder?: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 export default function CustomSearch({
   placeholder = "Search order ID, customer name, branch name",
+  onChange,
+  value,
 }: ISearchProps) {
   return (
     <Box>
@@ -67,6 +71,8 @@ export default function CustomSearch({
         <StyledInputBase
           placeholder={placeholder}
           inputProps={{ "aria-label": "search" }}
+          value={value}
+          onChange={onChange}
         />
       </Search>
     </Box>

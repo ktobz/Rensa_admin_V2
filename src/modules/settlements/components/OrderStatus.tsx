@@ -1,11 +1,11 @@
 import { IconOrder } from "@/lib/mui.lib.icons";
 import { useTimer } from "react-timer-hook";
 
-export type IStatus = "warning" | "closed" | "sold" | "error" | "hold";
+export type IActiveStatus = "warning" | "closed" | "sold" | "error" | "hold";
 export type ISettlementStatus = "active" | "pending" | "delivered" | "closed";
 
 const statusData: {
-  [key in IStatus]: {
+  [key in IActiveStatus]: {
     bg: React.CSSProperties["backgroundColor"];
     color: React.CSSProperties["color"];
     text: string;
@@ -114,7 +114,7 @@ export const ActionTimeStatus = ({
   type,
   time = 0,
 }: {
-  type: IStatus;
+  type: IActiveStatus;
   time?: number;
 }) => {
   const currentTime = new Date();
@@ -151,7 +151,7 @@ export const ActionTimeStatus = ({
   );
 };
 
-export const OrderIcon = ({ type }: { type: IStatus }) => {
+export const OrderIcon = ({ type }: { type: IActiveStatus }) => {
   return (
     <span
       style={{

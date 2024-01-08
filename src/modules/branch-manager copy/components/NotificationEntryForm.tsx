@@ -11,7 +11,7 @@ import NotificationService from "@/services/notification-service";
 
 const SCHEMA = Yup.object().shape({
   title: Yup.string().required("required"),
-  description: Yup.string().required("required"),
+  message: Yup.string().required("required"),
 });
 
 type IViewProps = {
@@ -32,7 +32,7 @@ export const NotificationEntryForm = ({
   const initialData = {
     id: initData?.id || "",
     title: initData?.title || "",
-    description: initData?.description || "",
+    message: initData?.message || "",
   };
 
   const [action, setAction] = React.useState<"send" | "save" | null>(null);
@@ -109,15 +109,15 @@ export const NotificationEntryForm = ({
           />
 
           <VendgramInput
-            id="description"
-            name="description"
+            id="message"
+            name="message"
             label="Body"
-            placeholder="Enter description"
+            placeholder="Enter message"
             type="text"
-            value={values.description}
+            value={values.message}
             onChange={handleChange}
-            helperText={errors.description}
-            error={!!errors.description}
+            helperText={errors.message}
+            error={!!errors.message}
             required
             rows={4}
             multiline

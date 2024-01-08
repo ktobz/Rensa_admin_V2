@@ -294,7 +294,13 @@ export type IStatus =
   | "reported"
   | "failed"
   | "intransit"
-  | "pending_cancellation";
+  | "pending_cancellation"
+  | "sold"
+  | "pending_payment"
+  | "pending_delivery"
+  | "pending_pickup"
+  | "expired"
+  | "processing";
 
 export type IVerifyStatus = "true" | "false";
 
@@ -773,7 +779,7 @@ export type IReportedListingData = {
   catalogue: IListingData;
   catalogueId: string;
   reason: string;
-  category: string;
+  category: number;
   status: number;
   catalogueCreationTime: string;
   catalogueCreatorUserId: string;
@@ -874,6 +880,7 @@ export type ILookups = {
   bankProvider: ICategory[];
   dashboardFilter: ICategory[];
   durationHours: ICategory[];
+  reportedListingCategory: ICategory[];
 };
 
 export type IListingProp = {
