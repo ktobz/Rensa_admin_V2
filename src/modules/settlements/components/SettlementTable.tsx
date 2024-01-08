@@ -195,15 +195,17 @@ export function SettlementTable({
             onChange={handleChangeText}
           />
 
-          <MuiButton
-            startIcon={<IconAdd />}
-            variant="contained"
-            color="primary"
-            style={{ whiteSpace: "nowrap" }}
-            onClick={handleAddNew}
-            className="btn">
-            Add New
-          </MuiButton>
+          {showAddNew && (
+            <MuiButton
+              startIcon={<IconAdd />}
+              variant="contained"
+              color="primary"
+              style={{ whiteSpace: "nowrap" }}
+              onClick={handleAddNew}
+              className="btn">
+              Add New
+            </MuiButton>
+          )}
         </div>
       </div>
 
