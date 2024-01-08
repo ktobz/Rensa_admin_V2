@@ -86,6 +86,17 @@ const statusData: {
     color: "#64748B",
     text: "Resolved",
   },
+
+  intransit: {
+    bg: "#64748B1A",
+    color: "#64748B",
+    text: "In transit",
+  },
+  pending_cancellation: {
+    bg: "#64748B1A",
+    color: "#64748B",
+    text: "Pending cancellation",
+  },
 };
 
 export const OrderStatus = ({

@@ -94,5 +94,5 @@ export const formatDate = (
 };
 
 export const getIdName = (id: number, list: ICategory[]) => {
-  return list?.find((x) => id === x?.id)?.name || "";
+  return list?.find((x) => id === x?.id)?.name?.replaceAll(" ", "_") || "";
 };

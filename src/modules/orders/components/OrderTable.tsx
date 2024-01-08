@@ -23,6 +23,7 @@ import {
   createPaginationData,
   formatCurrency,
   formatDate,
+  getIdName,
 } from "@/utils/helper-funcs";
 import TableWrapper from "@/components/table/TableWrapper";
 import {
@@ -49,6 +50,7 @@ import {
 import { OrderIcon, OrderStatus } from "@/components/feedback/OrderStatus";
 import StatusFilter from "@/components/select/StatusFillter";
 import Calendar from "react-calendar";
+import useCachedDataStore from "@/config/store-config/lookup";
 
 const DATE_LIST = [
   "Jan",
@@ -113,6 +115,10 @@ export function OrderTable({
   showMetrics = false,
   orderDate = "",
 }: IProps) {
+  const { catalogueOrderStatus } = useCachedDataStore(
+    (state) => state.cache?.lookup
+  );
+
   const navigate = useNavigate();
   const [pagination, setPagination] = React.useState<IPagination>(defaultQuery);
 
@@ -298,6 +304,14 @@ export function OrderTable({
             filterType="status"
             statusType="delivered"
           />
+          <TotalCard
+            className="card"
+            title="Total sales"
+            variant="order"
+            showFilter={false}
+            defaultValue={0}
+            filterType="minimal"
+          />
         </div>
       )}
 
@@ -322,6 +336,7 @@ export function OrderTable({
                 <StatusFilter
                   selectedValue={filter}
                   handleSetValue={handleSetFilter}
+                  options={catalogueOrderStatus}
                 />
                 <CustomSearch placeholder="Search order ID" />
               </>
@@ -465,7 +480,7 @@ export function OrderTable({
                         {/* <OrderIcon type={row?.status as IStatus} /> */}
                       </MuiTableCell>
                       <MuiTableCell className="order-id" align="left">
-                        <b>{row?.catalogueId}</b>
+                        <b>#{row?.orderNumber}</b>
                       </MuiTableCell>
                       <MuiTableCell>{row?.catalogueName || "-"}</MuiTableCell>
                       <MuiTableCell align="left">
@@ -486,9 +501,14 @@ export function OrderTable({
                       </MuiTableCell>
 
                       <MuiTableCell align="left">
-                        {/* <OrderStatus
-                          type={row?.status?.toLowerCase() as IStatus}
-                        /> */}
+                        <OrderStatus
+                          type={
+                            getIdName(
+                              row?.status,
+                              catalogueOrderStatus
+                            )?.toLowerCase() as IStatus
+                          }
+                        />
                       </MuiTableCell>
                       <MuiTableCell align="left">
                         <MuiIconButton

@@ -14,6 +14,13 @@ export function DashboardView() {
   const { dashboardFilter } = useCachedDataStore(
     (state) => state.cache?.lookup
   );
+  const transformedFilter = dashboardFilter
+    ?.map((x) => ({
+      ...x,
+      name: x?.name?.replace(/([a-z])([A-Z])/g, "$1 $2"),
+    }))
+    ?.filter((x) => x?.name?.toLowerCase() !== "active");
+
   const navigate = useNavigate();
 
   const handleViewMore = () => {
@@ -34,7 +41,7 @@ export function DashboardView() {
             action: handleGoTo("orders"),
             name: "View more",
           }}
-          defaultOptions={dashboardFilter}
+          defaultOptions={transformedFilter}
           filterType="minimal"
           queryKey="dashboard-new-orders"
           serviceFunc={DashboardService.orders}
@@ -47,7 +54,7 @@ export function DashboardView() {
             action: handleGoTo("marketplace"),
             name: "View more",
           }}
-          defaultOptions={dashboardFilter}
+          defaultOptions={transformedFilter}
           serviceFunc={DashboardService.getMarketplace}
           queryKey="dashboard-marketplace"
         />
@@ -59,7 +66,7 @@ export function DashboardView() {
             action: handleGoTo("users"),
             name: "View more",
           }}
-          defaultOptions={dashboardFilter}
+          defaultOptions={transformedFilter}
           serviceFunc={DashboardService.users}
           queryKey="dashboard-users"
         />
@@ -71,19 +78,19 @@ export function DashboardView() {
             action: handleGoTo("transactions"),
             name: "View more",
           }}
-          defaultOptions={dashboardFilter}
+          defaultOptions={transformedFilter}
           serviceFunc={DashboardService.getSales}
           queryKey="dashboard-transactions"
         />
         <TotalCard
           className="card"
           title="Revenue"
-          variant="order"
+          variant="sales"
           subAction={{
             action: handleGoTo("revenue"),
             name: "View more",
           }}
-          defaultOptions={dashboardFilter}
+          defaultOptions={transformedFilter}
           serviceFunc={DashboardService.revenue}
           queryKey="dashboard-revenue"
         />

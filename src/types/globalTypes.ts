@@ -292,7 +292,9 @@ export type IStatus =
   | "active"
   | "resolved"
   | "reported"
-  | "failed";
+  | "failed"
+  | "intransit"
+  | "pending_cancellation";
 
 export type IVerifyStatus = "true" | "false";
 

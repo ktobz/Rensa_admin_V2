@@ -17,7 +17,7 @@ function useCopyToClipboard(): [CopiedValue, CopyFn] {
     try {
       await navigator.clipboard.writeText(text);
       setCopiedText(text);
-      toast.success("Copied");
+      // toast.success("Copied");
       return true;
     } catch (error) {
       toast.error("Copy failed");

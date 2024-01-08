@@ -5,10 +5,11 @@ import {
   MuiButton,
   MuiCardMedia,
   MuiIconButton,
+  MuiTooltip,
   MuiTypography,
   styled,
 } from "@/lib/index";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   IconBike,
   IconBranches,
@@ -31,18 +32,27 @@ import { SettlementStatus } from "@/modules/settlements/components/OrderStatus";
 import { formatCurrency, formatDate, getIdName } from "@/utils/helper-funcs";
 import useCachedDataStore from "@/config/store-config/lookup";
 import { OrderConfirmation } from "../components/OrderConfirmation";
+import ConfigService from "@/services/config-service";
+import useCopyToClipboard from "@/utils/useCopyToClipboard";
 
 export function OrderDetails() {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { state } = useLocation();
   const [orderAction, setOrderAction] = React.useState<"confirm" | "cancel">(
     "confirm"
   );
+  const [, copy] = useCopyToClipboard();
+
   const { orderId } = useParams<{ orderId: string }>();
   const { catalogueOrderStatus } = useCachedDataStore(
     (state) => state.cache.lookup
   );
-  const [show, setShow] = React.useState(false);
+  const [show, setShow] = React.useState({
+    modal: false,
+    tooltip_1: false,
+    tooltip_2: false,
+  });
 
   const { data } = useQuery(
     ["order-details", orderId],
@@ -59,12 +69,26 @@ export function OrderDetails() {
     }
   );
 
+  const { data: serviceFee, isLoading: serviceIsLoading } = useQuery(
+    ["service-fee"],
+    () =>
+      ConfigService.getServiceFeeSettings().then((res) => {
+        const data = res.data?.result;
+        return data?.[0] || {};
+      }),
+    {
+      retry: 0,
+      refetchOnWindowFocus: false,
+    }
+  );
+
   const handleToggleShow = () => {
-    setShow((prev) => !prev);
+    setShow((prev) => ({ ...prev, modal: !prev.modal }));
   };
+
   const handleRefresh = () => {
     queryClient.invalidateQueries(["order-details"]);
-    setShow(false);
+    setShow({ modal: false, tooltip_1: false, tooltip_2: false });
   };
 
   const handleSetAction = (status: "cancel" | "confirm") => () => {
@@ -78,12 +102,35 @@ export function OrderDetails() {
 
   const handleConfirmOrder = (cb: () => void) => () => {};
 
+  const handleViewDetails = () => {
+    navigate(`/app/marketplace/${data?.catalogueId}`);
+  };
+
+  const handleTooltipClose = () => {
+    setShow((prev) => ({ ...prev, tooltip_1: false, tooltip_2: false }));
+  };
+
+  const handleTooltipOpen = (name: "tooltip_1" | "tooltip_2") => () => {
+    setShow((prev) => ({ ...prev, [name]: true }));
+    copy(
+      name === "tooltip_1"
+        ? data?.pickUpLocation?.location || ""
+        : data?.dropOffLocation?.location || ""
+    );
+  };
+
+  const handleCopyLink = (name: "tooltip_1" | "tooltip_2") => () => {
+    handleTooltipOpen(name)();
+
+    setTimeout(() => handleTooltipClose(), 1000);
+  };
+
   return (
     <PageContent>
       <div className="left">
         <div className="heading">
           <MuiTypography variant="h3" className="title">
-            Order <b style={{ color: "#1E75BB" }}>#{data?.id}</b>
+            Order <b style={{ color: "#1E75BB" }}>#{data?.orderNumber}</b>
           </MuiTypography>
           <div className="status">
             <span className="text">Status</span>{" "}
@@ -112,7 +159,7 @@ export function OrderDetails() {
               Scheduled Date
             </MuiTypography>
             <MuiTypography variant="body2" className="body">
-              <IconShipping style={{ color: "#F05B2A" }} />
+              {/* <IconShipping style={{ color: "#F05B2A" }} /> */}
               {data ? formatDate(data?.deliveryDate) : ""}
             </MuiTypography>
           </div>
@@ -242,9 +289,28 @@ export function OrderDetails() {
                     {data?.pickUpLocation?.location}
                   </MuiTypography>
                 </div>
-                <MuiIconButton>
-                  <IconCopyFilled />
-                </MuiIconButton>
+
+                <MuiTooltip
+                  arrow
+                  PopperProps={{
+                    disablePortal: true,
+                    sx: {
+                      ".MuiTooltip-tooltip": {
+                        color: "#fff",
+                        background: "#030949",
+                      },
+                    },
+                  }}
+                  onClose={handleTooltipClose}
+                  open={show.tooltip_1}
+                  disableFocusListener
+                  disableHoverListener
+                  disableTouchListener
+                  title="Copied">
+                  <MuiIconButton onClick={handleCopyLink("tooltip_1")}>
+                    <IconCopyFilled />
+                  </MuiIconButton>
+                </MuiTooltip>
               </div>
               <div className="delivery-data">
                 <div className="group">
@@ -255,9 +321,27 @@ export function OrderDetails() {
                     {data?.dropOffLocation?.location}
                   </MuiTypography>
                 </div>
-                <MuiIconButton>
-                  <IconCopyFilled />
-                </MuiIconButton>
+                <MuiTooltip
+                  arrow
+                  PopperProps={{
+                    disablePortal: true,
+                    sx: {
+                      ".MuiTooltip-tooltip": {
+                        color: "#fff",
+                        background: "#030949",
+                      },
+                    },
+                  }}
+                  onClose={handleTooltipClose}
+                  open={show.tooltip_2}
+                  disableFocusListener
+                  disableHoverListener
+                  disableTouchListener
+                  title="Copied">
+                  <MuiIconButton onClick={handleCopyLink("tooltip_2")}>
+                    <IconCopyFilled />
+                  </MuiIconButton>
+                </MuiTooltip>
               </div>
             </div>
             <IconBike className="delivery-method" />
@@ -274,7 +358,7 @@ export function OrderDetails() {
               <MuiButton
                 variant="text"
                 className="view-btn"
-                // onClick={}
+                onClick={handleViewDetails}
                 color="primary">
                 {" "}
                 View listing details{" "}
@@ -293,16 +377,16 @@ export function OrderDetails() {
               </div>
 
               <div className="product-content">
-                <SettlementStatus
+                {/* <SettlementStatus
                   type="pending"
                   size="small"
                   variant="secondary"
-                />
+                /> */}
                 <MuiTypography variant="body1" className="name">
                   {data?.catalogueName}
                 </MuiTypography>
                 <MuiTypography variant="body1" className="price">
-                  Final bid:{" "}
+                  Final price:{" "}
                   <span>
                     ₦
                     {formatCurrency({
@@ -319,11 +403,11 @@ export function OrderDetails() {
               <div className="price-line">
                 <MuiTypography variant="body1" className="entry">
                   <IconTicket /> Buyer's Payment{" "}
-                  <SettlementStatus
+                  {/* <SettlementStatus
                     type="active"
                     size="small"
                     style={{ marginLeft: "10px" }}
-                  />
+                  /> */}
                 </MuiTypography>
                 <MuiTypography variant="body1" className="vendor-total">
                   ₦
@@ -347,7 +431,7 @@ export function OrderDetails() {
               </div>
               <div className="price-line">
                 <MuiTypography variant="body1" className="entry">
-                  Service fee (2%):
+                  Service fee ({serviceFee?.buyerServiceFee}%):
                 </MuiTypography>
                 <MuiTypography variant="body1" className="entry">
                   ₦
@@ -359,7 +443,7 @@ export function OrderDetails() {
               </div>
               <div className="price-line">
                 <MuiTypography variant="body1" className="entry">
-                  Delivery fee (10%):
+                  Delivery fee (bike/van):
                 </MuiTypography>
                 <MuiTypography variant="body1" className="entry">
                   ₦
@@ -374,11 +458,11 @@ export function OrderDetails() {
               <div className="price-line">
                 <MuiTypography variant="body1" className="entry">
                   <IconTicket /> Seller's Settlement{" "}
-                  <SettlementStatus
+                  {/* <SettlementStatus
                     type="closed"
                     size="small"
                     style={{ marginLeft: "10px" }}
-                  />
+                  /> */}
                 </MuiTypography>
                 <MuiTypography variant="body1" className="vendor-total">
                   ₦
@@ -402,7 +486,7 @@ export function OrderDetails() {
               </div>
               <div className="price-line">
                 <MuiTypography variant="body1" className="entry">
-                  Service fee:
+                  Service fee ({serviceFee?.sellerServiceFee}%):
                 </MuiTypography>
                 <MuiTypography variant="body1" className="entry">
                   ₦
@@ -426,14 +510,14 @@ export function OrderDetails() {
                   })}
                 </MuiTypography>
               </div>
-              <div className="price-line">
+              {/* <div className="price-line">
                 <MuiTypography variant="body1" className="entry">
                   Refunded with delivery
                 </MuiTypography>
                 <MuiTypography variant="body1" className="entry">
                   Yes
                 </MuiTypography>
-              </div>
+              </div> */}
 
               <div className="line" />
 
@@ -480,7 +564,7 @@ export function OrderDetails() {
       <VendgramCustomModal
         closeOnOutsideClick={false}
         handleClose={handleToggleShow}
-        open={show}
+        open={show.modal}
         alignTitle="left"
         title=""
         showClose>
@@ -553,6 +637,11 @@ const PageContent = styled.section`
     & .delivery-data,
     & .address-data {
       display: flex;
+      align-items: center;
+
+      button {
+        height: fit-content;
+      }
     }
     & .group {
       flex: 1;
@@ -599,7 +688,7 @@ const PageContent = styled.section`
     display: flex;
     width: 100%;
     min-height: 100px;
-    height: 130px;
+    height: 100px;
 
     border-radius: 10px;
     overflow: hidden;
