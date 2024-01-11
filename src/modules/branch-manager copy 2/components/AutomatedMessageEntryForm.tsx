@@ -81,6 +81,7 @@ export const AutomatedMessageEntryForm = ({
             value={values.title}
             helperText={errors.title}
             error={!!errors.title}
+            onChange={handleChange}
             required
           />
 
