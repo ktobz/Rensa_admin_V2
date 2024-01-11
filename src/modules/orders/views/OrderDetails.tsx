@@ -34,6 +34,13 @@ import useCachedDataStore from "@/config/store-config/lookup";
 import { OrderConfirmation } from "../components/OrderConfirmation";
 import ConfigService from "@/services/config-service";
 import useCopyToClipboard from "@/utils/useCopyToClipboard";
+import { toast } from "react-toastify";
+import { OrderPayoutConfirmation } from "../components/OrderPayoutConfirmation";
+
+const mapPickupMethod: { [key: number]: React.ReactNode } = {
+  1: <IconBike className="delivery-method" />,
+  2: <IconShipping className="delivery-method" />,
+};
 
 export function OrderDetails() {
   const navigate = useNavigate();
@@ -45,11 +52,12 @@ export function OrderDetails() {
   const [, copy] = useCopyToClipboard();
 
   const { orderId } = useParams<{ orderId: string }>();
-  const { catalogueOrderStatus } = useCachedDataStore(
+  const { catalogueOrderStatus, deliveryFeePickupMethod } = useCachedDataStore(
     (state) => state.cache.lookup
   );
   const [show, setShow] = React.useState({
     modal: false,
+    payout: false,
     tooltip_1: false,
     tooltip_2: false,
   });
@@ -57,10 +65,18 @@ export function OrderDetails() {
   const { data } = useQuery(
     ["order-details", orderId],
     () =>
-      OrderService.getOrderDetails(orderId || "").then((res) => {
-        const data = res.data.result;
-        return data;
-      }),
+      (orderId?.includes("RN_")
+        ? OrderService.getOrderDetailsByTransactionRef(orderId || "")
+        : OrderService.getOrderDetails(orderId || "")
+      )
+        .then((res) => {
+          const data = res.data.result;
+          return data;
+        })
+        .catch((err) => {
+          toast.error(err?.response?.data?.message || "An error occurred");
+          console.error(err);
+        }),
     {
       retry: 0,
       refetchOnWindowFocus: false,
@@ -82,25 +98,94 @@ export function OrderDetails() {
     }
   );
 
-  const handleToggleShow = () => {
-    setShow((prev) => ({ ...prev, modal: !prev.modal }));
+  const handleToggleShow = (modal: "modal" | "payout") => () => {
+    setShow((prev) => ({ ...prev, [modal]: !prev[modal] }));
   };
 
   const handleRefresh = () => {
-    queryClient.invalidateQueries(["order-details"]);
-    setShow({ modal: false, tooltip_1: false, tooltip_2: false });
+    queryClient.invalidateQueries(["order-details", orderId]);
+    setShow({
+      modal: false,
+      tooltip_1: false,
+      tooltip_2: false,
+      payout: false,
+    });
   };
 
-  const handleSetAction = (status: "cancel" | "confirm") => () => {
-    setOrderAction(status);
-    handleToggleShow();
-  };
+  const handleSetAction =
+    (status: "cancel" | "confirm", modal: "modal" | "payout") => () => {
+      setOrderAction(status);
+      handleToggleShow(modal)();
+    };
 
-  const handleCancelOrder = (cb: () => void) => () => {
-    // OrderService.cancelOrder();
-  };
+  const handleCancelOrder =
+    (cb: () => void, reason = "") =>
+    async () => {
+      try {
+        const { data: resData, status } = await OrderService.cancelOrder({
+          cancellationReason: reason,
+          orderNumber: data?.orderNumber || "",
+        });
+        toast.success(resData?.data?.message);
+        handleRefresh();
+        cb?.();
+      } catch (error: any) {
+        toast.error(error?.response?.data?.message);
+        cb?.();
+      }
+    };
 
-  const handleConfirmOrder = (cb: () => void) => () => {};
+  const handleConfirmOrder =
+    (cb: () => void, reason = "") =>
+    async () => {
+      try {
+        const { data: resData, status } = await OrderService.confirmOrder(
+          data?.orderNumber || ""
+        );
+        toast.success(resData?.data?.message);
+        handleRefresh();
+        cb?.();
+      } catch (error: any) {
+        toast.error(error?.response?.data?.message);
+        cb?.();
+      }
+    };
+
+  const handleRejectRefund =
+    (cb: () => void, reason = "") =>
+    async () => {
+      try {
+        const { data: resData, status } = await OrderService.rejectRefund({
+          comment: reason,
+          orderNumber: data?.orderNumber || "",
+          approve: false,
+        });
+        toast.success(resData?.data?.message);
+        handleRefresh();
+        cb?.();
+      } catch (error: any) {
+        toast.error(error?.response?.data?.message);
+        cb?.();
+      }
+    };
+
+  const handleAcceptRefund =
+    (cb: () => void, reason = "") =>
+    async () => {
+      try {
+        const { data: resData, status } = await OrderService.acceptRefund({
+          comment: reason,
+          orderNumber: data?.orderNumber || "",
+          approve: true,
+        });
+        toast.success(resData?.data?.message);
+        handleRefresh();
+        cb?.();
+      } catch (error: any) {
+        toast.error(error?.response?.data?.message);
+        cb?.();
+      }
+    };
 
   const handleViewDetails = () => {
     navigate(`/app/marketplace/${data?.catalogueId}`);
@@ -125,6 +210,12 @@ export function OrderDetails() {
     setTimeout(() => handleTooltipClose(), 1000);
   };
 
+  const handleVisitUser = (userId: string) => () => {
+    if (userId) {
+      navigate(`/app/users/${userId}`);
+    }
+  };
+
   return (
     <PageContent>
       <div className="left">
@@ -143,7 +234,25 @@ export function OrderDetails() {
         </div>
         <div className="order-section">
           <MuiTypography variant="h4" className="group-heading">
-            Order info
+            <span>Order info </span>
+            {data?.status !== 4 && data?.status !== 5 && (
+              <div className="actions">
+                <MuiButton
+                  className="btn"
+                  onClick={handleSetAction("cancel", "modal")}
+                  color="primary"
+                  variant="outlined">
+                  Cancel order
+                </MuiButton>
+                <MuiButton
+                  className="btn accept-btn"
+                  onClick={handleSetAction("confirm", "modal")}
+                  color="success"
+                  variant="contained">
+                  Confirm order
+                </MuiButton>
+              </div>
+            )}
           </MuiTypography>
 
           <div className="group">
@@ -151,7 +260,7 @@ export function OrderDetails() {
               Date Created
             </MuiTypography>
             <MuiTypography variant="body2" className="body">
-              {/* {data ? formatDate(data?.) : ""} */} 'no date'
+              {data ? formatDate(data?.creationTime) : ""}
             </MuiTypography>
           </div>
           <div className="group">
@@ -183,7 +292,11 @@ export function OrderDetails() {
               <MuiTypography variant="h4" className="heading">
                 Buyer Info
               </MuiTypography>
-              <MuiButton variant="text" color="primary" className="view-btn">
+              <MuiButton
+                variant="text"
+                color="primary"
+                onClick={handleVisitUser(data?.buyerUserId || "")}
+                className="view-btn">
                 View details
               </MuiButton>
             </div>
@@ -226,7 +339,11 @@ export function OrderDetails() {
               <MuiTypography variant="h4" className="heading">
                 Seller Info
               </MuiTypography>
-              <MuiButton variant="text" className="view-btn" color="primary">
+              <MuiButton
+                variant="text"
+                className="view-btn"
+                color="primary"
+                onClick={handleVisitUser(data?.sellerUserId || "")}>
                 {" "}
                 View details{" "}
               </MuiButton>
@@ -344,7 +461,7 @@ export function OrderDetails() {
                 </MuiTooltip>
               </div>
             </div>
-            <IconBike className="delivery-method" />
+            {mapPickupMethod?.[data?.pickupMethod || 1]}
           </div>
         </div>
       </div>
@@ -443,7 +560,9 @@ export function OrderDetails() {
               </div>
               <div className="price-line">
                 <MuiTypography variant="body1" className="entry">
-                  Delivery fee (bike/van):
+                  Delivery fee (
+                  {getIdName(data?.pickupMethod || 1, deliveryFeePickupMethod)}
+                  ):
                 </MuiTypography>
                 <MuiTypography variant="body1" className="entry">
                   ₦
@@ -540,22 +659,24 @@ export function OrderDetails() {
                 </div>
               </div>
 
-              <div className="actions">
-                <MuiButton
-                  className="btn"
-                  onClick={handleSetAction("cancel")}
-                  color="primary"
-                  variant="outlined">
-                  Cancel order
-                </MuiButton>
-                <MuiButton
-                  className="btn"
-                  onClick={handleSetAction("confirm")}
-                  color="success"
-                  variant="contained">
-                  Confirm order
-                </MuiButton>
-              </div>
+              {data?.status !== 4 && (
+                <div className="actions">
+                  <MuiButton
+                    className="btn"
+                    onClick={handleSetAction("cancel", "payout")}
+                    color="primary"
+                    variant="outlined">
+                    Reject refund
+                  </MuiButton>
+                  <MuiButton
+                    className="btn accept-btn"
+                    onClick={handleSetAction("confirm", "payout")}
+                    color="success"
+                    variant="contained">
+                    Accept refund
+                  </MuiButton>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -563,24 +684,36 @@ export function OrderDetails() {
 
       <VendgramCustomModal
         closeOnOutsideClick={false}
-        handleClose={handleToggleShow}
+        handleClose={handleToggleShow("modal")}
         open={show.modal}
         alignTitle="left"
         title=""
         showClose>
         <OrderConfirmation
           data={data}
-          handleClose={handleToggleShow}
+          handleClose={handleToggleShow("modal")}
           action={orderAction}
           handleAction={
             orderAction === "cancel" ? handleCancelOrder : handleConfirmOrder
           }
         />
-        {/* <AssignRiderForm
-          mode={data?.rider ? "re-assign" : "assign"}
-          orderId={orderId || ""}
-          refreshQuery={handleRefresh}
-        /> */}
+      </VendgramCustomModal>
+
+      <VendgramCustomModal
+        closeOnOutsideClick={false}
+        handleClose={handleToggleShow("payout")}
+        open={show.payout}
+        alignTitle="left"
+        title=""
+        showClose>
+        <OrderPayoutConfirmation
+          data={data}
+          handleClose={handleToggleShow("payout")}
+          action={orderAction}
+          handleAction={
+            orderAction === "cancel" ? handleRejectRefund : handleAcceptRefund
+          }
+        />
       </VendgramCustomModal>
     </PageContent>
   );
@@ -600,6 +733,7 @@ const PageContent = styled.section`
     gap: 20px;
     align-items: center;
     padding-left: 10px;
+    margin-bottom: 30px;
 
     & .section {
       display: flex;
@@ -616,10 +750,15 @@ const PageContent = styled.section`
     display: flex;
     gap: 10px;
     align-items: center;
-    margin-top: 30px;
+    /* margin-top: 30px; */
 
     & .btn {
       height: fit-content;
+    }
+
+    & .accept-btn {
+      background: #45b26b;
+      color: #fff;
     }
   }
 

@@ -22,7 +22,7 @@ type IProps = {
   action: "confirm" | "cancel";
 };
 
-export const OrderConfirmation = ({
+export const OrderPayoutConfirmation = ({
   handleClose,
   data,
   handleAction,
@@ -69,22 +69,20 @@ export const OrderConfirmation = ({
           : "Confirming this order will release funds from Buyer and disbursed to Seller"}
       </MuiTypography>
 
-      {isToCancel && (
-        <VendgramInput
-          id="message"
-          name="message"
-          label="Cancellation Reason"
-          placeholder="Enter reason"
-          type="text"
-          value={reason}
-          onChange={handleChange}
-          helperText={error}
-          error={!!error}
-          required
-          rows={2}
-          multiline
-        />
-      )}
+      <VendgramInput
+        id="message"
+        name="message"
+        label="Comment"
+        placeholder="Enter comment"
+        type="text"
+        value={reason}
+        onChange={handleChange}
+        helperText={error}
+        error={!!error}
+        required
+        rows={2}
+        multiline
+      />
 
       <div className="action-group">
         <MuiButton

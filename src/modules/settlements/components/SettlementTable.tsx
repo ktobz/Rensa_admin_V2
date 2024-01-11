@@ -1,7 +1,8 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
-import throttle from "lodash.throttle";
+import debounce from "lodash.debounce";
+import { AxiosPromise } from "axios";
 
 import { NoData } from "@/components/feedback/NoData";
 import {
@@ -39,9 +40,9 @@ import { ActionTimeStatus, IActiveStatus } from "./OrderStatus";
 import CustomSearch from "@/components/input/CustomSearch";
 import StatusFilter from "@/components/select/StatusFillter";
 import ListingService from "@/services/listing-service";
-import { AxiosPromise } from "axios";
 import useCachedDataStore from "@/config/store-config/lookup";
 import { OrderStatus } from "@/components/feedback/OrderStatus";
+import throttle from "lodash.throttle";
 
 const defaultQuery: IPagination = {
   pageSize: 10,
@@ -148,15 +149,15 @@ export function SettlementTable({
     }
   };
 
-  const throttledChangeHandler = React.useMemo(
-    () => throttle(handleSetSearchText(text), 600),
+  const debouncedChangeHandler = React.useMemo(
+    () => throttle(handleSetSearchText(text), 500),
     [text]
   );
 
   const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setText(value);
-    throttledChangeHandler();
+    debouncedChangeHandler();
   };
 
   return (

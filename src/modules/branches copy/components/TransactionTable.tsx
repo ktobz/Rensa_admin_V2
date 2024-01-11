@@ -115,7 +115,7 @@ export function TransactionTable({
   };
 
   const handleViewDetails = (data: ITransactions) => () => {
-    navigate(`/app/orders/${data?.id}`);
+    navigate(`/app/orders/${data?.transactionReference}`);
   };
 
   const handleSetFilter = (values: number[]) => {

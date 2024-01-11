@@ -139,7 +139,18 @@ export function ListingDetails() {
           </MuiTypography>
           <MuiTypography variant="body2" className="timer">
             Auction
-            <ActionTimeStatus type="error" time={300} />
+            {data?.catalogueStatus === 1 ? (
+              <ActionTimeStatus type="error" time={300} />
+            ) : (
+              <OrderStatus
+                type={
+                  getIdName(
+                    data?.catalogueStatus || 1,
+                    catalogueStatus
+                  )?.toLowerCase() as IStatus
+                }
+              />
+            )}
           </MuiTypography>
         </div>
 

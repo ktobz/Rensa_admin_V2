@@ -491,6 +491,12 @@ export type ICancelOrderProps = {
   cancellationReason: string;
 };
 
+export type IRefundOrderPaymentProps = {
+  orderNumber: string;
+  comment: string;
+  approve: boolean;
+};
+
 export type IOrderData = {
   orderNumber: string;
   transactionReference: string;
@@ -567,6 +573,10 @@ export type IOrderFullDetails = {
   catalogueName: string;
   catalogueCoverPhoto: string;
   deliveryDate: string;
+  creationTime: string;
+  sellerUserId: string;
+  buyerUserId: string;
+  pickupMethod: number;
   status: number;
 };
 

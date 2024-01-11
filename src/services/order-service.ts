@@ -7,6 +7,7 @@ import {
   IOrderDetailsResponse,
   ICancelOrderProps,
   ICalendarOrderResponse,
+  IRefundOrderPaymentProps,
 } from "@/types/globalTypes";
 import { AxiosPromise } from "axios";
 
@@ -16,6 +17,8 @@ const PATHS = {
   assignRider: "/admin/orders",
   period: "/admin/periods",
   cancelOrder: "/admin/cancelledorder/cancel-order",
+  confirmOrder: "/admin/order/confirm-order",
+  refundPayment: "/admin/cancelledorder/confirm-order-cancellation",
 };
 
 const OrderService = {
@@ -73,8 +76,46 @@ const OrderService = {
     });
   },
 
+  getOrderDetailsByTransactionRef(
+    id: string
+  ): AxiosPromise<IOrderDetailsResponse> {
+    return HTTP.get(`${PATHS.orders}/transaction-reference/${id}`, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+
+  confirmOrder(orderNumber: string): AxiosPromise<any> {
+    return HTTP.put(
+      `${PATHS.confirmOrder}/${orderNumber}`,
+      {},
+      {
+        headers: {
+          Authorization: getToken(),
+        },
+      }
+    );
+  },
+
   cancelOrder(data: ICancelOrderProps): AxiosPromise<any> {
-    return HTTP.get(`${PATHS.cancelOrder}/`, {
+    return HTTP.post(`${PATHS.cancelOrder}`, data, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+
+  acceptRefund(data: IRefundOrderPaymentProps): AxiosPromise<any> {
+    return HTTP.post(`${PATHS.refundPayment}`, data, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+
+  rejectRefund(data: IRefundOrderPaymentProps): AxiosPromise<any> {
+    return HTTP.post(`${PATHS.refundPayment}`, data, {
       headers: {
         Authorization: getToken(),
       },

@@ -51,6 +51,8 @@ import { OrderIcon, OrderStatus } from "@/components/feedback/OrderStatus";
 import StatusFilter from "@/components/select/StatusFillter";
 import Calendar from "react-calendar";
 import useCachedDataStore from "@/config/store-config/lookup";
+import debounce from "lodash.debounce";
+import throttle from "lodash.throttle";
 
 const DATE_LIST = [
   "Jan",
@@ -126,6 +128,9 @@ export function OrderTable({
 
   const calendarRef = React.useRef<any>();
   const [filter, setFilter] = React.useState<number[]>([]);
+  const [searchText, setSearchText] = React.useState("");
+  const [text, setText] = React.useState("");
+
   const [date, setDate] = React.useState<{ year: number; month: number }>(
     () => {
       const today = new Date();
@@ -150,10 +155,19 @@ export function OrderTable({
   };
 
   const { data, isLoading, isError } = useQuery(
-    [queryKey, id, filter, pagination.page, pagination.pageSize],
+    [queryKey, id, filter, pagination.page, pagination.pageSize, searchText],
     () =>
       apiFunc(
-        `?pageNumber=${pagination.page}&pageSize=${pagination?.pageSize}`
+        `?pageNumber=${pagination.page}&pageSize=${
+          pagination?.pageSize
+        }&searchText=${searchText}${
+          filter?.length > 0
+            ? `${filter.reduce((acc, val) => {
+                acc += `&status=${val}`;
+                return acc;
+              }, "")}`
+            : ""
+        }`
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
         const { hasNextPage, hasPrevPage, total, totalPages } =
@@ -273,6 +287,23 @@ export function OrderTable({
     navigate("/app/orders");
   };
 
+  const handleSetSearchText = (value: string) => () => {
+    if (value) {
+      setSearchText(value);
+    }
+  };
+
+  const throttleChangeHandler = React.useMemo(
+    () => throttle(handleSetSearchText(text), 500),
+    [text]
+  );
+
+  const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setText(value);
+    throttleChangeHandler();
+  };
+
   return (
     <StyledPage>
       {showMetrics && (
@@ -338,7 +369,11 @@ export function OrderTable({
                   handleSetValue={handleSetFilter}
                   options={catalogueOrderStatus}
                 />
-                <CustomSearch placeholder="Search order ID" />
+                <CustomSearch
+                  placeholder="Search Order ID, name or description"
+                  value={text}
+                  onChange={handleChangeText}
+                />
               </>
             )}
             {view === "grid" && (
@@ -572,7 +607,7 @@ const StyledPage = styled.section`
     margin-bottom: 30px;
 
     & .card {
-      width: calc((100% - 40px) / 3);
+      width: calc((100% - 60px) / 4);
     }
   }
 
