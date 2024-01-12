@@ -810,6 +810,7 @@ export type IListingData = {
   id: string;
   creatorUserId: string;
   lastModifierUserId: null;
+
   deleterUserId: null;
   creationTime: string;
   lastModificationTime: null;
