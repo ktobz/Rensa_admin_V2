@@ -301,7 +301,9 @@ export type IStatus =
   | "pending_pickup"
   | "expired"
   | "processing"
-  | "queued";
+  | "queued"
+  | "on_hold"
+  | "closed";
 
 export type IVerifyStatus = "true" | "false";
 
@@ -399,6 +401,10 @@ export type IOrderDetails = {
   rider: IRiderData;
   created_at: string;
   updated_at: string;
+  // cancellationRequests: {
+  //   cancellationReason: string;
+  //   comment: string;
+  // }[];
 };
 
 export type IOrderMetrics = {
@@ -446,6 +452,8 @@ export type IUserData = {
   lastName: string;
   email: string;
   userName: string;
+  username: string;
+
   phoneNumber: string;
   emailConfirmed: boolean;
   id: string;
@@ -580,6 +588,10 @@ export type IOrderFullDetails = {
   buyerUserId: string;
   pickupMethod: number;
   status: number;
+  cancellationRequests: {
+    cancellationReason: string;
+    comment: string;
+  }[];
 };
 
 export type IOrderResponse = {
@@ -818,6 +830,7 @@ export type IListingData = {
     email: string;
     phoneNumber: string;
     profilePictureUrl: string;
+    username: string;
   };
   state: string;
   city: string;

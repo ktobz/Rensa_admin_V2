@@ -27,10 +27,14 @@ import { IListingData, IOrderDetails, IStatus } from "@/types/globalTypes";
 import { UserDetailCard } from "@/components/card/UserCard";
 import VendgramCustomModal from "@/components/modal/Modal";
 import { OrderStatus } from "@/components/feedback/OrderStatus";
-import { SettlementStatus } from "@/modules/settlements/components/OrderStatus";
+import {
+  ActionTimeStatus,
+  IActiveStatus,
+  SettlementStatus,
+} from "@/modules/settlements/components/OrderStatus";
 import { useIds } from "@/utils/hooks";
 import CustomStyledSelect from "@/components/select/CustomStyledSelect";
-import { ActionTimeStatus } from "../components/OrderStatus";
+
 import SimpleBar from "simplebar-react";
 import { ReportedComments } from "../components/ReportedComments";
 import { SellerInfo } from "../components/SellerInfo";
@@ -111,6 +115,15 @@ export function ListingDetails() {
     //   });
   };
 
+  const time = data?.creationTime || "";
+  const duration = data?.durationInHours || 0;
+  const date = new Date(time);
+  const today = new Date().getTime();
+
+  const endTime = date.setTime(date.getTime() + duration * 60 * 60 * 1000);
+
+  const timeRemaining = endTime > today ? (endTime - today) / 1000 : 0;
+
   return (
     <PageContent>
       <div className="top-section">
@@ -129,7 +142,18 @@ export function ListingDetails() {
             className="actions"
             placeholder="Action Items"
           />
-          <SettlementStatus type="active" />
+          <OrderStatus
+            style={{
+              display: "inline-block",
+              whiteSpace: "nowrap",
+            }}
+            type={
+              getIdName(
+                data?.catalogueStatus || 1,
+                catalogueStatus
+              )?.toLowerCase() as IStatus
+            }
+          />
         </div>
       </div>
       <div className="listing">
@@ -139,18 +163,20 @@ export function ListingDetails() {
           </MuiTypography>
           <MuiTypography variant="body2" className="timer">
             Auction
-            {data?.catalogueStatus === 1 ? (
-              <ActionTimeStatus type="error" time={300} />
-            ) : (
-              <OrderStatus
-                type={
-                  getIdName(
-                    data?.catalogueStatus || 1,
-                    catalogueStatus
-                  )?.toLowerCase() as IStatus
-                }
-              />
-            )}
+            <ActionTimeStatus
+              type={
+                timeRemaining > 0
+                  ? (data?.catalogueStatusDescription?.toLowerCase() as IActiveStatus)
+                  : "closed"
+              }
+              catelogueStatus={
+                getIdName(
+                  data?.catalogueStatus || 1,
+                  catalogueStatus
+                )?.toLowerCase() as IStatus
+              }
+              time={timeRemaining}
+            />
           </MuiTypography>
         </div>
 

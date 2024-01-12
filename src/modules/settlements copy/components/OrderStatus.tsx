@@ -110,49 +110,6 @@ export const SettlementStatus = ({
   );
 };
 
-export const ActionTimeStatus = ({
-  type,
-  time = 0,
-}: {
-  type: IStatus;
-  time?: number;
-}) => {
-  const currentTime = new Date();
-  currentTime.setSeconds(currentTime.getSeconds() + time);
-
-  const { seconds, minutes, hours, restart } = useTimer({
-    expiryTimestamp: currentTime,
-    onExpire: () => {
-      // restart(currentTime);
-    },
-  });
-  const statusType =
-    type !== "error" && type !== "warning"
-      ? type
-      : minutes >= 3
-      ? "warning"
-      : "error";
-
-  return (
-    <span
-      style={{
-        color: statusData[statusType]?.color || "",
-        background: statusData[statusType]?.bg || "",
-        padding: "10px 15px",
-        borderRadius: "10px",
-        fontWeight: "bold",
-        minWidth: "90px",
-        display: "inline-block",
-        textAlign: "center",
-      }}>
-      {statusData[statusType]?.text ||
-        `${hours > 9 ? hours : `0${hours}`}:${
-          minutes > 9 ? minutes : `0${minutes}`
-        }:${seconds > 9 ? seconds : `0${seconds}`}`}
-    </span>
-  );
-};
-
 export const OrderIcon = ({ type }: { type: IStatus }) => {
   return (
     <span

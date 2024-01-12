@@ -45,6 +45,7 @@ export function DashboardView() {
           filterType="minimal"
           queryKey="dashboard-new-orders"
           serviceFunc={DashboardService.orders}
+          defaultOptionId={5}
         />
         <TotalCard
           className="card"
@@ -57,6 +58,7 @@ export function DashboardView() {
           defaultOptions={transformedFilter}
           serviceFunc={DashboardService.getMarketplace}
           queryKey="dashboard-marketplace"
+          defaultOptionId={5}
         />
         <TotalCard
           className="card"
@@ -69,6 +71,7 @@ export function DashboardView() {
           defaultOptions={transformedFilter}
           serviceFunc={DashboardService.users}
           queryKey="dashboard-users"
+          defaultOptionId={5}
         />
         <TotalCard
           className="card"
@@ -81,6 +84,7 @@ export function DashboardView() {
           defaultOptions={transformedFilter}
           serviceFunc={DashboardService.getSales}
           queryKey="dashboard-transactions"
+          defaultOptionId={5}
         />
         <TotalCard
           className="card"
@@ -93,6 +97,7 @@ export function DashboardView() {
           defaultOptions={transformedFilter}
           serviceFunc={DashboardService.revenue}
           queryKey="dashboard-revenue"
+          defaultOptionId={5}
         />
       </div>
 

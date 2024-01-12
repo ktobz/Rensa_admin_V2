@@ -325,7 +325,15 @@ export function SettlementTable({
                       <MuiTableCell align="left">
                         <ActionTimeStatus
                           type={
-                            row?.catalogueStatusDescription?.toLowerCase() as IActiveStatus
+                            timeRemaining > 0
+                              ? (row?.catalogueStatusDescription?.toLowerCase() as IActiveStatus)
+                              : "closed"
+                          }
+                          catelogueStatus={
+                            getIdName(
+                              row?.catalogueStatus,
+                              catalogueStatus
+                            )?.toLowerCase() as IStatus
                           }
                           time={timeRemaining}
                         />

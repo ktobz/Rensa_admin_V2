@@ -28,12 +28,6 @@ import {
 import TableWrapper from "@/components/table/TableWrapper";
 import { IconVisibility } from "@/lib/mui.lib.icons";
 
-import {
-  ActionTimeStatus,
-  IStatus,
-  SettlementStatus,
-  ISettlementStatus,
-} from "./OrderStatus";
 import CustomSearch from "@/components/input/CustomSearch";
 import StatusFilter from "@/components/select/StatusFillter";
 import ListingService from "@/services/listing-service";
@@ -42,7 +36,7 @@ import { OrderStatus } from "@/components/feedback/OrderStatus";
 import throttle from "lodash.throttle";
 
 const defaultQuery: IPagination = {
-  pageSize: 15,
+  pageSize: 10,
   page: 1,
   total: 1,
   hasNextPage: false,
@@ -62,9 +56,8 @@ export function ReportTable({
   showPagination = false,
 }: IProps) {
   const navigate = useNavigate();
-  const { reportedListingStatus, reportedListingCategory } = useCachedDataStore(
-    (state) => state.cache?.lookup
-  );
+  const { reportedListingStatus, reportedListingCategory, catalogueStatus } =
+    useCachedDataStore((state) => state.cache?.lookup);
   const [pagination, setPagination] = React.useState<IPagination>(defaultQuery);
 
   const handleNavigate = (path: string) => () => {
@@ -178,7 +171,10 @@ export function ReportTable({
         )}
       </div>
 
-      <TableWrapper showPagination={showPagination} pagination={pagination}>
+      <TableWrapper
+        showPagination={showPagination}
+        handleChangePagination={handleChange}
+        pagination={pagination}>
         <MuiTableContainer
           sx={{
             maxWidth: "100%",
@@ -253,12 +249,11 @@ export function ReportTable({
                   <MuiTableCell align="left">
                     <OrderStatus
                       style={{
-                        display: "inline-block",
                         width: "100%",
                         border: "none",
                       }}
                       type={
-                        getIdName(row?.status, reportedListingStatus) as any
+                        getIdName(row?.catalogueStatus, catalogueStatus) as any
                       }
                     />
                   </MuiTableCell>

@@ -32,7 +32,7 @@ import VendgramCustomModal from "@/components/modal/Modal";
 import throttle from "lodash.throttle";
 
 const defaultQuery: IPagination = {
-  pageSize: 15,
+  pageSize: 10,
   page: 1,
   total: 1,
   hasNextPage: false,

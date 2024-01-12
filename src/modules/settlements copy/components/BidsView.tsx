@@ -50,10 +50,10 @@ export function BidsView({ isLoading, listingData, isError }: IProps) {
   const offers = listingData?.catalogueBids?.filter((x) => x?.bidType === 1);
 
   const biddersAndCount = bids?.reduce((acc, v) => {
-    if (v?.userId in acc) {
-      acc[v.userId] += 1;
+    if (v?.bidderInfo?.username in acc) {
+      acc[v.bidderInfo?.username] += 1;
     } else {
-      acc[v.userId] = 1;
+      acc[v.bidderInfo?.username] = 1;
     }
     return acc;
   }, {} as { [key: string]: number });
@@ -123,9 +123,7 @@ export function BidsView({ isLoading, listingData, isError }: IProps) {
                   <UserDetailCard
                     variant="bidder"
                     data={{
-                      fullName: `${row?.bidderInfo?.firstName || "-"} ${
-                        row?.bidderInfo?.lastName || "-"
-                      }`,
+                      fullName: `${row?.bidderInfo?.username || "-"}`,
                       date: formatDate(
                         row?.creationTime || "",
                         "do LLLL yyyy, HH:MM:ss"
@@ -165,9 +163,7 @@ export function BidsView({ isLoading, listingData, isError }: IProps) {
                   <UserDetailCard
                     variant="bidder"
                     data={{
-                      fullName: `${row?.bidderInfo?.firstName || "-"} ${
-                        row?.bidderInfo?.lastName || "-"
-                      }`,
+                      fullName: `${row?.bidderInfo?.username || "-"}`,
                       date: formatDate(
                         row?.creationTime || "",
                         "do LLLL yyyy, HH:MM:ss"

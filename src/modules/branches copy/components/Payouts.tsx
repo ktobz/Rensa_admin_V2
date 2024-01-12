@@ -23,7 +23,7 @@ import {
   getIdName,
 } from "utils/helper-funcs";
 import TableWrapper from "@/components/table/TableWrapper";
-import { IconRetry, IconVisibility } from "@/lib/mui.lib.icons";
+import { IconRetry, IconVerify, IconVisibility } from "@/lib/mui.lib.icons";
 
 import CustomSearch from "@/components/input/CustomSearch";
 
@@ -84,6 +84,7 @@ export function PayoutTableView({
   const [searchText, setSearchText] = React.useState("");
   const [text, setText] = React.useState("");
   const [verifyId, setVerifyId] = React.useState("");
+  const [actionType, setActionType] = React.useState("");
 
   const [pagination, setPagination] = React.useState<IPagination>(defaultQuery);
 
@@ -154,33 +155,33 @@ export function PayoutTableView({
     debouncedChangeHandler();
   };
 
-  const handleVerifyTransaction = (data: IUserPayout) => async () => {
-    setVerifyId(data?.transactionReference || "");
+  const handleVerifyTransaction =
+    (data: IUserPayout, type: "verify" | "retry") => async () => {
+      setVerifyId(data?.transactionReference || "");
+      setActionType(type);
 
-    try {
-      const { data: resData } = await TransactionService.verifyPayout(
-        data?.transactionReference || ""
-      );
+      try {
+        const { data: resData } = await (actionType === "verify"
+          ? TransactionService.verifyPayout
+          : TransactionService.retryTransaction)(
+          data?.transactionReference || ""
+        );
 
-      //  const { data: resData } = await TransactionService.verifyTransaction(
-      //    data?.transactionReference || ""
-      //  );
+        toast.success(resData?.message);
+      } catch (error: any) {
+        toast.error(error?.response?.data?.message);
+      }
 
-      toast.success(resData?.message);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message);
-    }
-
-    queryClient.invalidateQueries([
-      queryKey,
-      id,
-      pagination.page,
-      pagination.pageSize,
-      searchText,
-      filter,
-    ]);
-    setVerifyId("");
-  };
+      queryClient.invalidateQueries([
+        queryKey,
+        id,
+        pagination.page,
+        pagination.pageSize,
+        searchText,
+        filter,
+      ]);
+      setVerifyId("");
+    };
 
   return (
     <StyledPage>
@@ -250,65 +251,91 @@ export function PayoutTableView({
 
             <MuiTableBody>
               {data &&
-                data?.map((row) => (
-                  <MuiTableRow
-                    key={row?.id}
-                    sx={{
-                      "&:last-child td, &:last-child th": { border: 0 },
-                    }}>
-                    <MuiTableCell>{row?.userId || "-"}</MuiTableCell>
-                    <MuiTableCell align="left">{row?.orderNumber}</MuiTableCell>
-                    <MuiTableCell align="left">
-                      ₦
-                      {formatCurrency({
-                        amount: Math.abs(row?.amount),
-                        style: "decimal",
-                      })}
-                    </MuiTableCell>
+                data?.map((row) => {
+                  const type = getIdName(
+                    row?.status,
+                    catalogueTransactionStatus
+                  )?.toLowerCase() as IStatus;
+                  const disableRetryBtn = type !== "failed";
+                  const disableVerifyBtn = type !== "pending";
 
-                    <MuiTableCell align="left">
-                      {row?.transactionReference}
-                    </MuiTableCell>
+                  return (
+                    <MuiTableRow
+                      key={row?.id}
+                      sx={{
+                        "&:last-child td, &:last-child th": { border: 0 },
+                      }}>
+                      <MuiTableCell>{row?.userId || "-"}</MuiTableCell>
+                      <MuiTableCell align="left">
+                        {row?.orderNumber}
+                      </MuiTableCell>
+                      <MuiTableCell align="left">
+                        ₦
+                        {formatCurrency({
+                          amount: Math.abs(row?.amount),
+                          style: "decimal",
+                        })}
+                      </MuiTableCell>
 
-                    <MuiTableCell align="left">
-                      {" "}
-                      {format(
-                        new Date(row?.creationTime || ""),
-                        "LL MMMM, yyyy"
-                      )}
-                    </MuiTableCell>
-                    <MuiTableCell align="left">
-                      <OrderStatus
-                        type={
-                          getIdName(
-                            row?.status,
-                            catalogueTransactionStatus
-                          )?.toLowerCase() as IStatus
-                        }
-                      />
-                    </MuiTableCell>
-                    <MuiTableCell align="left">
-                      <MuiBox className="action-group">
-                        <MuiIconButton
-                          onClick={handleVerifyTransaction(row)}
-                          disabled={!!verifyId}
-                          className={`visible-btn ${"active"}`}>
-                          {verifyId === row?.transactionReference ? (
-                            <MuiCircularProgress size={13} color="secondary" />
-                          ) : (
-                            <IconRetry />
-                          )}
-                        </MuiIconButton>
-                        <MuiIconButton
-                          disabled={!!verifyId}
-                          onClick={handleViewDetails(row)}
-                          className="visible-btn">
-                          <IconVisibility />
-                        </MuiIconButton>
-                      </MuiBox>
-                    </MuiTableCell>
-                  </MuiTableRow>
-                ))}
+                      <MuiTableCell align="left">
+                        {row?.transactionReference}
+                      </MuiTableCell>
+
+                      <MuiTableCell align="left">
+                        {" "}
+                        {format(
+                          new Date(row?.creationTime || ""),
+                          "LL MMMM, yyyy"
+                        )}
+                      </MuiTableCell>
+                      <MuiTableCell align="left">
+                        <OrderStatus type={type} />
+                      </MuiTableCell>
+                      <MuiTableCell align="left">
+                        <MuiBox className="action-group">
+                          <MuiIconButton
+                            onClick={handleVerifyTransaction(row, "verify")}
+                            disabled={!!verifyId || disableVerifyBtn}
+                            className={`visible-btn ${
+                              disableVerifyBtn ? "disabled" : "verify"
+                            }`}>
+                            {verifyId === row?.transactionReference &&
+                            actionType == "verify" ? (
+                              <MuiCircularProgress
+                                size={13}
+                                color="secondary"
+                              />
+                            ) : (
+                              <IconVerify />
+                            )}
+                          </MuiIconButton>
+                          <MuiIconButton
+                            onClick={handleVerifyTransaction(row, "retry")}
+                            disabled={!!verifyId || disableRetryBtn}
+                            className={`visible-btn ${
+                              disableRetryBtn ? "disable" : "retry"
+                            }`}>
+                            {verifyId === row?.transactionReference &&
+                            actionType == "retry" ? (
+                              <MuiCircularProgress
+                                size={13}
+                                color="secondary"
+                              />
+                            ) : (
+                              <IconRetry />
+                            )}
+                          </MuiIconButton>
+                          <MuiIconButton
+                            disabled={!!verifyId}
+                            onClick={handleViewDetails(row)}
+                            className="visible-btn">
+                            <IconVisibility />
+                          </MuiIconButton>
+                        </MuiBox>
+                      </MuiTableCell>
+                    </MuiTableRow>
+                  );
+                })}
 
               {!isLoading && data && data?.length === 0 && (
                 <MuiTableRow>
@@ -419,17 +446,17 @@ const StyledPage = styled.section`
     }
   }
 
-  & .active {
+  & .disable {
     color: #777e90;
     background-color: #f0f0f0;
   }
 
-  & .pending {
+  & .retry {
     color: #ffc502;
     background-color: #ffc5021a;
   }
 
-  & .success {
+  & .verify {
     color: #45b26b;
     background-color: #e8fff3;
   }

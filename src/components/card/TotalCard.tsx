@@ -23,6 +23,8 @@ type IProps =
       showFilter?: boolean;
       defaultValue?: number | string;
       defaultOptions?: any[];
+      defaultOptionId?: number;
+
       setValues?: React.Dispatch<React.SetStateAction<string>>;
       value?: string;
       variant: "order" | "sales";
@@ -41,6 +43,7 @@ type IProps =
       title: string;
       showFilter?: boolean;
       defaultValue?: string;
+      defaultOptionId?: number;
       defaultOptions?: ICategory[];
       setValues?: React.Dispatch<React.SetStateAction<any>>;
       value?: string;
@@ -64,6 +67,7 @@ export function TotalCard({
   className,
   subAction,
   defaultValue = "",
+  defaultOptionId,
   defaultOptions,
   setValues,
   // value,
@@ -75,9 +79,11 @@ export function TotalCard({
 }: IProps) {
   const options = defaultOptions?.map((x) => x) || [];
 
-  const [value, setValue] = React.useState<number>(options?.[0]?.id);
+  const [value, setValue] = React.useState<number>(
+    options?.[defaultOptionId || 0]?.id
+  );
   const [valueString, setValueString] = React.useState<string>(
-    options?.[0]?.name
+    options?.[defaultOptionId || 0]?.name
   );
 
   const handleChangeMinimal = (val: ICategory) => {

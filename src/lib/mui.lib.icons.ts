@@ -105,9 +105,11 @@ import { ReactComponent as IconAttachment } from "assets/icon/attachment.svg";
 import { ReactComponent as IconAppRelease } from "assets/icon/app_release.svg";
 import { ReactComponent as IconConfirm } from "assets/icon/confirm.svg";
 import { ReactComponent as IconRetry } from "assets/icon/retry.svg";
+import { ReactComponent as IconVerify } from "assets/icon/verify.svg";
 import { ReactComponent as IconPayout } from "assets/icon/payout.svg";
 
 export {
+  IconVerify,
   IconPayout,
   IconRetry,
   IconConfirm,

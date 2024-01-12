@@ -102,6 +102,13 @@ const TransactionService = {
       },
     });
   },
+  retryTransaction(id: string) {
+    return HTTP.get(`${PATHS.transactions}/retry/${id}`, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
 
   verifyPayout(id: string) {
     return HTTP.get(`${PATHS.payout}/verify/${id}`, {

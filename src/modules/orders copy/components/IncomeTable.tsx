@@ -139,6 +139,7 @@ export function IncomeTable() {
           defaultOptions={transformedFilter}
           queryKey="sales-total"
           serviceFunc={TransactionService.salesCount}
+          defaultOptionId={5}
         />
         <TotalCard
           className="card"
@@ -149,6 +150,7 @@ export function IncomeTable() {
           defaultOptions={transformedFilter}
           queryKey="sales-amount"
           serviceFunc={TransactionService.salesAmount}
+          defaultOptionId={5}
         />
         <TotalCard
           className="card"
@@ -159,6 +161,7 @@ export function IncomeTable() {
           defaultOptions={transformedFilter}
           queryKey="sales-revenue"
           serviceFunc={TransactionService.salesRevenue}
+          defaultOptionId={5}
         />
       </div>
       <div className="tab-section">

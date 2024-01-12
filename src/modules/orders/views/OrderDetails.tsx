@@ -641,20 +641,20 @@ export function OrderDetails() {
               <div className="line" />
 
               <div className="delivery-status">
-                <div className="section delivery">
+                {/* <div className="section delivery">
                   <MuiTypography variant="body1" className="title">
                     Delivery status
                   </MuiTypography>
                   <MuiTypography variant="body2" className="body">
                     -
                   </MuiTypography>
-                </div>
+                </div> */}
                 <div className="section reason">
                   <MuiTypography variant="body1" className="title">
                     Reason
                   </MuiTypography>
                   <MuiTypography variant="body2" className="body">
-                    -
+                    {data?.cancellationRequests?.[0]?.cancellationReason || "-"}
                   </MuiTypography>
                 </div>
               </div>

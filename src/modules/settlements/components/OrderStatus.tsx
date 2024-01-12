@@ -1,4 +1,6 @@
+import { OrderStatus } from "@/components/feedback/OrderStatus";
 import { IconOrder } from "@/lib/mui.lib.icons";
+import { IStatus } from "@/types/globalTypes";
 import { useTimer } from "react-timer-hook";
 
 export type IActiveStatus = "warning" | "closed" | "sold" | "error" | "hold";
@@ -113,9 +115,11 @@ export const SettlementStatus = ({
 export const ActionTimeStatus = ({
   type,
   time = 0,
+  catelogueStatus,
 }: {
   type: IActiveStatus;
   time?: number;
+  catelogueStatus?: IStatus;
 }) => {
   const currentTime = new Date();
   currentTime.setSeconds(currentTime.getSeconds() + time);
@@ -124,14 +128,20 @@ export const ActionTimeStatus = ({
     expiryTimestamp: currentTime,
     onExpire: () => {},
   });
-  const statusType =
-    type !== "error" && type !== "warning"
-      ? type
-      : minutes >= 10
-      ? "warning"
-      : "error";
+  const statusType = minutes >= 10 ? "warning" : "error";
+  const hasEnded = minutes === 0 && seconds === 0;
 
-  return (
+  return hasEnded ? (
+    <OrderStatus
+      type={
+        catelogueStatus === "pending_payment"
+          ? "on_hold"
+          : catelogueStatus !== "closed" && catelogueStatus !== "expired"
+          ? "sold"
+          : "closed"
+      }
+    />
+  ) : (
     <span
       style={{
         color: statusData[statusType]?.color || "",

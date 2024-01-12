@@ -96,19 +96,29 @@ const statusData: {
     text: "Pending cancellation",
   },
   pending_payment: {
-    bg: "#64748B1A",
-    color: "#64748B",
+    bg: "#FFF8DD",
+    color: "#F7992B",
     text: "Pending Payment",
   },
   sold: {
-    bg: "#64748B1A",
-    color: "#64748B",
+    bg: "#45B26B",
+    color: "#fff",
     text: "Sold",
   },
   expired: {
     bg: "#F0F0F0",
     color: "#777E90",
     text: "Expired",
+  },
+  closed: {
+    bg: "#F0F0F0",
+    color: "#777E90",
+    text: "Closed",
+  },
+  on_hold: {
+    bg: "#F0F0F0",
+    color: "#777E90",
+    text: "On-Hold",
   },
   processing: {
     bg: "#D2EBFE",
