@@ -1,35 +1,17 @@
 import * as React from "react";
-import { useQuery, useQueryClient } from "react-query";
+import { useQueryClient } from "react-query";
 import SimpleBar from "simplebar-react";
 
 import { NoData } from "@/components/feedback/NoData";
-import {
-  MuiBox,
-  MuiDivider,
-  MuiIconButton,
-  MuiTypography,
-  styled,
-} from "@/lib/index";
-import {
-  IconBellBlue,
-  IconEdit,
-  IconNotificationInfo,
-} from "@/lib/mui.lib.icons";
+import { MuiBox, MuiTypography, styled } from "@/lib/index";
+import { IconNotificationInfo } from "@/lib/mui.lib.icons";
 
-import {
-  IListingData,
-  INotificationData,
-  IPagination,
-  ISettlementStatus,
-} from "@/types/globalTypes";
-import NotificationService from "@/services/notification-service";
+import { IListingData, ISettlementStatus } from "@/types/globalTypes";
 import CustomTabs from "@/components/other/CustomTabs";
 import CustomTab from "@/components/other/CustomTab";
 import { UserDetailCard } from "@/components/card/UserCard";
 import { BidStatus } from "./BidStatus";
 import useCachedDataStore from "@/config/store-config/lookup";
-import { off } from "process";
-import { IStatus } from "./OrderStatus";
 import { formatCurrency, formatDate } from "@/utils/helper-funcs";
 
 type IProps = {
@@ -64,7 +46,6 @@ export function BidsView({ isLoading, listingData, isError }: IProps) {
     handleCloseModal();
   };
 
-  console.log(bidType);
   const bids = listingData?.catalogueBids?.filter((x) => x?.bidType === 2);
   const offers = listingData?.catalogueBids?.filter((x) => x?.bidType === 1);
 
@@ -142,13 +123,15 @@ export function BidsView({ isLoading, listingData, isError }: IProps) {
                   <UserDetailCard
                     variant="bidder"
                     data={{
-                      fullName: " - -",
+                      fullName: `${row?.bidderInfo?.firstName || "-"} ${
+                        row?.bidderInfo?.lastName || "-"
+                      }`,
                       date: formatDate(
                         row?.creationTime || "",
                         "do LLLL yyyy, HH:MM:ss"
                       ),
-                      image: "",
-                      verStatus: true,
+                      image: row?.bidderInfo?.profilePictureUrl || "",
+                      verStatus: row?.bidderInfo?.isVerified || false,
                     }}
                   />
                   <MuiBox className="bid-value">
@@ -182,13 +165,15 @@ export function BidsView({ isLoading, listingData, isError }: IProps) {
                   <UserDetailCard
                     variant="bidder"
                     data={{
-                      fullName: " - -",
+                      fullName: `${row?.bidderInfo?.firstName || "-"} ${
+                        row?.bidderInfo?.lastName || "-"
+                      }`,
                       date: formatDate(
                         row?.creationTime || "",
                         "do LLLL yyyy, HH:MM:ss"
                       ),
-                      image: "",
-                      verStatus: true,
+                      image: row?.bidderInfo?.profilePictureUrl || "",
+                      verStatus: row?.bidderInfo?.isVerified || false,
                     }}
                   />
                   <MuiBox className="bid-value">

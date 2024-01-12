@@ -71,7 +71,7 @@ export const UserDetailCard = ({
             ) : (
               <IconDefaultUserImage className="img" />
             )}
-            <IconVerification className="ver-status" />
+            {data?.verStatus && <IconVerification className="ver-status" />}
           </div>
 
           <div className="details bidder-details">

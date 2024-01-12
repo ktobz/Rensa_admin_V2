@@ -25,6 +25,7 @@ import ReportedListingPageView from "@/modules/settlements copy";
 import { ListingDetails } from "@/modules/settlements copy/views/ListingDetails";
 import AppReleaseView from "@/modules/branch-manager copy 3";
 import { AddListing } from "@/modules/settlements copy/views/AddListing";
+import { PayoutView } from "@/modules/branches copy/views/PayoutView";
 
 export default function MergedModuleRoutes() {
   return (
@@ -59,6 +60,7 @@ export default function MergedModuleRoutes() {
       <Route path="/marketplace/:rp_id" element={<ListingDetails />} />
 
       <Route path="/transactions" element={<TransactionsView />} />
+      <Route path="/payouts" element={<PayoutView />} />
       <Route path="/sales-revenue" element={<IncomeView />} />
 
       <Route path="/notification-center" element={<NotificationCenterView />} />

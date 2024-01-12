@@ -30,11 +30,9 @@ const statusData: {
     text: "Confirmed",
   },
   cancelled: {
-    // bg: "#EF50501A",
-    // color: "#EF5050",
     text: "Cancelled",
-    bg: "#64748B1A",
-    color: "#64748B",
+    bg: "#FFF5F8",
+    color: "#EF5050",
   },
   delivered: {
     bg: "#E8FFF3",
@@ -62,8 +60,8 @@ const statusData: {
     text: "Failed",
   },
   pending: {
-    bg: "#FFC5021A",
-    color: "#FFC502",
+    bg: "#FFF8DD",
+    color: "#F7992B",
     text: "Pending",
   },
   reported: {
@@ -73,7 +71,7 @@ const statusData: {
   },
   active: {
     bg: "#E8FFF3",
-    color: "#05A357",
+    color: "#45B26B",
     text: "Active",
   },
   rejected: {
@@ -88,13 +86,13 @@ const statusData: {
   },
 
   intransit: {
-    bg: "#64748B1A",
-    color: "#64748B",
+    bg: "#D2EBFE",
+    color: "#137AC9",
     text: "In transit",
   },
   pending_cancellation: {
-    bg: "#64748B1A",
-    color: "#64748B",
+    bg: "#FFF5F8",
+    color: "#A10705",
     text: "Pending cancellation",
   },
   pending_payment: {
@@ -108,24 +106,29 @@ const statusData: {
     text: "Sold",
   },
   expired: {
-    bg: "#64748B1A",
-    color: "#64748B",
+    bg: "#F0F0F0",
+    color: "#777E90",
     text: "Expired",
   },
   processing: {
-    bg: "#64748B1A",
-    color: "#64748B",
+    bg: "#D2EBFE",
+    color: "#137AC9",
     text: "Processing",
   },
   pending_pickup: {
-    bg: "#64748B1A",
-    color: "#64748B",
+    bg: "#FFF9F6",
+    color: "#380719",
     text: "Pending pickup",
   },
   pending_delivery: {
-    bg: "#64748B1A",
-    color: "#64748B",
+    bg: "#E6D7FB",
+    color: "#9747FF",
     text: "Pending delivery",
+  },
+  queued: {
+    bg: "#E6D7FB",
+    color: "#9747FF",
+    text: "Queued",
   },
 };
 

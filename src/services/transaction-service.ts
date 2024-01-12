@@ -1,10 +1,15 @@
 import { getToken } from "utils/helper-funcs";
 import HTTP from "./Http";
 import { AxiosPromise } from "axios";
-import { ITransactionsResponse, ISalesResponse } from "@/types/globalTypes";
+import {
+  ITransactionsResponse,
+  ISalesResponse,
+  IPayoutResponse,
+} from "@/types/globalTypes";
 
 const PATHS = {
   transactions: "/admin/transaction",
+  payout: "/admin/payout",
   dashboardMetrics: "/orders/dashboard",
   sales: "/admin/sales",
   userTransactions: "/admin/transactions/customers",
@@ -18,6 +23,15 @@ const TransactionService = {
       },
     });
   },
+
+  getAllPayouts(query?: string): AxiosPromise<IPayoutResponse> {
+    return HTTP.get(`${PATHS.payout}${query ? query : ""}`, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+
   getAllSales(query?: string): AxiosPromise<ISalesResponse> {
     return HTTP.get(`${PATHS.sales}${query ? query : ""}`, {
       headers: {
@@ -78,6 +92,22 @@ const TransactionService = {
         Authorization: getToken(),
       },
       params: data,
+    });
+  },
+
+  verifyTransaction(id: string) {
+    return HTTP.get(`${PATHS.transactions}/verify/${id}`, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+
+  verifyPayout(id: string) {
+    return HTTP.get(`${PATHS.payout}/verify/${id}`, {
+      headers: {
+        Authorization: getToken(),
+      },
     });
   },
 };

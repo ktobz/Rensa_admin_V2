@@ -30,10 +30,12 @@ import CustomSearch from "@/components/input/CustomSearch";
 import VendgramCustomModal from "@/components/modal/Modal";
 import {
   IPagination,
+  IPayoutResponse,
   IStatus,
   ITransactionData,
   ITransactions,
   ITransactionsResponse,
+  IUserPayout,
 } from "@/types/globalTypes";
 import { TransactionDetails } from "./TransactionDetails";
 import TransactionService from "@/services/transaction-service";
@@ -60,16 +62,16 @@ type IProps = {
   title?: string;
   showActionTab?: boolean;
   id?: string;
-  apiFunc?: (query?: string) => AxiosPromise<ITransactionsResponse>;
+  apiFunc?: (query?: string) => AxiosPromise<IPayoutResponse>;
   queryKey?: string;
 };
-export function TransactionTable({
+export function PayoutTableView({
   variant = "all",
-  title = "Transactions",
+  title = "Payouts",
   id,
   showActionTab = true,
-  apiFunc = TransactionService.getAll,
-  queryKey = "all-transactions",
+  apiFunc = TransactionService.getAllPayouts,
+  queryKey = "all-payouts",
 }: IProps) {
   const {
     lookup: { catalogueTransactionStatus },
@@ -127,7 +129,7 @@ export function TransactionTable({
     setPagination((prev: any) => ({ ...prev, page }));
   };
 
-  const handleViewDetails = (data: ITransactions) => () => {
+  const handleViewDetails = (data: IUserPayout) => () => {
     navigate(`/app/orders/${data?.transactionReference}`);
   };
 
@@ -152,18 +154,23 @@ export function TransactionTable({
     debouncedChangeHandler();
   };
 
-  const handleVerifyTransaction = (data: ITransactions) => async () => {
+  const handleVerifyTransaction = (data: IUserPayout) => async () => {
     setVerifyId(data?.transactionReference || "");
 
     try {
-      const { data: resData } = await TransactionService.verifyTransaction(
+      const { data: resData } = await TransactionService.verifyPayout(
         data?.transactionReference || ""
       );
+
+      //  const { data: resData } = await TransactionService.verifyTransaction(
+      //    data?.transactionReference || ""
+      //  );
 
       toast.success(resData?.message);
     } catch (error: any) {
       toast.error(error?.response?.data?.message);
     }
+
     queryClient.invalidateQueries([
       queryKey,
       id,
@@ -199,7 +206,10 @@ export function TransactionTable({
         </div>
       )}
 
-      <TableWrapper showPagination pagination={pagination}>
+      <TableWrapper
+        showPagination
+        handleChangePagination={handleChange}
+        pagination={pagination}>
         <MuiTableContainer
           sx={{
             maxWidth: "100%",
@@ -247,11 +257,11 @@ export function TransactionTable({
                       "&:last-child td, &:last-child th": { border: 0 },
                     }}>
                     <MuiTableCell>{row?.userId || "-"}</MuiTableCell>
-                    <MuiTableCell align="left">{row?.catalogueId}</MuiTableCell>
+                    <MuiTableCell align="left">{row?.orderNumber}</MuiTableCell>
                     <MuiTableCell align="left">
                       ₦
                       {formatCurrency({
-                        amount: Math.abs(row?.itemAmount),
+                        amount: Math.abs(row?.amount),
                         style: "decimal",
                       })}
                     </MuiTableCell>

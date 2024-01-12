@@ -24,6 +24,11 @@ const settleStatusData: {
     color: "#F53139",
     text: "Rejected",
   },
+  expired: {
+    bg: "#F0F0F0",
+    color: "#777E90",
+    text: "Expired",
+  },
 };
 
 export const BidStatus = ({
@@ -38,7 +43,9 @@ export const BidStatus = ({
   variant?: "secondary" | "primary";
   size?: "large" | "small";
 }) => {
-  const type = status in settleStatusData ? status : "pending";
+  const casedStatus = status?.toLowerCase() as ISettlementStatus;
+  const type = casedStatus in settleStatusData ? casedStatus : "pending";
+
   return (
     <span
       style={{

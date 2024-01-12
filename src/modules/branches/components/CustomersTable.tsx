@@ -29,6 +29,7 @@ import { createPaginationData } from "@/utils/helper-funcs";
 import { DeleteUserConfirm } from "./DeleteProductConfirm";
 import { toast } from "react-toastify";
 import VendgramCustomModal from "@/components/modal/Modal";
+import throttle from "lodash.throttle";
 
 const defaultQuery: IPagination = {
   pageSize: 15,
@@ -49,12 +50,14 @@ export function CustomersTable() {
   const [show, setShow] = React.useState({
     delete: false,
   });
+  const [searchText, setSearchText] = React.useState("");
+  const [text, setText] = React.useState("");
 
   const { data, isLoading, isError } = useQuery(
-    ["all-users", pagination.page, pagination.pageSize],
+    ["all-users", pagination.page, pagination.pageSize, searchText],
     () =>
       CustomerService.getAll(
-        `?PageNumber=${pagination.page}&PageSize=${pagination.pageSize}`
+        `?PageNumber=${pagination.page}&PageSize=${pagination.pageSize}&searchText=${searchText}`
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
         const { hasNextPage, hasPrevPage, total, totalPages } =
@@ -91,6 +94,10 @@ export function CustomersTable() {
     }));
   };
 
+  const handleChange = (page: number) => {
+    setPagination((prev) => ({ ...prev, page }));
+  };
+
   const handleSetDeleteData = (data: IUserData) => () => {
     setDeleteData(() => [data]);
     setShow((prev) => ({ ...prev, delete: true }));
@@ -101,6 +108,7 @@ export function CustomersTable() {
       "all-users",
       pagination.page,
       pagination.pageSize,
+      searchText,
     ]);
     handleCloseModal();
   };
@@ -120,6 +128,23 @@ export function CustomersTable() {
       });
   };
 
+  const handleSetSearchText = (value: string) => () => {
+    if (value) {
+      setSearchText(value);
+    }
+  };
+
+  const debouncedChangeHandler = React.useMemo(
+    () => throttle(handleSetSearchText(text), 500),
+    [text]
+  );
+
+  const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setText(value);
+    debouncedChangeHandler();
+  };
+
   return (
     <StyledPage>
       <div className="tab-section">
@@ -136,11 +161,18 @@ export function CustomersTable() {
           </MuiTypography>
         </div>
         <div className="action-section">
-          <CustomSearch placeholder="Search name, username, email, phone number" />
+          <CustomSearch
+            placeholder="Search name, username, email, phone number"
+            value={text}
+            onChange={handleChangeText}
+          />
         </div>
       </div>
 
-      <TableWrapper>
+      <TableWrapper
+        handleChangePagination={handleChange}
+        pagination={pagination}
+        showPagination>
         <MuiTableContainer
           sx={{
             maxWidth: "100%",

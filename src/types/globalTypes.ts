@@ -1,4 +1,4 @@
-export type ISettlementStatus = "accepted" | "pending" | "rejected";
+export type ISettlementStatus = "accepted" | "pending" | "rejected" | "expired";
 
 export interface ILoginReq {
   username: string;
@@ -300,7 +300,8 @@ export type IStatus =
   | "pending_delivery"
   | "pending_pickup"
   | "expired"
-  | "processing";
+  | "processing"
+  | "queued";
 
 export type IVerifyStatus = "true" | "false";
 
@@ -450,6 +451,7 @@ export type IUserData = {
   id: string;
   isVerified: boolean;
   isActive: boolean;
+  profilePictureUrl: string;
 };
 
 export type IUsersResponse = {
@@ -698,12 +700,47 @@ export type ITransactions = {
   creationTime: string;
 };
 
+export type IUserPayout = {
+  id: number;
+  creatorUserId: string;
+  lastModifierUserId: string;
+  deleterUserId: string;
+  creationTime: string;
+  lastModificationTime: string;
+  deletionTime: string;
+  isDeleted: true;
+  accountNumber: string;
+  accountName: string;
+  bankCode: string;
+  bankName: string;
+  amount: number;
+  narration: string;
+  transactionReference: string;
+  userId: string;
+  orderNumber: string;
+  response: string;
+  statusQueryResponse: string;
+  statusQueryCount: number;
+  retryCount: number;
+  lastStatusQueryDate: string;
+  providerTransactionId: string;
+  providerTransactionReference: string;
+  provider: number;
+  status: number;
+  transactionType: number;
+};
+
 export type ITransactionsResponse = {
   result: IPaginationResponse & {
     data: ITransactions[];
   };
 };
 
+export type IPayoutResponse = {
+  result: IPaginationResponse & {
+    data: IUserPayout[];
+  };
+};
 // SALES
 
 export type ISalesData = {
@@ -741,6 +778,7 @@ export type ICatalogueBid = {
   bidStatusDescription: string;
   bidTypeDescription: string;
   creationTime: string;
+  bidderInfo: IUserData;
 };
 
 export type IListingData = {

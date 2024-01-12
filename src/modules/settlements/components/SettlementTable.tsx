@@ -210,7 +210,10 @@ export function SettlementTable({
         </div>
       </div>
 
-      <TableWrapper showPagination pagination={pagination}>
+      <TableWrapper
+        showPagination
+        handleChangePagination={handleChange}
+        pagination={pagination}>
         <MuiTableContainer
           sx={{
             maxWidth: "100%",

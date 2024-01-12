@@ -19,6 +19,7 @@ import {
   IconSales,
   IconShop,
   IconAppRelease,
+  IconPayout,
 } from "lib/mui.lib.icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUserStore } from "config/store-config/store.config";
@@ -49,6 +50,11 @@ const menuLinks = [
     title: "Transactions",
     path: "transactions",
     icon: <IconBars />,
+  },
+  {
+    title: "Payouts",
+    path: "payouts",
+    icon: <IconPayout />,
   },
   {
     title: "Sales Revenue",
