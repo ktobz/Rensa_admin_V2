@@ -25,7 +25,7 @@ import CustomSearch from "@/components/input/CustomSearch";
 import { IUserData, IPagination } from "@/types/globalTypes";
 import CustomerService from "@/services/customer-service";
 import { VerificationStatus } from "@/components/feedback/VerfiedStatus";
-import { createPaginationData } from "@/utils/helper-funcs";
+import { createPaginationData, formatDate } from "@/utils/helper-funcs";
 import { DeleteUserConfirm } from "./DeleteProductConfirm";
 import { toast } from "react-toastify";
 import VendgramCustomModal from "@/components/modal/Modal";
@@ -235,10 +235,7 @@ export function CustomersTable() {
 
                     <MuiTableCell align="left">{row?.email}</MuiTableCell>
                     <MuiTableCell align="left">
-                      {format(
-                        new Date(row?.creationTime || ""),
-                        "LL MMMM, yyyy"
-                      )}
+                      {formatDate(row?.creationTime || "")}
                     </MuiTableCell>
                     <MuiTableCell align="left">
                       <VerificationStatus

@@ -710,6 +710,7 @@ export type ITransactions = {
   status: number;
   id: number;
   creationTime: string;
+  orderNumber: string;
 };
 
 export type IUserPayout = {

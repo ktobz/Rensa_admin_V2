@@ -20,6 +20,7 @@ import {
   IconPetrol,
   IconShipping,
   IconTicket,
+  IconVan,
 } from "@/lib/mui.lib.icons";
 import { useQuery, useQueryClient } from "react-query";
 import OrderService from "@/services/order-service";
@@ -39,7 +40,7 @@ import { OrderPayoutConfirmation } from "../components/OrderPayoutConfirmation";
 
 const mapPickupMethod: { [key: number]: React.ReactNode } = {
   1: <IconBike className="delivery-method" />,
-  2: <IconShipping className="delivery-method" />,
+  2: <IconVan className="delivery-method" />,
 };
 
 export function OrderDetails() {
@@ -67,6 +68,8 @@ export function OrderDetails() {
     () =>
       (orderId?.includes("RN_")
         ? OrderService.getOrderDetailsByTransactionRef(orderId || "")
+        : orderId?.includes("RN")
+        ? OrderService.getOrderDetailsByOrderNumber(orderId || "")
         : OrderService.getOrderDetails(orderId || "")
       )
         .then((res) => {

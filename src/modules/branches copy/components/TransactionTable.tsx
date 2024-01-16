@@ -20,6 +20,7 @@ import CustomTableSkeleton from "components/skeleton/CustomTableSkeleton";
 import {
   createPaginationData,
   formatCurrency,
+  formatDate,
   getIdName,
 } from "utils/helper-funcs";
 import TableWrapper from "@/components/table/TableWrapper";
@@ -270,11 +271,7 @@ export function TransactionTable({
                       </MuiTableCell>
 
                       <MuiTableCell align="left">
-                        {" "}
-                        {format(
-                          new Date(row?.creationTime || ""),
-                          "LL MMMM, yyyy"
-                        )}
+                        {formatDate(row?.creationTime || "")}
                       </MuiTableCell>
                       <MuiTableCell align="left">
                         <OrderStatus

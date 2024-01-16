@@ -88,6 +88,7 @@ import { ReactComponent as IconSales } from "assets/icon/sales.svg";
 import { ReactComponent as IconReport } from "assets/icon/report.svg";
 import { ReactComponent as IconShop } from "assets/icon/store.svg";
 import { ReactComponent as IconBike } from "assets/icon/bike.svg";
+import { ReactComponent as IconVan } from "assets/icon/van.svg";
 import { ReactComponent as IconCopyFilled } from "assets/icon/copy_main.svg";
 import { ReactComponent as IconBlock } from "assets/icon/block.svg";
 import { ReactComponent as IconUnblock } from "assets/icon/unblock.svg";
@@ -109,6 +110,7 @@ import { ReactComponent as IconVerify } from "assets/icon/verify.svg";
 import { ReactComponent as IconPayout } from "assets/icon/payout.svg";
 
 export {
+  IconVan,
   IconVerify,
   IconPayout,
   IconRetry,

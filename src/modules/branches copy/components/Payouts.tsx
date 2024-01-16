@@ -20,6 +20,7 @@ import CustomTableSkeleton from "components/skeleton/CustomTableSkeleton";
 import {
   createPaginationData,
   formatCurrency,
+  formatDate,
   getIdName,
 } from "utils/helper-funcs";
 import TableWrapper from "@/components/table/TableWrapper";
@@ -131,7 +132,7 @@ export function PayoutTableView({
   };
 
   const handleViewDetails = (data: IUserPayout) => () => {
-    navigate(`/app/orders/${data?.transactionReference}`);
+    navigate(`/app/orders/${data?.orderNumber}`);
   };
 
   const handleSetFilter = (values: number[]) => {
@@ -282,11 +283,7 @@ export function PayoutTableView({
                       </MuiTableCell>
 
                       <MuiTableCell align="left">
-                        {" "}
-                        {format(
-                          new Date(row?.creationTime || ""),
-                          "LL MMMM, yyyy"
-                        )}
+                        {formatDate(row?.creationTime || "")}
                       </MuiTableCell>
                       <MuiTableCell align="left">
                         <OrderStatus type={type} />

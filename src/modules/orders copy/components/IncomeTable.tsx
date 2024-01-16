@@ -20,7 +20,11 @@ import {
 import { IPagination, ISalesData, IStatus } from "@/types/globalTypes";
 
 import CustomTableSkeleton from "components/skeleton/CustomTableSkeleton";
-import { createPaginationData, formatCurrency } from "utils/helper-funcs";
+import {
+  createPaginationData,
+  formatCurrency,
+  formatDate,
+} from "utils/helper-funcs";
 import { format } from "date-fns";
 import TableWrapper from "@/components/table/TableWrapper";
 import { IconOrder, IconVisibility } from "@/lib/mui.lib.icons";
@@ -235,7 +239,7 @@ export function IncomeTable() {
                     Order <b>#{row?.orderNumber}</b>
                   </MuiTableCell>
                   <MuiTableCell>
-                    {format(new Date(row?.creationTime || ""), "LL MMMM, yyyy")}
+                    {formatDate(row?.creationTime || "")}
                   </MuiTableCell>
                   <MuiTableCell align="left">
                     ₦

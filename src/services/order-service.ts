@@ -85,6 +85,15 @@ const OrderService = {
       },
     });
   },
+  getOrderDetailsByOrderNumber(
+    id: string
+  ): AxiosPromise<IOrderDetailsResponse> {
+    return HTTP.get(`${PATHS.orders}/order-number/${id}`, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
 
   confirmOrder(orderNumber: string): AxiosPromise<any> {
     return HTTP.put(
