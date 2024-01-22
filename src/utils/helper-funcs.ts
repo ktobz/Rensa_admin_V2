@@ -59,7 +59,7 @@ export const createPaginationData = (
   data: any,
   pagination: IPaginationResponse
 ) => {
-  const totalEntries = pagination?.totalRecords || 1;
+  const totalEntries = pagination?.totalRecords || 0;
   const totalPages = pagination.totalPages;
   const hasNextPage = pagination.hasNextPage;
   const hasPrevPage = pagination.hasPreviousPage;

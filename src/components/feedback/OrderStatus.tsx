@@ -160,6 +160,8 @@ export const OrderStatus = ({
         background: statusData[statusType]?.bg || "",
         padding: "10px 15px",
         borderRadius: "10px",
+        display: "inline-block",
+        whiteSpace: "nowrap",
         fontWeight: "bold",
         ...style,
       }}>

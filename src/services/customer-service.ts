@@ -4,6 +4,7 @@ import {
   IUserDetailResponse,
   IUsersResponse,
   IUserStatusUpdateResponse,
+  IBankDetailsResponse,
 } from "@/types/globalTypes";
 import { AxiosPromise } from "axios";
 
@@ -12,6 +13,7 @@ const PATHS = {
   admin: "/admin",
   findUser: "/admin/find-user",
   userOrders: "/admin/order",
+  bankDetails: "/admin/bank/get-user-bank-account",
 };
 
 const CustomerService = {
@@ -32,7 +34,17 @@ const CustomerService = {
       });
     };
   },
-
+  payoutAccount(id: number | string): AxiosPromise<IBankDetailsResponse> {
+    return HTTP.get(
+      `${PATHS.bankDetails}/${id}
+      `,
+      {
+        headers: {
+          Authorization: getToken(),
+        },
+      }
+    );
+  },
   getCustomerDetails(id: number | string): AxiosPromise<IUserDetailResponse> {
     return HTTP.get(`${PATHS.findUser}/${id}`, {
       headers: {

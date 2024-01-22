@@ -21,10 +21,7 @@ export const BlockUserConfirm = ({
   handleAction,
   action = "unblock",
 }: IProps) => {
-  console.log(action);
   const [isUpdating, setIsUpdating] = React.useState(false);
-
-  // const userData = data?.[0];
 
   const isToClose = action === "block";
 

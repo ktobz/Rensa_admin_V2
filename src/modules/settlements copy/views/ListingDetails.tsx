@@ -234,12 +234,14 @@ export function ListingDetails() {
             <SimpleBar className="">
               <div className="image-wrapper">
                 {data?.catalogueAttachments?.map((file, index) => (
-                  <MuiCardMedia
-                    key={index}
-                    component="img"
-                    src={file?.url}
-                    className="product"
-                  />
+                  <>
+                    <MuiCardMedia
+                      key={index}
+                      component="img"
+                      src={file?.url}
+                      className="product"
+                    />
+                  </>
                 ))}
               </div>
             </SimpleBar>

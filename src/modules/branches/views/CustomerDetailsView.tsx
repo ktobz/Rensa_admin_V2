@@ -3,7 +3,13 @@ import { format } from "date-fns";
 import { useQuery, useQueryClient } from "react-query";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
-import { MuiButton, MuiTypography, styled } from "@/lib/index";
+import {
+  MuiButton,
+  MuiInputLabel,
+  MuiSwitch,
+  MuiTypography,
+  styled,
+} from "@/lib/index";
 import { OrderTable } from "@/modules/orders";
 import { TotalCard } from "@/components/index";
 import CustomSearch from "@/components/input/CustomSearch";
@@ -22,6 +28,8 @@ import { SettlementTable } from "@/modules/settlements/components/SettlementTabl
 import { TransactionTable } from "@/modules/branches copy/components/TransactionTable";
 import ListingService from "@/services/listing-service";
 import TransactionService from "@/services/transaction-service";
+import { PayoutAccountView } from "./PayoutAccountView";
+import { CustomSwitch } from "@/components/input/CustomSwitch";
 
 type TStatus = "block" | "unblock";
 
@@ -211,10 +219,36 @@ export function CustomerDetailsView() {
               label="Transactions"
               current={current}
             />
+            <CustomTab
+              onClick={handleChangeIndex(3)}
+              value={3}
+              label="Bank Details"
+              current={current}
+            />
           </CustomTabs>
 
           <div className="action-section">
-            {data?.isActive ? (
+            <MuiInputLabel
+              style={{ cursor: "pointer" }}
+              onClick={handleToggleUserActiveStatus(
+                data?.isActive ? "block" : "unblock"
+              )}>
+              <span
+                style={{
+                  fontWeight: "700",
+                  color: "#475367",
+                  paddingRight: "20px",
+                }}>
+                Blacklist user{" "}
+              </span>
+
+              <CustomSwitch
+                disabled
+                checked={!data?.isActive}
+                defaultChecked={!data?.isActive}
+              />
+            </MuiInputLabel>
+            {/* {data?.isActive ? (
               <MuiButton
                 color="inherit"
                 variant="contained"
@@ -230,7 +264,7 @@ export function CustomerDetailsView() {
                 onClick={handleToggleUserActiveStatus("unblock")}>
                 Unblock User
               </MuiButton>
-            )}
+            )} */}
           </div>
         </div>
       </div>
@@ -263,6 +297,9 @@ export function CustomerDetailsView() {
           apiFunc={TransactionService.getUserTransactions(customerId)}
           queryKey="all-customer-transactions"
         />
+      </CustomTabPanel>
+      <CustomTabPanel index={current} value={3}>
+        <PayoutAccountView userId={customerId} />
       </CustomTabPanel>
 
       <VendgramCustomModal
@@ -297,6 +334,12 @@ const PageContent = styled.section`
     }
   }
 
+  & .MuiSwitch-track {
+    opacity: 1 !important;
+  }
+  & .Mui-checked {
+    color: #fff !important;
+  }
   & .branch-section {
     display: flex;
     gap: 20px;

@@ -621,12 +621,20 @@ export type IOrderStatsResponse = {
     cancelled: number;
   };
 };
+
 // DELIVERY SETTINGS
 
 export type IDeliverySettingsResponse = {
   result: IDeliverySettingsData[];
 };
-
+export type IBankDetailsResponse = {
+  result: {
+    bankName: string | null;
+    internalCode: string | null;
+    accountName: string | null;
+    accountNumber: string | null;
+  };
+};
 // CATALOGUE CATEGORY
 export type ICategoryData = {
   name: string;
