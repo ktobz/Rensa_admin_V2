@@ -110,6 +110,11 @@ const statusData: {
     color: "#777E90",
     text: "Expired",
   },
+  invalid_account: {
+    bg: "#F0F0F0",
+    color: "#777E90",
+    text: "Invalid Account",
+  },
   closed: {
     bg: "#F0F0F0",
     color: "#777E90",
@@ -152,7 +157,7 @@ export const OrderStatus = ({
   const statusType = type
     ?.toLowerCase()
     ?.trim()
-    ?.replaceAll(" ", "-") as IStatus;
+    ?.replaceAll(" ", "_") as IStatus;
   return (
     <span
       style={{

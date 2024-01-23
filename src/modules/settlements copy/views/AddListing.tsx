@@ -10,7 +10,7 @@ import {
   MuiTypography,
   styled,
 } from "@/lib/index";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { useQuery, useQueryClient } from "react-query";
 import { IListingProp, IUserData, PlaceType } from "@/types/globalTypes";
@@ -28,9 +28,6 @@ import CustomImageUploader from "../components/CustomImageUploader";
 import ListingService from "@/services/listing-service";
 import { toast } from "react-toastify";
 import APP_VARS from "@/utils/env";
-import axios from "axios";
-
-const GOOGLE_MAPS_API_KEY = APP_VARS.googleAPI;
 
 const SCHEMA = Yup.object().shape({
   name: Yup.string().required("required"),
@@ -48,6 +45,8 @@ export function AddListing() {
   const {
     lookup: { deliveryFeePickupMethod, durationHours },
   } = useCachedDataStore((state) => state.cache);
+  const navigate = useNavigate();
+
   const queryClient = useQueryClient();
   const { state } = useLocation();
   const { reportId } = useIds();
@@ -114,15 +113,6 @@ export function AddListing() {
             const latitude = place.geometry.location.lat();
             const longitude = place.geometry.location.lng();
 
-            console.log({
-              city,
-              state,
-              formattedAddress,
-              latitude,
-              longitude,
-              values,
-            });
-
             setIsSubmitting(true);
             const formData = new FormData();
             formData.append("Name", values?.name);
@@ -141,12 +131,16 @@ export function AddListing() {
             formData.append("CatalogueCategoryId", values?.catalogueCategoryId);
             formData.append("DurationInHours", values?.durationInHours);
             formData.append("PickupMethod", values?.pickupMethod);
-            formData.append("Files", values?.files as any);
+
+            for (let i = 0; i < values.files.length; i += 1) {
+              formData.append("Files", values.files[i] as any);
+            }
+
             try {
               const { data } = await ListingService.create(formData);
-              // toast.success(data?.);
-              console.log(data, "DT");
+              toast.success(data?.result?.message);
               setIsSubmitting(false);
+              navigate("/app/marketplace/listings");
             } catch (error: any) {
               toast.error(error?.response?.data?.message);
               setIsSubmitting(false);
@@ -158,64 +152,6 @@ export function AddListing() {
         }
       );
     }
-
-    // axios
-    //   .get(
-    //     `https://maps.googleapis.com/maps/api/place/details/json?placeid=${locationValue?.place_id}&key=${GOOGLE_MAPS_API_KEY}`,
-    //     {}
-    //   )
-    //   .then((response) => {
-    //     console.log(response);
-    //     return response;
-    //   })
-    //   .then(async (placeData) => {
-    //     // Access detailed information about the place from placeData
-    //     // const locationId = locationValue?.place_id || "";
-    //     // const stats = placeData.result.stats;
-    //     // const state = placeData.result.address_components.find(
-    //     //   (component: any) =>
-    //     //     component.types.includes("administrative_area_level_1")
-    //     // ).short_name;
-    //     // const city = placeData.result.address_components.find(
-    //     //   (component: any) => component?.types.includes("locality")
-    //     // ).long_name;
-    //     // const description = placeData.result.name;
-    //     // const latitude = placeData.result.geometry.location.lat;
-    //     // const longitude = placeData.result.geometry.location.lng;
-    //     // const formattedAddress = placeData.result.formatted_address;
-    //     // console.log({
-    //     //   stats,
-    //     //   city,
-    //     //   description,
-    //     //   latitude,
-    //     //   longitude,
-    //     // });
-    //     // setIsSubmitting(true);
-    //     // const formData = new FormData();
-    //     // formData.append("name", values?.name);
-    //     // formData.append("userId", values?.userId);
-    //     // formData.append("Description", values.description);
-    //     // formData.append("Price", values.price);
-    //     // formData.append("LocationInfo.Location", formattedAddress);
-    //     // formData.append("LocationInfo.Latitude", latitude);
-    //     // formData.append("LocationInfo.Longitude", longitude);
-    //     // formData.append("LocationInfo.City", city);
-    //     // formData.append("LocationInfo.State", state);
-    //     // formData.append("catalogueConditionId", values?.catalogueConditionId);
-    //     // formData.append("catalogueCategoryId", values?.catalogueCategoryId);
-    //     // formData.append("durationInHours", values?.durationInHours);
-    //     // formData.append("pickupMethod", values?.pickupMethod);
-    //     // formData.append("files", values?.files as any);
-    //     // try {
-    //     //   const { data } = await ListingService.create(values);
-    //     //   // toast.success(data?.);
-    //     //   console.log(data, "DT");
-    //     //   setIsSubmitting(false);
-    //     // } catch (error: any) {
-    //     //   toast.error(error?.response?.data?.message);
-    //     //   setIsSubmitting(false);
-    //     // }
-    //   });
   };
 
   const formik = useFormik({
@@ -298,7 +234,6 @@ export function AddListing() {
 
   const handelUpdateValue = (value: any) => {
     setLocationValue(value);
-    console.log(value);
     setFieldValue("location", value?.description);
   };
 

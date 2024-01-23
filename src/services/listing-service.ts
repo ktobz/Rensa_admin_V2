@@ -7,6 +7,7 @@ import {
   IReportedListingResponse,
   IListingStatsResponse,
   IReportedListingCommentsResponse,
+  IAddListingResponse,
 } from "@/types/globalTypes";
 import { AxiosPromise } from "axios";
 
@@ -31,7 +32,7 @@ const ListingService = {
     );
   },
 
-  create(data: FormData): AxiosPromise<IListingDetailsResponse> {
+  create(data: FormData): AxiosPromise<IAddListingResponse> {
     return HTTP.post(`${PATHS.orders}`, data, {
       headers: {
         Authorization: getToken(),

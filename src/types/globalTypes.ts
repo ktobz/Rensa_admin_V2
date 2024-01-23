@@ -303,7 +303,8 @@ export type IStatus =
   | "processing"
   | "queued"
   | "on_hold"
-  | "closed";
+  | "closed"
+  | "invalid_account";
 
 export type IVerifyStatus = "true" | "false";
 
@@ -911,7 +912,11 @@ export type IReportedListingCommentsResponse = {
 export type IListingDetailsResponse = {
   result: IListingData;
 };
-
+export type IAddListingResponse = {
+  result: {
+    message: string;
+  };
+};
 // LOOKUPS
 
 export type ILookupGroupName =
