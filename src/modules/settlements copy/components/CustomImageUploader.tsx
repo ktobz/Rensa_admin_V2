@@ -331,6 +331,7 @@ export default function CustomImageUploader(props: IUploaderProps) {
         <VendgramCustomModal
           closeOnOutsideClick={false}
           showClose
+          title="Crop Image"
           handleClose={handleClose}
           open={showCropper}>
           <div
@@ -340,9 +341,13 @@ export default function CustomImageUploader(props: IUploaderProps) {
               flexDirection: "column",
               gap: "20px",
               position: "relative",
+              width: "calc(100vw - 80px)",
+              maxWidth: "600px",
+              justifyContent: "center",
+              alignItems: "center",
             }}>
             <Cropper
-              style={{ height: 400, width: "100%" }}
+              style={{ height: "100%", width: "100%" }}
               zoomTo={0}
               // initialAspectRatio={1}
               // preview=".img-preview"

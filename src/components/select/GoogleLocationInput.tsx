@@ -7,13 +7,24 @@ import Typography from "@mui/material/Typography";
 import parse from "autosuggest-highlight/parse";
 import { debounce } from "@mui/material/utils";
 import APP_VARS from "@/utils/env";
-import VendgramInput from "../input";
+import AppInput from "../input";
 import { PlaceType } from "@/types/globalTypes";
+// import { Autocomplete, LoadScript, useLoadScript } from "@react-google-maps/api";
 
 const GOOGLE_MAPS_API_KEY = APP_VARS.googleAPI;
+type TWindow = typeof globalThis & {
+  google: any;
+};
 
 function loadScript(src: string, position: HTMLElement | null, id: string) {
   if (!position) {
+    return;
+  }
+
+  if (
+    typeof (window as unknown as TWindow)?.google === "object" &&
+    typeof (window as unknown as TWindow)?.google?.maps === "object"
+  ) {
     return;
   }
 
@@ -23,6 +34,10 @@ function loadScript(src: string, position: HTMLElement | null, id: string) {
   script.src = src;
   position.appendChild(script);
 }
+
+// const gmFallback = () => {
+//   console.log("LOADED MAP");
+// };
 
 const autocompleteService = { current: null };
 
@@ -43,7 +58,7 @@ export default function GoogleLocationInput({
   if (typeof window !== "undefined" && !loaded.current) {
     if (!document.querySelector("#google-maps")) {
       loadScript(
-        `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`,
+        `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&callback=Function.prototype`,
         document.querySelector("head"),
         "google-maps"
       );
@@ -138,7 +153,7 @@ export default function GoogleLocationInput({
         setInputValue(newInputValue);
       }}
       renderInput={(params) => (
-        <VendgramInput {...params} label="Item Location" error={error} />
+        <AppInput {...params} label="Item Location" error={error} />
       )}
       renderOption={(props, option) => {
         const matches =

@@ -31,6 +31,15 @@ const ListingService = {
     );
   },
 
+  create(data: FormData): AxiosPromise<IListingDetailsResponse> {
+    return HTTP.post(`${PATHS.orders}`, data, {
+      headers: {
+        Authorization: getToken(),
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  },
+
   getDetails(id: number | string): AxiosPromise<IListingDetailsResponse> {
     return HTTP.get(`${PATHS.orders}/${id}`, {
       headers: {

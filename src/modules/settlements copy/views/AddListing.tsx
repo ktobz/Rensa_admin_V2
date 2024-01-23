@@ -3,7 +3,13 @@ import * as Yup from "yup";
 import { useFormik, FormikProvider } from "formik";
 import debounceFunc from "lodash.debounce";
 
-import { MuiButton, MuiDivider, MuiTypography, styled } from "@/lib/index";
+import {
+  MuiButton,
+  MuiCircularProgress,
+  MuiDivider,
+  MuiTypography,
+  styled,
+} from "@/lib/index";
 import { useLocation } from "react-router-dom";
 
 import { useQuery, useQueryClient } from "react-query";
@@ -19,25 +25,28 @@ import NotificationService from "@/services/notification-service";
 
 import CustomerService from "@/services/customer-service";
 import CustomImageUploader from "../components/CustomImageUploader";
+import ListingService from "@/services/listing-service";
+import { toast } from "react-toastify";
+import APP_VARS from "@/utils/env";
+import axios from "axios";
+
+const GOOGLE_MAPS_API_KEY = APP_VARS.googleAPI;
 
 const SCHEMA = Yup.object().shape({
   name: Yup.string().required("required"),
   description: Yup.string().required("required"),
-  price: Yup.number().required("required"),
+  price: Yup.number().required("required").min(1, "required"),
   location: Yup.string().required("required"),
-  latitude: Yup.number().required("required"),
-  longitude: Yup.number().required("required"),
-
   userId: Yup.string().required("required"),
-  pickupMethod: Yup.number().required("Required"),
-  availability: Yup.boolean(),
-  catalogueConditionId: Yup.number().required("required"),
-  catalogueCategoryId: Yup.number().required("required"),
+  pickupMethod: Yup.number().required("Required").min(1, "required"),
+  durationInHours: Yup.number().required("Required").min(1, "required"),
+  catalogueConditionId: Yup.number().required("required").min(1, "required"),
+  catalogueCategoryId: Yup.number().required("required").min(1, "required"),
 });
 
 export function AddListing() {
   const {
-    lookup: { pickupMethod, deliveryFeePickupMethod, durationHours },
+    lookup: { deliveryFeePickupMethod, durationHours },
   } = useCachedDataStore((state) => state.cache);
   const queryClient = useQueryClient();
   const { state } = useLocation();
@@ -56,23 +65,157 @@ export function AddListing() {
 
   const initialData = {
     location: "",
-    CatalogueCategoryId: 0,
-    CatalogueConditionId: 0,
+    catalogueCategoryId: 0,
+    catalogueConditionId: 0,
     description: "",
-    DurationInHours: 0,
+    durationInHours: 0,
     files: [],
-    langitude: "",
-    longitude: "",
     name: "",
-    PickupMethod: 0,
+    pickupMethod: 0,
     price: 0,
-    UserId: "",
+    userId: "",
     userId_name: "",
     files_preview: [],
   };
 
   const createListing = (values: any) => {
-    setIsSubmitting(true);
+    if (values?.files?.length === 0) {
+      toast.warn("Listing Image is missing");
+      return false;
+    }
+
+    if ((window as any).google) {
+      // Use the PlacesAPI component to fetch place details
+      const placesAPI = new (window as any).google.maps.places.PlacesService(
+        document.createElement("div")
+      );
+
+      placesAPI.getDetails(
+        {
+          placeId: locationValue?.place_id || "",
+          fields: [
+            "name",
+            "formatted_address",
+            "geometry",
+            "address_components",
+          ],
+        },
+        async (place: any, status: any) => {
+          if (
+            status === (window as any).google.maps.places.PlacesServiceStatus.OK
+          ) {
+            const city = place.address_components.find((component: any) =>
+              component.types.includes("locality")
+            ).long_name;
+            const state = place.address_components.find((component: any) =>
+              component.types.includes("administrative_area_level_1")
+            ).long_name;
+            const formattedAddress = place.formatted_address;
+            const latitude = place.geometry.location.lat();
+            const longitude = place.geometry.location.lng();
+
+            console.log({
+              city,
+              state,
+              formattedAddress,
+              latitude,
+              longitude,
+              values,
+            });
+
+            setIsSubmitting(true);
+            const formData = new FormData();
+            formData.append("Name", values?.name);
+            formData.append("UserId", values?.userId);
+            formData.append("Description", values.description);
+            formData.append("Price", values.price);
+            formData.append("LocationInfo.Location", formattedAddress);
+            formData.append("LocationInfo.Latitude", latitude);
+            formData.append("LocationInfo.Longitude", longitude);
+            formData.append("LocationInfo.City", city);
+            formData.append("LocationInfo.State", state);
+            formData.append(
+              "CatalogueConditionId",
+              values?.catalogueConditionId
+            );
+            formData.append("CatalogueCategoryId", values?.catalogueCategoryId);
+            formData.append("DurationInHours", values?.durationInHours);
+            formData.append("PickupMethod", values?.pickupMethod);
+            formData.append("Files", values?.files as any);
+            try {
+              const { data } = await ListingService.create(formData);
+              // toast.success(data?.);
+              console.log(data, "DT");
+              setIsSubmitting(false);
+            } catch (error: any) {
+              toast.error(error?.response?.data?.message);
+              setIsSubmitting(false);
+            }
+          } else {
+            console.error("Error fetching place details:", status);
+            setIsSubmitting(false);
+          }
+        }
+      );
+    }
+
+    // axios
+    //   .get(
+    //     `https://maps.googleapis.com/maps/api/place/details/json?placeid=${locationValue?.place_id}&key=${GOOGLE_MAPS_API_KEY}`,
+    //     {}
+    //   )
+    //   .then((response) => {
+    //     console.log(response);
+    //     return response;
+    //   })
+    //   .then(async (placeData) => {
+    //     // Access detailed information about the place from placeData
+    //     // const locationId = locationValue?.place_id || "";
+    //     // const stats = placeData.result.stats;
+    //     // const state = placeData.result.address_components.find(
+    //     //   (component: any) =>
+    //     //     component.types.includes("administrative_area_level_1")
+    //     // ).short_name;
+    //     // const city = placeData.result.address_components.find(
+    //     //   (component: any) => component?.types.includes("locality")
+    //     // ).long_name;
+    //     // const description = placeData.result.name;
+    //     // const latitude = placeData.result.geometry.location.lat;
+    //     // const longitude = placeData.result.geometry.location.lng;
+    //     // const formattedAddress = placeData.result.formatted_address;
+    //     // console.log({
+    //     //   stats,
+    //     //   city,
+    //     //   description,
+    //     //   latitude,
+    //     //   longitude,
+    //     // });
+    //     // setIsSubmitting(true);
+    //     // const formData = new FormData();
+    //     // formData.append("name", values?.name);
+    //     // formData.append("userId", values?.userId);
+    //     // formData.append("Description", values.description);
+    //     // formData.append("Price", values.price);
+    //     // formData.append("LocationInfo.Location", formattedAddress);
+    //     // formData.append("LocationInfo.Latitude", latitude);
+    //     // formData.append("LocationInfo.Longitude", longitude);
+    //     // formData.append("LocationInfo.City", city);
+    //     // formData.append("LocationInfo.State", state);
+    //     // formData.append("catalogueConditionId", values?.catalogueConditionId);
+    //     // formData.append("catalogueCategoryId", values?.catalogueCategoryId);
+    //     // formData.append("durationInHours", values?.durationInHours);
+    //     // formData.append("pickupMethod", values?.pickupMethod);
+    //     // formData.append("files", values?.files as any);
+    //     // try {
+    //     //   const { data } = await ListingService.create(values);
+    //     //   // toast.success(data?.);
+    //     //   console.log(data, "DT");
+    //     //   setIsSubmitting(false);
+    //     // } catch (error: any) {
+    //     //   toast.error(error?.response?.data?.message);
+    //     //   setIsSubmitting(false);
+    //     // }
+    //   });
   };
 
   const formik = useFormik({
@@ -155,7 +298,7 @@ export function AddListing() {
 
   const handelUpdateValue = (value: any) => {
     setLocationValue(value);
-    // console.log(value);
+    console.log(value);
     setFieldValue("location", value?.description);
   };
 
@@ -182,7 +325,6 @@ export function AddListing() {
             <VendgramVirtualizedCountriesSelect
               label="Select user"
               updateFieldValue={(value: any) => {
-                console.log("update", value);
                 setFieldValue("userId", value?.id);
                 setFieldValue("userId_name", value?.firstName);
               }}
@@ -215,10 +357,9 @@ export function AddListing() {
                     handleChangeCompetitionValue("");
                   }
                   if (reason === "reset") {
-                    setFieldValue("userId_name", newInputValue);
-                    setFieldValue("userId", getId(newInputValue, users.data));
+                    // setFieldValue("userId_name", newInputValue);
+                    // setFieldValue("userId", getId(newInputValue, users.data));
                   }
-                  console.log(newInputValue, reason, users.data);
                 }
               }}
               isOptionEqualToValue={(option: any, value: any) => {
@@ -226,7 +367,7 @@ export function AddListing() {
               }}
             />
           </div>
-          <MuiDivider className="" />
+          <MuiDivider className="divider" />
 
           <div className="image-listing">
             <MuiTypography variant="body1">Listing Images</MuiTypography>
@@ -275,15 +416,15 @@ export function AddListing() {
             />
 
             <VendgramSelect
-              id="catalogueCategoryId"
-              name="catalogueCategoryId"
+              id="catalogueConditionId"
+              name="catalogueConditionId"
               label="Condition"
               placeholder="Select Condition"
-              value={values.catalogueCategoryId}
+              value={values.catalogueConditionId}
               onChange={handleChange}
-              helperText={errors.catalogueCategoryId}
+              helperText={errors.catalogueConditionId}
               options={allConditions.data || []}
-              error={!!errors.catalogueCategoryId}
+              error={!!errors.catalogueConditionId}
               required
             />
 
@@ -350,8 +491,17 @@ export function AddListing() {
             />
           </div>
 
-          <MuiButton variant="contained" className="btn" color="primary">
-            Publish listing
+          <MuiButton
+            variant="contained"
+            type="submit"
+            disabled={isSubmitting}
+            className="btn"
+            color="primary">
+            {isSubmitting ? (
+              <MuiCircularProgress size={20} />
+            ) : (
+              "Publish listing"
+            )}
           </MuiButton>
         </div>
       </PageContent>
@@ -362,6 +512,10 @@ export function AddListing() {
 const PageContent = styled.form`
   width: 100%;
   margin: auto;
+
+  & .divider {
+    margin: 20px 0 25px;
+  }
 
   & .listing-info {
     display: grid;
