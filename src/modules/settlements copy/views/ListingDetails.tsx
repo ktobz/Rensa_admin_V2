@@ -1,5 +1,6 @@
 import * as React from "react";
 import { format } from "date-fns";
+import { Lightbox } from "react-modal-image";
 
 import {
   MuiButton,
@@ -16,8 +17,10 @@ import {
   IconCopyFilled,
   IconCreditCard,
   IconEarning,
+  IconEye,
   IconLocation,
   IconPetrol,
+  IconPlay,
   IconShipping,
   IconTicket,
 } from "@/lib/mui.lib.icons";
@@ -65,7 +68,14 @@ export function ListingDetails() {
   const { state } = useLocation();
   const { reportId } = useIds();
   const [action, setAction] = React.useState("");
-  const [show, setShow] = React.useState(false);
+  const [selectedVideo, setSelectedVideo] = React.useState("");
+  const [selectedImage, setSelectedImage] = React.useState("");
+  const [showImageModal, setShowImageModal] = React.useState(false);
+  const [show, setShow] = React.useState({
+    video: false,
+    image: false,
+    action: false,
+  });
   const trimmedId = trimText(reportId);
 
   const { data, isLoading, isError } = useQuery(
@@ -84,12 +94,21 @@ export function ListingDetails() {
   );
 
   const handleToggleShow = () => {
-    setShow((prev) => !prev);
+    setShow((prev) => ({ ...prev, action: !prev.action }));
   };
+
+  const handleClose = () => {
+    setShow((prev) => ({
+      action: false,
+      image: false,
+      video: false,
+    }));
+  };
+
   const handleRefresh = () => {
     queryClient.invalidateQueries(["order-details"]);
     setAction("");
-    setShow(false);
+    handleClose();
   };
 
   const handleSetAction = (
@@ -123,6 +142,27 @@ export function ListingDetails() {
   const endTime = date.setTime(date.getTime() + duration * 60 * 60 * 1000);
 
   const timeRemaining = endTime > today ? (endTime - today) / 1000 : 0;
+
+  const handleSetImage = (image: string) => () => {
+    setSelectedImage(image);
+    setShow((prev) => ({ ...prev, image: true }));
+  };
+
+  const handleSetVideo = (video: string) => () => {
+    setSelectedVideo(video);
+    setShow((prev) => ({ ...prev, video: true }));
+  };
+
+  const handleCloseImageModal = () => {
+    setShow((prev) => ({ ...prev, image: false }));
+  };
+
+  const videoFile = data?.catalogueAttachments?.filter((x) =>
+    x?.cleansedName?.includes("mp4")
+  );
+  const imageFiles = data?.catalogueAttachments?.filter(
+    (x) => !x?.cleansedName?.includes("mp4")
+  );
 
   return (
     <PageContent>
@@ -233,15 +273,37 @@ export function ListingDetails() {
           <div className="">
             <SimpleBar className="">
               <div className="image-wrapper">
-                {data?.catalogueAttachments?.map((file, index) => (
-                  <>
+                {videoFile?.map((file, index) => (
+                  <div className="listing-image">
+                    <MuiCardMedia
+                      key={index}
+                      component="img"
+                      src={imageFiles?.[0]?.url}
+                      className="product"
+                    />
+
+                    <MuiButton
+                      className="image-view"
+                      onClick={handleSetVideo(file?.url)}>
+                      <IconPlay className="play-icon" />
+                    </MuiButton>
+                  </div>
+                ))}
+                {imageFiles?.map((file, index) => (
+                  <div className="listing-image">
                     <MuiCardMedia
                       key={index}
                       component="img"
                       src={file?.url}
                       className="product"
                     />
-                  </>
+
+                    <MuiButton
+                      className="image-view"
+                      onClick={handleSetImage(file?.url)}>
+                      <IconEye />
+                    </MuiButton>
+                  </div>
                 ))}
               </div>
             </SimpleBar>
@@ -265,11 +327,10 @@ export function ListingDetails() {
         </div>
       </div>
       <ReportedComments listingId={reportId} />
-
       <VendgramCustomModal
         closeOnOutsideClick={false}
         handleClose={handleToggleShow}
-        open={show}
+        open={show.action}
         alignTitle="left"
         title=""
         showClose>
@@ -279,10 +340,49 @@ export function ListingDetails() {
           action={action}
         />
       </VendgramCustomModal>
+      {show.image && (
+        <Lightbox
+          small={selectedImage}
+          large={selectedImage}
+          alt="Listing image"
+          onClose={handleCloseImageModal}
+        />
+      )}
+      <VendgramCustomModal
+        closeOnOutsideClick={false}
+        handleClose={handleClose}
+        open={show.video}
+        alignTitle="left"
+        title=""
+        showClose>
+        <StyledVideo>
+          <MuiCardMedia
+            src={selectedVideo}
+            className="video"
+            component="video"
+            width={100}
+            height={100}
+            controls={true}
+            autoPlay
+          />
+        </StyledVideo>
+      </VendgramCustomModal>
     </PageContent>
   );
 }
+const StyledVideo = styled.section`
+  width: 100%;
 
+  width: calc(100vw - 80px);
+  max-width: 800px;
+
+  & .video {
+    border-radius: 10px;
+    width: 100%;
+    height: 100%;
+    max-height: 600px;
+  }
+`;
 const PageContent = styled.section`
   width: 100%;
   margin: auto;
@@ -295,6 +395,28 @@ const PageContent = styled.section`
 
     & .seller-info {
       grid-column: 2/3;
+    }
+  }
+
+  & .listing-image {
+    display: flex;
+    position: relative;
+
+    & .image-view {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+    }
+
+    & .play-icon {
+      width: 30px;
+      height: 30px;
+      color: #ffffffbb;
     }
   }
 

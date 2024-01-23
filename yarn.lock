@@ -2447,6 +2447,11 @@ react-is@^18.0.0, react-is@^18.2.0:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-18.2.0.tgz#199431eeaaa2e09f86427efbb4f1473edb47609b"
   integrity sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==
 
+react-modal-image@^2.6.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/react-modal-image/-/react-modal-image-2.6.0.tgz#24b5963b5a50c029a445d125efb49870738700d5"
+  integrity sha512-NNc1xPKzFAn0VsNMdJ8NXt6c54aL/z0fcoYmw9qn4SBUONdGl+8LOQ0sTfo0wtdzcjLiby/ncloHcAL+UI+wIA==
+
 react-phone-input@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/react-phone-input/-/react-phone-input-1.2.1.tgz#252ffdb0c6c3b3c9baf3f7fefa00c8a78a897428"

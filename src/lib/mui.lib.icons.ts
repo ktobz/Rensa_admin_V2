@@ -27,9 +27,10 @@ import IconSettings from "@mui/icons-material/SettingsRounded";
 import IconSettingsOutlined from "@mui/icons-material/SettingsOutlined";
 import IconRefreshOutlined from "@mui/icons-material/RefreshOutlined";
 import IconShipping from "@mui/icons-material/LocalShipping";
-
+import IconPlay from "@mui/icons-material/PlayCircle";
 import { ReactComponent as IconUserRounded } from "assets/icon/user_outline.svg";
 import { ReactComponent as IconLocation } from "assets/icon/location.svg";
+import { ReactComponent as IconEye } from "assets/icon/eye.svg";
 import { ReactComponent as IconLogout } from "assets/icon/logout.svg";
 import { ReactComponent as IconUser } from "assets/icon/user.svg";
 import { ReactComponent as IconBars } from "assets/icon/bars.svg";
@@ -110,6 +111,8 @@ import { ReactComponent as IconVerify } from "assets/icon/verify.svg";
 import { ReactComponent as IconPayout } from "assets/icon/payout.svg";
 
 export {
+  IconPlay,
+  IconEye,
   IconVan,
   IconVerify,
   IconPayout,
