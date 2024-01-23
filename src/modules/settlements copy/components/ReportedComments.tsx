@@ -126,19 +126,19 @@ export function ReportedComments({
         listingId,
         `?pageNumber=${pagination.page}&pageSize=${pagination?.pageSize}`
       ).then((res) => {
-        const { data, ...paginationData } = res.data?.result;
-        const { hasNextPage, hasPrevPage, total, totalPages } =
-          createPaginationData(data, paginationData);
+        // const { , ...paginationData } = res.data?.result;
+        // const { hasNextPage, hasPrevPage, total, totalPages } =
+        //   createPaginationData(data, paginationData);
 
-        setPagination((prev) => ({
-          ...prev,
-          total,
-          totalPages,
-          hasNextPage,
-          hasPrevPage,
-        }));
+        // setPagination((prev) => ({
+        //   ...prev,
+        //   total,
+        //   totalPages,
+        //   hasNextPage,
+        //   hasPrevPage,
+        // }));
 
-        return data;
+        return res?.data?.result?.comments || [];
       }),
     {
       retry: 0,
@@ -206,15 +206,14 @@ export function ReportedComments({
                   sx={{
                     "&:last-child td, &:last-child th": { border: 0 },
                   }}>
-                  {" "}
                   <MuiTableCell className="order-id" align="left">
-                    {/* {formatDate(row?.)} */}
+                    {formatDate(row?.creationTime)}
                   </MuiTableCell>
                   <MuiTableCell align="left">Appliances</MuiTableCell>
                   <MuiTableCell align="left">
                     <Link to="#" className="reporter">
-                      {/* {row?.branch} */}
-                    </Link>{" "}
+                      -
+                    </Link>
                   </MuiTableCell>
                   <MuiTableCell align="left">
                     Price listed is ridiculous. Thats 50% more than cost for

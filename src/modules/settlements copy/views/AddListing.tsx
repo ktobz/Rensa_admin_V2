@@ -182,6 +182,7 @@ export function AddListing() {
             <VendgramVirtualizedCountriesSelect
               label="Select user"
               updateFieldValue={(value: any) => {
+                console.log("update", value);
                 setFieldValue("userId", value?.id);
                 setFieldValue("userId_name", value?.firstName);
               }}
@@ -217,6 +218,7 @@ export function AddListing() {
                     setFieldValue("userId_name", newInputValue);
                     setFieldValue("userId", getId(newInputValue, users.data));
                   }
+                  console.log(newInputValue, reason, users.data);
                 }
               }}
               isOptionEqualToValue={(option: any, value: any) => {

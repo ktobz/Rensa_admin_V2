@@ -18,6 +18,7 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": "src",
     "types": ["node", "vite/client"],
+    "typeRoots": ["./src/types", "./node_modules/@types"],
     "paths": {
       "@/components/*": ["components/*"],
       "@/context/*": ["context/*"],

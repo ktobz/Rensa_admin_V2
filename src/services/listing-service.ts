@@ -6,6 +6,7 @@ import {
   IListingDetailsResponse,
   IReportedListingResponse,
   IListingStatsResponse,
+  IReportedListingCommentsResponse,
 } from "@/types/globalTypes";
 import { AxiosPromise } from "axios";
 
@@ -63,7 +64,7 @@ const ListingService = {
   getListingReportComments(
     id: string,
     query?: string
-  ): AxiosPromise<IReportedListingResponse> {
+  ): AxiosPromise<IReportedListingCommentsResponse> {
     return HTTP.get(
       `${PATHS.listingComments}/${id}${query ? `${query}` : ""}`,
       {

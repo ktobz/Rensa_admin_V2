@@ -10,13 +10,8 @@ import {
   MuiTypography,
   styled,
 } from "@/lib/index";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import {
-  IconBike,
-  IconBranches,
-  IconCopyFilled,
-  IconCreditCard,
-  IconEarning,
   IconEye,
   IconLocation,
   IconPetrol,

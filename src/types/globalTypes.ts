@@ -897,8 +897,14 @@ export type IListingStatsResponse = {
 };
 
 export type IReportedListingCommentsResponse = {
-  result: IPaginationResponse & {
-    data: IReportedListingData;
+  result: {
+    comments: {
+      id: number;
+      reason: string;
+      status: number;
+      category: number;
+      creationTime: string;
+    }[];
   };
 };
 
