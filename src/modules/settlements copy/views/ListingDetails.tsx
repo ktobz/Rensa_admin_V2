@@ -411,6 +411,7 @@ const PageContent = styled.section`
       top: 0;
       bottom: 0;
       margin: auto;
+      background: #0000005f;
     }
 
     & .play-icon {

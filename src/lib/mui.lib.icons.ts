@@ -14,6 +14,7 @@ import IconCupReward from "@mui/icons-material/EmojiEvents";
 // import IconLogout from "@mui/icons-material/LogoutRounded";
 import IconComment from "@mui/icons-material/ModeCommentRounded";
 import IconInfo from "@mui/icons-material/InfoOutlined";
+import IconPlus from "@mui/icons-material/Add";
 import IconArrowRight from "@mui/icons-material/KeyboardArrowRightRounded";
 import IconDeleteForever from "@mui/icons-material/DeleteForever";
 import IconDialPad from "@mui/icons-material/DialpadRounded";
@@ -111,6 +112,7 @@ import { ReactComponent as IconVerify } from "assets/icon/verify.svg";
 import { ReactComponent as IconPayout } from "assets/icon/payout.svg";
 
 export {
+  IconPlus,
   IconPlay,
   IconEye,
   IconVan,

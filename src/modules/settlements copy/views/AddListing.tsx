@@ -16,8 +16,9 @@ import VendgramInput from "@/components/input";
 import useCachedDataStore from "@/config/store-config/lookup";
 import GoogleLocationInput from "@/components/select/GoogleLocationInput";
 import NotificationService from "@/services/notification-service";
-import UserService from "@/services/user.service";
+
 import CustomerService from "@/services/customer-service";
+import CustomImageUploader from "../components/CustomImageUploader";
 
 const SCHEMA = Yup.object().shape({
   name: Yup.string().required("required"),
@@ -44,6 +45,7 @@ export function AddListing() {
 
   const [name, setName] = React.useState("");
   const [compText, setCompText] = React.useState("");
+  const [resetImages, setResetImages] = React.useState(false);
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [locationValue, setLocationValue] = React.useState<PlaceType | null>(
@@ -66,6 +68,7 @@ export function AddListing() {
     price: 0,
     UserId: "",
     userId_name: "",
+    files_preview: [],
   };
 
   const createListing = (values: any) => {
@@ -190,12 +193,12 @@ export function AddListing() {
               multiple={false}
               showCheck={false}
               inputValue={values?.userId_name || ""}
-              optionTitle="firstName"
+              optionTitle="userName"
               optionValue="id"
-              getOptionLabel={(opt: any) => {
-                console.log(`${opt?.firstName} ${opt?.lastName}`);
-                return `${opt?.firstName} ${opt?.lastName}`;
-              }}
+              // getOptionLabel={(opt: any) => {
+              //   // console.log(`${opt}`);
+              //   return `${opt?.firstName} ${opt?.lastName}`;
+              // }}
               error={!!errors.userId}
               helperText={errors.userId}
               onInputChange={(event, newInputValue, reason) => {
@@ -223,7 +226,24 @@ export function AddListing() {
           </div>
           <MuiDivider className="" />
 
-          <div className="image-listing"></div>
+          <div className="image-listing">
+            <MuiTypography variant="body1">Listing Images</MuiTypography>
+            <CustomImageUploader
+              // label="Listing Images"
+              instruction="Maximum of 5 photos. PNG, JPG, MP4 | 5MB max."
+              aspect={0}
+              name="files"
+              multiple
+              handleReset={resetImages}
+              maxPhoto={4}
+              initialPreviewData={values.files_preview}
+              initialFileData={values.files}
+              getFleList={(photos, photosPreview) => {
+                setFieldValue("files", photos);
+                setFieldValue("files_preview", photosPreview);
+              }}
+            />
+          </div>
 
           <div className="inputs-wrapper">
             <VendgramInput
