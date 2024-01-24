@@ -77,7 +77,7 @@ export default function CustomImageUploader(props: IUploaderProps) {
   const [photoList, setPhotoList] = React.useState<string[]>([]);
 
   const photoValidation = {
-    size: { maxSize: 3000000, errorMessage: "File too large" },
+    size: { maxSize: 5000000, errorMessage: "File too large" },
     type: { format: "image/", errorMessage: "File type not supported" },
   };
 
