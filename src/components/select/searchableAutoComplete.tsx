@@ -7,7 +7,7 @@ import ReactCountryFlag from "react-country-flag";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CloseIcon from "@mui/icons-material/Close";
-import { VendgramSelectInput } from "components/input";
+import VendgramInput, { VendgramSelectInput } from "components/input";
 import { MuiBox, MuiCardMedia, MuiTypography } from "lib";
 import { IconArrowDownIcon } from "lib/mui.lib.icons";
 
@@ -20,7 +20,7 @@ interface MyAutocomplete<
   DisableClearable extends boolean | undefined,
   FreeSolo extends boolean | undefined
 > extends AutocompleteProps<T, Multiple, DisableClearable, FreeSolo> {
-  updateFieldValue: Function;
+  updateFieldValue: (data: any) => void;
   optionTitle?: string;
   optionValue?: string;
   iconName?: string;
@@ -30,12 +30,13 @@ interface MyAutocomplete<
   showCheck?: boolean;
   showPills?: boolean;
   error?: boolean;
-  required?: boolean;
-  helperText?: string;
+  helperText?: any;
   wrapperClass?: string;
   wrapperId?: string;
   wrapperStyle?: React.CSSProperties;
   hasPreviousResult?: boolean;
+  variant?: "country" | "team";
+  required?: boolean;
 }
 
 // interface AutoCompleteExtendedProps extends  ;
@@ -60,23 +61,23 @@ export default function VendgramAutoCompleteWithCheckbox<
   options,
   error = false,
   helperText = "",
-  required = false,
   wrapperClass,
   wrapperId,
   wrapperStyle,
+  variant = "country",
   hasPreviousResult = false,
   onInputChange,
-  getOptionLabel,
+  limitTags = 3,
+  required = false,
   ...otherProps
 }: Omit<
   MyAutocomplete<T, Multiple, DisableClearable, FreeSolo>,
   "renderInput" | "renderTags"
 >) {
-  // console.log("SELECTED", selectedValue);
   const optionChips = selectedValue?.map?.((option: any, index: number) => {
     // This is to handle new options added by the user (allowed by freeSolo prop).
 
-    const label = option[optionTitle];
+    const label = option[optionTitle]?.trim();
 
     return (
       <Chip
@@ -84,16 +85,44 @@ export default function VendgramAutoCompleteWithCheckbox<
         size="small"
         // color="secondary"
         style={{
-          backgroundColor: "#fff",
+          backgroundColor: "#E9E9FF",
           fontSize: "10px",
           fontWeight: 600,
-          border: "1px solid #E1DFDD",
+          color: "#030949",
+          border: "1px solid #F4F4F4",
+          // padding: '5px !important',
         }}
-        label={label}
+        label={
+          <div
+            style={{
+              display: "flex",
+              gap: "5px",
+              alignItems: "center",
+              flex: 1,
+              width: "100%",
+              fontSize: "12px",
+
+              // paddingLeft: "10px",
+            }}>
+            <ReactCountryFlag
+              countryCode={option.code?.trim()}
+              svg
+              style={{
+                width: "15px",
+                height: "15px",
+                borderRadius: "50%",
+                fontSize: "9px",
+              }}
+              title={option.code?.trim()}
+            />
+            {label}
+          </div>
+        }
         deleteIcon={<CloseIcon style={{ color: "#616161" }} />}
         onDelete={() => {
           const newSelectedOptions = selectedValue?.filter(
-            (entry: any) => entry[optionValue] !== option[optionValue]
+            (entry: any) =>
+              entry[optionValue]?.trim() !== option[optionValue]?.trim()
           );
           // setSelectedOptions(newSelectedOptions);
           updateFieldValue(newSelectedOptions);
@@ -107,12 +136,10 @@ export default function VendgramAutoCompleteWithCheckbox<
     );
   });
 
-  // console.log(
-  //   options.find((option: any) => option?.[optionValue] === selectedValue)
-  // );
   return (
     <div style={{ width: "100%", ...wrapperStyle }} className={wrapperClass}>
       <Autocomplete
+        disableClearable
         value={
           showPills
             ? selectedValue
@@ -121,11 +148,10 @@ export default function VendgramAutoCompleteWithCheckbox<
               )
         }
         {...otherProps}
-        limitTags={3}
+        limitTags={limitTags}
         options={options}
-        autoHighlight
-        onInputChange={onInputChange}
         popupIcon={<IconArrowDownIcon />}
+        onInputChange={onInputChange}
         sx={{
           width: "100%",
           "& .MuiAutocomplete-input": {
@@ -135,23 +161,40 @@ export default function VendgramAutoCompleteWithCheckbox<
           },
           "& .MuiInputLabel-root": {
             left: "0",
-            fontSize: "13px !important",
             // display: "none",
           },
           ".MuiTextField-root": {
             marginTop: "8px",
+            "& .Mui-disabled": {
+              "& .MuiOutlinedInput-notchedOutline": {
+                background: "#cfcfcf52 !important",
+              },
+              "& .MuiOutlinedInput-input": {
+                background: "none !important",
+              },
+            },
+            "& .MuiOutlinedInput-root": {
+              padding: "0 65px 0 15px !important",
+            },
           },
 
           ...sx,
         }}
-        renderTags={() => null}
         onChange={(e, newValue) => {
           updateFieldValue(newValue);
         }}
         renderOption={(props, option: any, { selected }) => (
-          <MuiBox
-            component="li"
-            sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+          <li
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              borderBottom: hasPreviousResult
+                ? "0.4px solid #dfdfdf74"
+                : "none",
+              minHeight: "fit-content",
+            }}
             {...props}>
             <div
               style={{
@@ -161,10 +204,24 @@ export default function VendgramAutoCompleteWithCheckbox<
                 flex: 1,
                 width: "100%",
                 fontSize: "12px",
+
+                // paddingLeft: "10px",
               }}>
-              {hasImage && iconName === "flag" && (
+              {option?.logo && hasImage && variant === "team" && (
+                <MuiCardMedia
+                  component="img"
+                  style={{
+                    width: "20px",
+                    height: "20px",
+                    borderRadius: "50%",
+                  }}
+                  src={option?.logo || ""}
+                />
+              )}
+
+              {hasImage && variant === "country" && (
                 <ReactCountryFlag
-                  countryCode={option["code"]}
+                  countryCode={option.code?.trim()}
                   svg
                   style={{
                     width: "20px",
@@ -172,26 +229,11 @@ export default function VendgramAutoCompleteWithCheckbox<
                     borderRadius: "50%",
                     fontSize: "9px",
                   }}
-                  title={option["code"]}
-                />
-              )}
-              {hasImage && iconName !== "flag" && (
-                <MuiCardMedia
-                  component="img"
-                  src={option[iconName]}
-                  style={{
-                    width: "20px",
-                    height: "20px",
-                    borderRadius: "50%",
-                    fontSize: "9px",
-                  }}
-                  title={option[optionTitle]}
+                  title={option.code?.trim()}
                 />
               )}
 
-              <MuiTypography fontSize={12} variant="body2">
-                {option[optionTitle]}
-              </MuiTypography>
+              <b>{option[optionTitle]?.trim()}</b>
             </div>
 
             {showCheck && (
@@ -202,18 +244,20 @@ export default function VendgramAutoCompleteWithCheckbox<
                 checked={selected}
               />
             )}
-          </MuiBox>
+          </li>
         )}
         renderInput={(params) => (
-          <VendgramSelectInput
+          <VendgramInput
             {...params}
             error={error}
-            required={required}
             helperText={helperText}
+            sx={{ fontSize: "13px !important" }}
             placeholder={placeholder}
             label={label}
+            required={required}
           />
         )}
+        renderTags={(value: any, getTagProps: any) => null}
       />
       {showPills && selectedValue && (selectedValue?.length as number) > 0 && (
         <div

@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Yup from "yup";
 import { useFormik, FormikProvider } from "formik";
-import debounceFunc from "lodash.debounce";
+import debounceFunc from "lodash.throttle";
 
 import {
   MuiButton,
@@ -167,15 +167,14 @@ export function AddListing() {
 
   const { errors, handleSubmit, handleChange, values, setFieldValue } = formik;
 
-  const handleCustomChange = (name: string, value: string | number) => {
-    setFieldValue(name, value);
-  };
-
-  const users = useQuery(
-    ["all-users", name],
+  const usersQuery = useQuery(
+    ["all-users-listing", name],
     () =>
-      CustomerService.getAll(`?searchText=${name}`).then((res) => {
-        return res.data.result?.data;
+      CustomerService.getAll(name ? `?searchText=${name}` : "").then((res) => {
+        return res.data.result?.data?.map((x) => ({
+          id: x?.id,
+          name: x?.userName,
+        }));
       }),
     {
       refetchOnWindowFocus: false,
@@ -188,7 +187,7 @@ export function AddListing() {
   };
 
   const throttledChangeHandler = React.useMemo(
-    () => debounceFunc(handleSearch, 700),
+    () => debounceFunc(handleSearch, 600),
     []
   );
 
@@ -241,8 +240,7 @@ export function AddListing() {
     const data = options;
     return data.find(
       (value: any) =>
-        `${value?.firstName?.toLowerCase()} ${value?.lastName?.toLowerCase()}` ===
-        user?.toLowerCase()
+        `${value?.userName?.toLowerCase()}` === user?.toLowerCase()
     )?.id;
   };
 
@@ -261,21 +259,20 @@ export function AddListing() {
               label="Select user"
               updateFieldValue={(value: any) => {
                 setFieldValue("userId", value?.id);
-                setFieldValue("userId_name", value?.firstName);
+                setFieldValue("userId_name", value?.userName);
               }}
               selectedValue={values?.userId || ""}
-              options={users?.data || []}
+              options={usersQuery?.data || []}
               placeholder="Search and select user"
-              loading={users.isLoading}
+              loading={usersQuery.isLoading}
               showPills={false}
               multiple={false}
               showCheck={false}
               inputValue={values?.userId_name || ""}
-              optionTitle="userName"
+              optionTitle="name"
               optionValue="id"
               // getOptionLabel={(opt: any) => {
-              //   // console.log(`${opt}`);
-              //   return `${opt?.firstName} ${opt?.lastName}`;
+              //   return `${opt?.userName} `;
               // }}
               error={!!errors.userId}
               helperText={errors.userId}
@@ -292,13 +289,16 @@ export function AddListing() {
                     handleChangeCompetitionValue("");
                   }
                   if (reason === "reset") {
-                    // setFieldValue("userId_name", newInputValue);
-                    // setFieldValue("userId", getId(newInputValue, users.data));
+                    setFieldValue("userId_name", newInputValue);
+                    setFieldValue(
+                      "userId",
+                      getId(newInputValue, usersQuery.data)
+                    );
                   }
                 }
               }}
               isOptionEqualToValue={(option: any, value: any) => {
-                return option?.id === value?.id;
+                return option?.id === values?.userId;
               }}
             />
           </div>
