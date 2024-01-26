@@ -219,6 +219,11 @@ export function OrderDetails() {
     }
   };
 
+  const showActions =
+    data?.status !== 4 && data?.status !== 5 && data?.status !== 3;
+
+  const showReasonsActions = data?.status !== 4 && data?.status !== 3;
+
   return (
     <PageContent>
       <div className="left">
@@ -238,7 +243,7 @@ export function OrderDetails() {
         <div className="order-section">
           <MuiTypography variant="h4" className="group-heading">
             <span>Order info </span>
-            {data?.status !== 4 && data?.status !== 5 && (
+            {showActions && (
               <div className="actions">
                 <MuiButton
                   className="btn"
@@ -662,7 +667,7 @@ export function OrderDetails() {
                 </div>
               </div>
 
-              {data?.status !== 4 && (
+              {showReasonsActions && (
                 <div className="actions">
                   <MuiButton
                     className="btn"
