@@ -189,6 +189,9 @@ export function SettlementTable({
             selectedValue={filter}
             handleSetValue={handleSetFilter}
             options={catalogueStatus}
+            style={{
+              width: "150px",
+            }}
           />
           <CustomSearch
             placeholder="Search catalogue ID, name or description"

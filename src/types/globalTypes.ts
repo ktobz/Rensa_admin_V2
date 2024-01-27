@@ -720,6 +720,8 @@ export type ITransactions = {
   id: number;
   creationTime: string;
   orderNumber: string;
+  firstName: string;
+  lastName: string;
 };
 
 export type IUserPayout = {

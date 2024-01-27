@@ -27,7 +27,7 @@ export const PayoutAccountView = ({ userId }: { userId: string }) => {
           name="bank_name"
           label="Bank Name"
           type="text"
-          value={data?.bankName || "Fidelty"}
+          value={data?.bankName}
         />
         <InputRowVariant
           name="account_no"

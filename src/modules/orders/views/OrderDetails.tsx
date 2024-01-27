@@ -63,7 +63,7 @@ export function OrderDetails() {
     tooltip_2: false,
   });
 
-  const { data } = useQuery(
+  const { data, isLoading } = useQuery(
     ["order-details", orderId],
     () =>
       (orderId?.includes("RN_")
@@ -219,17 +219,19 @@ export function OrderDetails() {
     }
   };
 
-  const showActions =
-    data?.status !== 4 && data?.status !== 5 && data?.status !== 3;
+  const showActions = data?.status === 1 && !isLoading;
 
-  const showReasonsActions = data?.status !== 4 && data?.status !== 3;
+  const showReasonsActions = data?.status === 5 && !isLoading;
 
   return (
     <PageContent>
       <div className="left">
         <div className="heading">
           <MuiTypography variant="h3" className="title">
-            Order <b style={{ color: "#1E75BB" }}>#{data?.orderNumber}</b>
+            Order{" "}
+            <b style={{ color: "#1E75BB", whiteSpace: "pre-wrap" }}>
+              {data?.orderNumber}
+            </b>
           </MuiTypography>
           <div className="status">
             <span className="text">Status</span>{" "}
@@ -1052,5 +1054,23 @@ const PageContent = styled.section`
 
   @media screen and (max-width: 760px) {
     flex-direction: column;
+  }
+
+  @media screen and (max-width: 620px) {
+    & .order-info {
+      flex-direction: column;
+    }
+
+    & .delivery-method {
+      display: none;
+    }
+  }
+
+  @media screen and (max-width: 500px) {
+    & .left {
+      & .heading {
+        flex-direction: column;
+      }
+    }
   }
 `;

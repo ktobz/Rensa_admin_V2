@@ -219,7 +219,7 @@ export function TransactionTable({
                   className="heading"
                   align="left"
                   style={{ minWidth: "150px" }}>
-                  User full name
+                  User Full name
                 </MuiTableCell>
                 <MuiTableCell className="heading">Order Id</MuiTableCell>
                 <MuiTableCell className="heading">Amount</MuiTableCell>
@@ -254,7 +254,9 @@ export function TransactionTable({
                       sx={{
                         "&:last-child td, &:last-child th": { border: 0 },
                       }}>
-                      <MuiTableCell>{row?.userId || "-"}</MuiTableCell>
+                      <MuiTableCell>
+                        {row?.firstName} {row?.lastName || "-"}
+                      </MuiTableCell>
                       <MuiTableCell align="left">
                         {row?.catalogueId}
                       </MuiTableCell>

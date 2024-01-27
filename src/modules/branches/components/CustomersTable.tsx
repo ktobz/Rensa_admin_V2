@@ -239,7 +239,7 @@ export function CustomersTable() {
                     </MuiTableCell>
                     <MuiTableCell align="left">
                       <VerificationStatus
-                        type={row?.emailConfirmed ? "true" : "false"}
+                        type={row?.isVerified ? "true" : "false"}
                       />
                     </MuiTableCell>
 
