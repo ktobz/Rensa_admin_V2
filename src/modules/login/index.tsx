@@ -83,11 +83,8 @@ export default function Login() {
   });
 
   const initialData = {
-    // email: state?.email || "kingsconsult001@gmail.com",
-    // password: "Kingssley123@",
-
-    username: state?.email || "administrator@rensa.com",
-    password: "Admin12345.",
+    username: state?.email || "",
+    password: "",
   };
 
   const formik = useFormik({
