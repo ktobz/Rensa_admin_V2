@@ -1,0 +1,8 @@
+.simplebar-content-wrapper {
+  outline: none;
+}
+
+.MuiTabs-scroller {
+  display: flex;
+  align-items: center important;
+}

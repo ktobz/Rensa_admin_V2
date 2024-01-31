@@ -1,0 +1,196 @@
+@font-face {
+  font-family: "Helvetica";
+  src: local("Helvetica"),
+    url("./assets/fonts/Helvetica.ttf") format("truetype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Helvetica-Bold";
+  src: local("Helvetica-Bold"),
+    url("./assets/fonts/Helvetica-Bold.ttf") format("truetype");
+  font-display: swap;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+  scroll-behavior: smooth;
+}
+
+.MuiSlider-markLabel {
+  top: 30px !important;
+  font-size: 11px !important;
+}
+
+.scrollbar-container::-webkit-scrollbar,
+.MuiTableContainer-root::-webkit-scrollbar {
+  width: 10px;
+  transition: all 0.3s ease;
+  height: 10px;
+  visibility: hidden !important;
+}
+
+.scrollbar-container,
+.MuiTableContainer-root {
+  scrollbar-width: 0px !important;
+  transition: all 0.3s ease;
+  overflow: auto;
+  scrollbar-color: #7f7f7f white; /* thumb and track color */
+  scrollbar-width: thin;
+}
+
+.scrollbar-container:hover::-webkit-scrollbar,
+.MuiTableContainer-root:hover::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  visibility: visible !important;
+}
+
+.scrollbar-container:hover,
+.MuiTableContainer-root:hover {
+  scrollbar-width: 10px;
+}
+
+.scrollbar-container::-webkit-scrollbar-track,
+.MuiTableContainer-root::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+
+.scrollbar-container::-webkit-scrollbar-thumb,
+.MuiTableContainer-root::-webkit-scrollbar-thumb {
+  border-radius: 20px;
+  border: 2px solid #fff;
+  /* background-color: #a7a7a7; */
+  background-color: #fff;
+  transition: all 0.3s ease;
+}
+
+.scrollbar-container:hover::-webkit-scrollbar-thumb,
+.MuiTableContainer-root:hover::-webkit-scrollbar-thumb {
+  background-color: #373a3791;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.ps__thumb-y {
+  background-color: #5d625f !important;
+  border-radius: 6px;
+  transition: background-color 0.2s linear, width 0.2s ease-in-out;
+  -webkit-transition: background-color 0.2s linear, width 0.2s ease-in-out;
+  width: 6px;
+  right: 2px;
+  position: absolute;
+}
+
+.ps__rail-y {
+  width: 8px !important;
+}
+
+/* * {
+  transition: all 0.3s ease;
+} */
+
+.ps__rail-y:hover > .ps__thumb-y,
+.ps__rail-y:focus > .ps__thumb-y,
+.ps__rail-y.ps--clicking .ps__thumb-y {
+  width: 5px !important;
+  background-color: transparent;
+}
+
+.ps__rail-x {
+  height: 7px !important;
+  /* bottom: -10px !important; */
+}
+
+.ps__rail-x:hover > .ps__thumb-x,
+.ps__rail-x:focus > .ps__thumb-x,
+.ps__rail-x.ps--clicking .ps__thumb-x {
+  height: 7px !important;
+}
+
+.MuiSkeleton-root {
+  transform: unset !important;
+}
+
+:root {
+  --toastify-color-light: #fff;
+  --toastify-color-dark: #121212;
+  --toastify-color-info: #3498db;
+  --toastify-color-success: #3abd59 !important;
+  --toastify-color-warning: #f1c40f;
+  --toastify-color-error: #e74c3c;
+  --toastify-color-transparent: rgba(255, 255, 255, 0.7);
+
+  --toastify-icon-color-info: var(--toastify-color-info);
+  --toastify-icon-color-success: var(--toastify-color-success);
+  --toastify-icon-color-warning: var(--toastify-color-warning);
+  --toastify-icon-color-error: var(--toastify-color-error);
+
+  --toastify-toast-width: 320px;
+  --toastify-toast-width: 100%;
+  --toastify-toast-max-width: 320px;
+  --toastify-toast-background: #fff;
+  --toastify-toast-min-height: 64px;
+  --toastify-toast-max-height: 800px;
+  --toastify-font-family: sans-serif;
+  --toastify-z-index: 9999;
+
+  --toastify-text-color-light: #757575;
+  --toastify-text-color-dark: #fff;
+
+  --toastify-color-progress-dark: #bb86fc;
+  --toastify-color-progress-info: var(--toastify-color-info);
+  --toastify-color-progress-success: var(--toastify-color-success);
+  --toastify-color-progress-warning: var(--toastify-color-warning);
+  --toastify-color-progress-error: var(--toastify-color-error);
+}
+
+.Toastify__toast-container {
+  max-width: 320px !important;
+  width: 100% !important;
+
+  top: 6px;
+  right: 2px !important;
+  left: 0 !important;
+  margin: 0 0 0 auto !important;
+}
+
+.Toastify__toast {
+  box-shadow: 0 0 20px rgb(0, 0, 0, 0.05) !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+}
+
+.Toastify__close-button > svg {
+  width: 25px !important;
+  height: 25px !important;
+}
+
+.MuiList-root {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.slick-track {
+  display: flex !important;
+  gap: 10px !important;
+  margin-left: -5px !important;
+}
