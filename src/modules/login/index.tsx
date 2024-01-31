@@ -121,7 +121,7 @@ export default function Login() {
 
   const customHandleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    setFieldValue("email", value.trim());
+    setFieldValue("username", value.trim());
   };
 
   return (
