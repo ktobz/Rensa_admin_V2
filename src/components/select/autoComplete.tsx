@@ -91,7 +91,7 @@ const LabelStyle = muiStyled(MuiInputLabel)(({ theme }) => ({
   },
 }));
 
-interface VendgramSelectProps extends SelectProps {
+interface AppSelectProps extends SelectProps {
   options: any[];
   optionTitle?: string;
   optionValue?: string;
@@ -101,7 +101,7 @@ interface VendgramSelectProps extends SelectProps {
   helperText?: any;
 }
 
-export default function VendgramSelect({
+export default function AppSelect({
   label,
   fullWidth,
   placeholder,
@@ -119,7 +119,7 @@ export default function VendgramSelect({
   name,
   helperText,
   ...otherProps
-}: VendgramSelectProps) {
+}: AppSelectProps) {
   const [open, setOen] = React.useState(false);
 
   const handleOpen = () => {

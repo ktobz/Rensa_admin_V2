@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import VendgramInput from "components/input";
+import AppInput from "components/input";
 import {
   MuiBox,
   MuiButton,
@@ -160,7 +160,7 @@ export const NewPasswordForm = ({ toggleMode }: { toggleMode: () => void }) => {
       <Subtitle>Create new password to secure your account</Subtitle>
 
       <MuiBox style={{ marginTop: "20px" }}>
-        <VendgramInput
+        <AppInput
           name="password"
           label="New Password"
           placeholder="Enter password"
@@ -189,7 +189,7 @@ export const NewPasswordForm = ({ toggleMode }: { toggleMode: () => void }) => {
             ),
           }}
         />
-        <VendgramInput
+        <AppInput
           name="password_confirmation"
           label="Confirm Password"
           placeholder="Re-Enter password"

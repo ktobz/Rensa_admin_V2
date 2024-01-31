@@ -3,87 +3,62 @@ import {
   styled,
   MuiTypography,
   MuiButton,
+  MuiInputAdornment,
   MuiCircularProgress,
 } from "@/lib/index";
-
-import {
-  IconBlock,
-  IconCancel,
-  IconConfirm,
-  IconSuccess,
-  IconUnblock,
-} from "lib/mui.lib.icons";
-import AppInput from "@/components/input";
+import { AppSelectInput } from "components/input";
+import FormTitle from "components/text/FormTitle";
+import { IconDeleteLarge, IconSendNotification } from "lib/mui.lib.icons";
 
 type IProps = {
   handleClose: () => void;
-  data: any;
-  handleAction: (callback: () => void, reason?: string) => () => void;
-  action: "confirm" | "cancel";
+  data: any[];
+  handleSend: (callback: () => void) => () => void;
 };
 
-export const OrderConfirmation = ({
+export const SendNotificationConfirm = ({
   handleClose,
   data,
-  handleAction,
-  action = "confirm",
+  handleSend,
 }: IProps) => {
-  const [isUpdating, setIsUpdating] = React.useState(false);
-  const [reason, setReason] = React.useState("");
-  const [error, setError] = React.useState("");
+  const [isSending, setIsSending] = React.useState(false);
 
-  const isToCancel = action === "cancel";
+  const isMorThanOne = data?.length > 1;
+  const notificationData = data?.[0];
 
   const callback = () => {
-    setIsUpdating(false);
+    setIsSending(false);
   };
 
   const handleSubmit = () => {
-    if (isToCancel && !reason?.trim()) {
-      return setError("Required");
-    } else {
-      setError("");
-    }
-    setIsUpdating(true);
-    handleAction(callback, reason)();
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setReason(value);
+    setIsSending(true);
+    handleSend(callback)();
   };
 
   return (
     <StyledSection>
-      {isToCancel ? (
-        <IconCancel className="delete-icon" />
-      ) : (
-        <IconConfirm className="delete-icon" />
-      )}
+      <div className="icon-wrapper">
+        <IconSendNotification className="icon" />
+      </div>
       <MuiTypography variant="body2" className="heading">
-        {isToCancel ? "Cancel" : "Confirm"} order #{data?.id}
+        Send Notification{isMorThanOne ? "s" : ""}
       </MuiTypography>
       <MuiTypography variant="body2" className="body">
-        {isToCancel
-          ? "Are you sure you want to cancel this order? Buyer will be refunded order amount."
-          : "Confirming this order will release funds from Buyer and disbursed to Seller"}
+        Are you sure you want to send {isMorThanOne ? "these" : "this"}{" "}
+        notification{isMorThanOne ? "s" : ""}?
       </MuiTypography>
 
-      {isToCancel && (
-        <AppInput
-          id="message"
-          name="message"
-          label="Cancellation Reason"
-          placeholder="Enter reason"
-          type="text"
-          value={reason}
-          onChange={handleChange}
-          helperText={error}
-          error={!!error}
-          required
-          rows={2}
-          multiline
-        />
+      {!isMorThanOne && (
+        <div className="delete-data">
+          <div className="details">
+            <MuiTypography variant="body2" className="name">
+              {notificationData?.title}
+            </MuiTypography>
+            <MuiTypography className="email" variant="body2">
+              {notificationData?.description}
+            </MuiTypography>
+          </div>
+        </div>
       )}
 
       <div className="action-group">
@@ -91,19 +66,19 @@ export const OrderConfirmation = ({
           type="button"
           variant="contained"
           onClick={handleClose}
-          disabled={isUpdating}
+          disabled={isSending}
           className="secondary-btn btn">
-          No
+          Cancel
         </MuiButton>
         <MuiButton
           type="button"
-          color={isToCancel ? "error" : "success"}
+          color="error"
           variant="contained"
-          disabled={isUpdating}
+          disabled={isSending}
+          startIcon={isSending ? <MuiCircularProgress size={18} /> : null}
           onClick={handleSubmit}
-          startIcon={isUpdating ? <MuiCircularProgress size={14} /> : null}
           className="primary-btn btn">
-          {isToCancel ? "Cancel order" : "Yes Confirm"}
+          Send notification{isMorThanOne ? "s" : ""}
         </MuiButton>
       </div>
     </StyledSection>
@@ -112,7 +87,7 @@ export const OrderConfirmation = ({
 
 const StyledSection = styled.section`
   width: calc(100vw - 40px);
-  max-width: 445px;
+  max-width: 450px;
   background-color: #fff;
   padding: 10px 0px 0px 0px;
   border-radius: 20px;
@@ -121,11 +96,16 @@ const StyledSection = styled.section`
   gap: 20px;
   align-items: center;
 
+  & .icon-wrapper {
+    background-color: #05a3571a;
+    border-radius: 50%;
+    padding: 20px;
+  }
   & .notice {
     display: flex;
     gap: 10px;
     width: 100%;
-    max-width: 300px;
+    max-width: 400px;
     margin-top: 20px;
     /* align-items: baseline; */
 
@@ -134,14 +114,50 @@ const StyledSection = styled.section`
     }
   }
 
-  & .delete-icon {
+  & .delete-data {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    background: #fbfbfb;
+    padding: 15px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 410px;
+    margin: auto;
+    & .img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      overflow: hidden;
+      object-fit: cover;
+    }
+
+    & .name {
+      color: #1e75bb;
+      font-weight: 500;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+
+    & .email {
+      color: #64748b;
+      font-size: 14px;
+    }
+  }
+
+  & .icon {
     width: 130px;
     height: 130px;
   }
 
   & .heading {
     font-weight: 700;
-    font-size: 24px;
+    font-size: 18px;
+  }
+
+  & .product-name {
+    color: #64748b;
+    font-size: 12px;
   }
 
   & .action-group {
@@ -149,9 +165,7 @@ const StyledSection = styled.section`
     display: flex;
     gap: 10px;
     align-items: center;
-    border-top: 1px solid #fbfbfb;
-    margin-top: 25px;
-    padding-top: 25px;
+
     & .secondary-btn {
       background: #fbfbfb;
       color: #363636;
@@ -192,7 +206,7 @@ const StyledSection = styled.section`
   }
 
   & .body {
-    max-width: 350px;
+    max-width: 400px;
     text-align: center;
     font-size: 15px;
     font-weight: 500;
@@ -210,7 +224,7 @@ const StyledSection = styled.section`
 
   & .btn {
     width: 100%;
-
+    margin-top: 45px;
     display: flex !important;
     align-items: center;
     justify-content: center;

@@ -5,7 +5,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
-import VendgramInput from "components/input";
+import AppInput from "components/input";
 
 export default function CustomDatePicker({
   onChange,
@@ -58,7 +58,7 @@ export default function CustomDatePicker({
               onChange(newValue);
             }}
             renderInput={(params: any) => (
-              <VendgramInput
+              <AppInput
                 {...params}
                 helperText={helperText}
                 error={error}
@@ -79,7 +79,7 @@ export default function CustomDatePicker({
               onChange(newValue);
             }}
             renderInput={(params: any) => (
-              <VendgramInput
+              <AppInput
                 {...params}
                 required={required}
                 helperText={helperText}

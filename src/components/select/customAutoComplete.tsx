@@ -6,7 +6,7 @@ import Autocomplete, { AutocompleteProps } from "@mui/material/Autocomplete";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CloseIcon from "@mui/icons-material/Close";
-import VendgramInput from "components/input";
+import AppInput from "components/input";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -23,7 +23,7 @@ interface MyAutocomplete<
 }
 
 // interface AutoCompleteExtendedProps extends  ;
-export default function VendgramAutoComplete<
+export default function AppAutoComplete<
   T,
   Multiple extends boolean | undefined,
   DisableClearable extends boolean | undefined,
@@ -70,7 +70,7 @@ export default function VendgramAutoComplete<
       {...otherProps}
       sx={{ width: "100%", ...sx }}
       renderInput={(params) => (
-        <VendgramInput {...params} placeholder={placeholder} />
+        <AppInput {...params} placeholder={placeholder} />
       )}
     />
   );

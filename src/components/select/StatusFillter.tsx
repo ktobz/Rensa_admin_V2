@@ -80,7 +80,7 @@ const LabelStyle = muiStyled(MuiInputLabel)(({ theme }) => ({
   },
 }));
 
-interface VendgramSelectProps extends SelectProps {
+interface AppSelectProps extends SelectProps {
   optionCheckbox?: boolean;
   name?: string;
   helperText?: React.ReactNode | any;
@@ -113,7 +113,7 @@ export default function StatusFilter({
   handleSetValue,
   options = [],
   ...otherProps
-}: VendgramSelectProps) {
+}: AppSelectProps) {
   const handleChange = (event: MuiSelectChangeEvent<any>, node: any) => {
     const {
       target: { value },

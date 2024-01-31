@@ -8,7 +8,7 @@ import Popper from "@mui/material/Popper";
 import { useTheme, styled } from "@mui/material/styles";
 import { VariableSizeList, ListChildComponentProps } from "react-window";
 import Typography from "@mui/material/Typography";
-import VendgramAutoCompleteWithCheckbox from "./searchableAutoComplete";
+import AppAutoCompleteWithCheckbox from "./searchableAutoComplete";
 
 const LISTBOX_PADDING = 12; // px
 
@@ -145,7 +145,7 @@ interface MyAutocomplete<
   hasPreviousResult?: boolean;
 }
 
-export default function VendgramVirtualizedCountriesSelect<
+export default function AppVirtualizedCountriesSelect<
   T,
   Multiple extends boolean | undefined,
   DisableClearable extends boolean | undefined,
@@ -181,7 +181,7 @@ export default function VendgramVirtualizedCountriesSelect<
   // const filterOptions = ['wa', 'na'];
 
   return (
-    <VendgramAutoCompleteWithCheckbox
+    <AppAutoCompleteWithCheckbox
       {...otherProps}
       PopperComponent={StyledPopper}
       ListboxComponent={ListboxComponent}

@@ -5,7 +5,7 @@ import { useFormik, FormikProvider } from "formik";
 import { styled, MuiButton, MuiCircularProgress } from "@/lib/index";
 
 import { toast } from "react-toastify";
-import VendgramVirtualizedCountriesSelect from "@/components/select/test";
+import AppVirtualizedCountriesSelect from "@/components/select/test";
 import { useQuery } from "react-query";
 import RiderService from "@/services/rider-service";
 import OrderService from "@/services/order-service";
@@ -77,7 +77,7 @@ export const AssignRiderForm = ({
     <FormikProvider value={formik}>
       <StyledForm onSubmit={handleSubmit}>
         <div className="wrapper">
-          <VendgramVirtualizedCountriesSelect
+          <AppVirtualizedCountriesSelect
             label="Rider"
             placeholder="Select rider"
             value={values.rider_id}

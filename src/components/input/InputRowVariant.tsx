@@ -169,7 +169,7 @@ export default function InputRowVariant({
   );
 }
 
-interface VendgramSelectProps extends MuiSelectProps {
+interface AppSelectProps extends MuiSelectProps {
   options: any[];
   optionTitle?: string;
   optionValue?: string;
@@ -242,7 +242,7 @@ export function SelectRowVariant({
   styleVariant = "view",
   editable = false,
   ...otherProps
-}: VendgramSelectProps) {
+}: AppSelectProps) {
   return (
     <MuiFormControl
       error={error}

@@ -152,7 +152,7 @@ type ITextFieldProps = {
   showHelperInfoIcon?: boolean;
 } & Omit<MuiTextFieldProps, "helperText">;
 
-export default function VendgramInput({
+export default function AppInput({
   label,
   fullWidth,
   placeholder,
@@ -280,7 +280,7 @@ export default function VendgramInput({
   );
 }
 
-export function VendgramSelectInput({
+export function AppSelectInput({
   label,
   fullWidth,
   placeholder,

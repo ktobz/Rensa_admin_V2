@@ -13,7 +13,7 @@ import {
   IconSuccess,
   IconUnblock,
 } from "lib/mui.lib.icons";
-import VendgramInput from "@/components/input";
+import AppInput from "@/components/input";
 
 type IProps = {
   handleClose: () => void;
@@ -69,7 +69,7 @@ export const OrderPayoutConfirmation = ({
           : "Confirming this order will release funds from Buyer and disbursed to Seller"}
       </MuiTypography>
 
-      <VendgramInput
+      <AppInput
         id="message"
         name="message"
         label="Comment"

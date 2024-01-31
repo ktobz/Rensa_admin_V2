@@ -26,7 +26,7 @@ import { useQuery, useQueryClient } from "react-query";
 import OrderService from "@/services/order-service";
 import { IOrderData, IOrderDetails, IStatus } from "@/types/globalTypes";
 import { UserDetailCard } from "@/components/card/UserCard";
-import VendgramCustomModal from "@/components/modal/Modal";
+import AppCustomModal from "@/components/modal/Modal";
 import { AssignRiderForm } from "../components/AssignRiderForm";
 import { OrderStatus } from "@/components/feedback/OrderStatus";
 import { SettlementStatus } from "@/modules/settlements/components/OrderStatus";
@@ -692,7 +692,7 @@ export function OrderDetails() {
         </div>
       </div>
 
-      <VendgramCustomModal
+      <AppCustomModal
         closeOnOutsideClick={false}
         handleClose={handleToggleShow("modal")}
         open={show.modal}
@@ -707,9 +707,9 @@ export function OrderDetails() {
             orderAction === "cancel" ? handleCancelOrder : handleConfirmOrder
           }
         />
-      </VendgramCustomModal>
+      </AppCustomModal>
 
-      <VendgramCustomModal
+      <AppCustomModal
         closeOnOutsideClick={false}
         handleClose={handleToggleShow("payout")}
         open={show.payout}
@@ -724,7 +724,7 @@ export function OrderDetails() {
             orderAction === "cancel" ? handleRejectRefund : handleAcceptRefund
           }
         />
-      </VendgramCustomModal>
+      </AppCustomModal>
     </PageContent>
   );
 }

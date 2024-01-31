@@ -14,7 +14,7 @@ import {
 } from "@/lib/index";
 import Title from "@/components/text/Title";
 import Subtitle from "@/components/text/Subtitle";
-import VendgramInput from "@/components/input";
+import AppInput from "@/components/input";
 import AuthService from "@/services/auth.service";
 import { useUserStore } from "@/config/store-config/store.config";
 
@@ -114,7 +114,7 @@ export default function SetNewPasswordView() {
       <Subtitle>Create new password to secure your account</Subtitle>
 
       <MuiBox>
-        <VendgramInput
+        <AppInput
           name="password"
           label="New Password"
           placeholder="Enter password"
@@ -143,7 +143,7 @@ export default function SetNewPasswordView() {
             ),
           }}
         />
-        <VendgramInput
+        <AppInput
           name="password_confirmation"
           label="New Password"
           placeholder="Re-Enter password"

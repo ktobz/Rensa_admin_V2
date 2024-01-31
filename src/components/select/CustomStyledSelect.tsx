@@ -54,7 +54,7 @@ const LabelStyle = muiStyled(MuiInputLabel)(({ theme }) => ({
   },
 }));
 
-interface VendgramSelectProps extends SelectProps {
+interface AppSelectProps extends SelectProps {
   options: any[];
   optionTitle?: string;
   optionValue?: string;
@@ -82,7 +82,7 @@ export default function CustomStyledSelect({
   iconName,
   helperText,
   ...otherProps
-}: VendgramSelectProps) {
+}: AppSelectProps) {
   return (
     <MuiFormControl
       error={error}

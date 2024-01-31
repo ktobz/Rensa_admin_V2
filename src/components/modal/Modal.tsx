@@ -51,7 +51,7 @@ interface ModalProps {
   handleClose: () => void;
   closeOnOutsideClick?: boolean;
 }
-export default function VendgramCustomModal(props: ModalProps) {
+export default function AppCustomModal(props: ModalProps) {
   const {
     children,
     title,

@@ -7,7 +7,7 @@ import ReactCountryFlag from "react-country-flag";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CloseIcon from "@mui/icons-material/Close";
-import VendgramInput, { VendgramSelectInput } from "components/input";
+import AppInput, { AppSelectInput } from "components/input";
 import { MuiBox, MuiCardMedia, MuiTypography } from "lib";
 import { IconArrowDownIcon } from "lib/mui.lib.icons";
 
@@ -40,7 +40,7 @@ interface MyAutocomplete<
 }
 
 // interface AutoCompleteExtendedProps extends  ;
-export default function VendgramAutoCompleteWithCheckbox<
+export default function AppAutoCompleteWithCheckbox<
   T,
   Multiple extends boolean | undefined,
   DisableClearable extends boolean | undefined,
@@ -247,7 +247,7 @@ export default function VendgramAutoCompleteWithCheckbox<
           </li>
         )}
         renderInput={(params) => (
-          <VendgramInput
+          <AppInput
             {...params}
             error={error}
             helperText={helperText}

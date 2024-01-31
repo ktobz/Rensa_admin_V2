@@ -8,7 +8,7 @@ import DesktopMenu from "@/components/nav/DesktopMenu";
 import CustomMenu from "@/components/nav/CustomMenu";
 import { Logo } from "@/components/logo";
 import AppContext from "@/providers/appContext";
-import VendgramCustomModal from "@/components/modal/Modal";
+import AppCustomModal from "@/components/modal/Modal";
 import { useUserStore } from "@/config/store-config/store.config";
 import BreadCrumbs from "@/components/other/Breadcrumb";
 import InAppRoutes from "@/routes/auth-routes";
@@ -125,7 +125,7 @@ export default function AppContentLayout() {
               </Footer>
             </PageContent>
           </SimpleBar>
-          <VendgramCustomModal
+          <AppCustomModal
             handleClose={() => null}
             open={!isAuthorized}
             closeOnOutsideClick={false}
@@ -133,7 +133,7 @@ export default function AppContentLayout() {
             showClose={false}
             title={""}>
             <NotAuthorized />
-          </VendgramCustomModal>
+          </AppCustomModal>
           <UserIdlenessFeedback />
         </div>
       </Layout>

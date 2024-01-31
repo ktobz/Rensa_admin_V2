@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import { toast } from "react-toastify";
 import { useFormik, FormikProvider } from "formik";
 
-import VendgramInput from "components/input";
+import AppInput from "components/input";
 import {
   MuiBox,
   MuiIconButton,
@@ -141,7 +141,7 @@ export default function Login() {
           </MuiTypography>
 
           <MuiBox marginTop="30px" width="100%">
-            <VendgramInput
+            <AppInput
               name="username"
               label="Email Address"
               placeholder="Enter email address "
@@ -153,7 +153,7 @@ export default function Login() {
               onBlur={handleBlur}
               required
             />
-            <VendgramInput
+            <AppInput
               name="password"
               label="Password"
               placeholder="Enter password"

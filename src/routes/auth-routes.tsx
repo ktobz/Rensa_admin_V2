@@ -1,31 +1,22 @@
-import * as React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import { OrdersView } from "@/modules/orders/views/OrdersView";
 import { OrderDetails } from "@/modules/orders";
-// import { PartnersView } from "@/modules/products/views/PartnersView";
 import { SettlementsView } from "@/modules/settlements/views/SettlementsView";
 import { DashboardView } from "@/modules/dashboard/views/DashboardView";
-import CustomersView, {
-  CustomerDetailsView,
-  CustomerOrdersView,
-} from "@/modules/branches";
-// import { RidersView } from "@/modules/branch-manager/views/RidersView";
-import { TransactionsView } from "@/modules/branches copy/views/TransactionsView";
-import { CustomerTransactionsView } from "@/modules/branches/views/CustomerTransactionsView";
-import { IncomeView } from "@/modules/orders copy/views/IncomeView";
-// import { PartnerDetailsView } from "@/modules/products/views/PartnerDetailsView";
-import NotificationCenterView from "@/modules/branch-manager copy";
-import ConfigurationView from "@/modules/branch-manager copy 2";
-
-// import { BranchDetailsView } from "@/modules/products/views/branches";
 import { MarketPlaceListingsView } from "@/modules/settlements/views/MarketPlaceListingsView";
 import { ScheduledOrdersView } from "@/modules/orders/views/ScheduledOrdersView";
-import ReportedListingPageView from "@/modules/settlements copy";
-import { ListingDetails } from "@/modules/settlements copy/views/ListingDetails";
-import AppReleaseView from "@/modules/branch-manager copy 3";
-import { AddListing } from "@/modules/settlements copy/views/AddListing";
-import { PayoutView } from "@/modules/branches copy/views/PayoutView";
+import ReportedListingPageView from "@/modules/marketplace";
+import { ListingDetails } from "@/modules/marketplace/views/ListingDetails";
+import { AddListing } from "@/modules/marketplace/views/AddListing";
+import TransactionsView from "@/modules/transaction";
+import { PayoutView } from "@/modules/transaction/views/PayoutView";
+import IncomeView from "@/modules/income";
+import NotificationCenterView from "@/modules/notification-center";
+import AppReleaseView from "@/modules/app-release";
+import ConfigurationView from "@/modules/configuration";
+import CustomersView, { CustomerDetailsView } from "@/modules/users";
+import { CustomerTransactionsView } from "@/modules/users/views/CustomerTransactionsView";
 
 export default function MergedModuleRoutes() {
   return (
@@ -72,7 +63,6 @@ export default function MergedModuleRoutes() {
       <Route path="/users/:c_id/:rp_id" element={<ListingDetails />} />
       <Route path="/users/:c_id/:orderId" element={<OrderDetails />} />
 
-      <Route path="/customers/:id/orders" element={<CustomerOrdersView />} />
       <Route
         path="/customers/:c_id/transactions"
         element={<CustomerTransactionsView />}
@@ -82,7 +72,7 @@ export default function MergedModuleRoutes() {
         element={<OrderDetails />}
       />
 
-      {/* <Route path="*" element={<NotFound />} /> */}
+      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
 }

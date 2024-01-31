@@ -2,7 +2,7 @@ import { FormControlLabelProps } from "@mui/material";
 import { MuiBox, MuiFormControlLabel, MuiRadio } from "lib/index";
 import * as React from "react";
 
-export default function VendgramRadio({
+export default function AppRadio({
   label,
   ...others
 }: Omit<FormControlLabelProps, "control">) {

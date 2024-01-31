@@ -53,6 +53,6 @@ const StyledSwitch = styled((props: SwitchProps) => (
   },
 }));
 
-export default function VendgramSwitch(props: SwitchProps) {
+export default function AppSwitch(props: SwitchProps) {
   return <StyledSwitch {...props} />;
 }

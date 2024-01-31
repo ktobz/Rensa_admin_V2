@@ -3,7 +3,7 @@ import { useIdleTimer } from "react-idle-timer";
 
 import { styled } from "@/lib/index";
 import { CustomActionCard } from "@/components/card/CustomActionCard";
-import VendgramCustomModal from "@/components/modal/Modal";
+import AppCustomModal from "@/components/modal/Modal";
 import { useUserStore } from "@/config/store-config/store.config";
 
 const timeout = 600_000; // 10 minutes Idle Time
@@ -60,7 +60,7 @@ export default function UserIdlenessFeedback() {
 
   return (
     <>
-      <VendgramCustomModal
+      <AppCustomModal
         handleClose={handleCloseModal}
         open={showModal}
         alignTitle="left"
@@ -83,7 +83,7 @@ export default function UserIdlenessFeedback() {
           title="Are you still here?"
           // isSubmitting={isSubmitting}
         />
-      </VendgramCustomModal>
+      </AppCustomModal>
     </>
   );
 }

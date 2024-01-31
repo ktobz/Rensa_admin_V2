@@ -2,7 +2,7 @@ import * as React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import VendgramInput from "@/components/input";
+import AppInput from "@/components/input";
 import {
   MuiBox,
   MuiButton,
@@ -199,7 +199,7 @@ export const ForgotPasswordForm = ({
       </MuiTypography>
 
       <MuiBox marginTop="50px" width="100%">
-        <VendgramInput
+        <AppInput
           name="email"
           label="Email Address"
           placeholder="Enter email address "
