@@ -1,6 +1,4 @@
 import * as React from "react";
-import { format } from "date-fns";
-
 import {
   MuiButton,
   MuiCardMedia,
@@ -12,24 +10,18 @@ import {
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   IconBike,
-  IconBranches,
   IconCopyFilled,
-  IconCreditCard,
   IconEarning,
-  IconLocation,
-  IconPetrol,
-  IconShipping,
   IconTicket,
   IconVan,
 } from "@/lib/mui.lib.icons";
 import { useQuery, useQueryClient } from "react-query";
 import OrderService from "@/services/order-service";
-import { IOrderData, IOrderDetails, IStatus } from "@/types/globalTypes";
-import { UserDetailCard } from "@/components/card/UserCard";
+import { IStatus } from "@/types/globalTypes";
+
 import AppCustomModal from "@/components/modal/Modal";
-import { AssignRiderForm } from "../components/AssignRiderForm";
+
 import { OrderStatus } from "@/components/feedback/OrderStatus";
-import { SettlementStatus } from "@/modules/settlements/components/OrderStatus";
 import { formatCurrency, formatDate, getIdName } from "@/utils/helper-funcs";
 import useCachedDataStore from "@/config/store-config/lookup";
 import { OrderConfirmation } from "../components/OrderConfirmation";
@@ -84,7 +76,6 @@ export function OrderDetails() {
       retry: 0,
       refetchOnWindowFocus: false,
       enabled: !!orderId,
-      // initialData: state as any,
     }
   );
 
@@ -639,26 +630,10 @@ export function OrderDetails() {
                   })}
                 </MuiTypography>
               </div>
-              {/* <div className="price-line">
-                <MuiTypography variant="body1" className="entry">
-                  Refunded with delivery
-                </MuiTypography>
-                <MuiTypography variant="body1" className="entry">
-                  Yes
-                </MuiTypography>
-              </div> */}
 
               <div className="line" />
 
               <div className="delivery-status">
-                {/* <div className="section delivery">
-                  <MuiTypography variant="body1" className="title">
-                    Delivery status
-                  </MuiTypography>
-                  <MuiTypography variant="body2" className="body">
-                    -
-                  </MuiTypography>
-                </div> */}
                 <div className="section reason">
                   <MuiTypography variant="body1" className="title">
                     Reason
