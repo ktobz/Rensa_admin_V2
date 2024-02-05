@@ -168,7 +168,7 @@ export function AddListing() {
   const { errors, handleSubmit, handleChange, values, setFieldValue } = formik;
 
   const usersQuery = useQuery(
-    ["all-users-listing", name],
+    ["all-users-in-db", name],
     () =>
       CustomerService.getAll(name ? `?searchText=${name}` : "").then((res) => {
         return res.data.result?.data?.map((x) => ({
@@ -237,6 +237,7 @@ export function AddListing() {
   };
 
   const getId = (user: string, options: any) => {
+    console.log(user, options);
     const data = options;
     return data.find(
       (value: any) =>
@@ -290,10 +291,10 @@ export function AddListing() {
                   }
                   if (reason === "reset") {
                     setFieldValue("userId_name", newInputValue);
-                    setFieldValue(
-                      "userId",
-                      getId(newInputValue, usersQuery.data)
-                    );
+                    // setFieldValue(
+                    //   "userId",
+                    //   getId(newInputValue, usersQuery.data)
+                    // );
                   }
                 }
               }}
