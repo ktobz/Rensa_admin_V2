@@ -6,10 +6,13 @@ import {
   IConditionResponse,
   ICondition,
   IAutomatedMessageResponse,
+  INotificationDataResponse,
 } from "@/types/globalTypes";
 import { AxiosPromise } from "axios";
 const PATHS = {
   all: "/pushnotification",
+  notifications: "/admin/push",
+  createNotification: "/admin/push/create-push-notification",
   category: "/admin/cataloguecategory",
   messages: "/admin/automatedmessages",
   conditions: "/admin/cataloguecondition",
@@ -18,22 +21,22 @@ const PATHS = {
 
 const NotificationService = {
   create(data: FormData) {
-    return HTTP.post(`${PATHS.all}`, data, {
+    return HTTP.post(`${PATHS.createNotification}`, data, {
       headers: {
         Authorization: getToken(),
       },
     });
   },
   update(id: string, data: FormData) {
-    return HTTP.put(`${PATHS.all}/${id}`, data, {
+    return HTTP.put(`${PATHS.notifications}/${id}`, data, {
       headers: {
         Authorization: getToken(),
       },
     });
   },
 
-  getAll(query?: string) {
-    return HTTP.get(`${PATHS.all}${query ? query : ""}`, {
+  getAll(query?: string): AxiosPromise<INotificationDataResponse> {
+    return HTTP.get(`${PATHS.notifications}${query ? query : ""}`, {
       headers: {
         Authorization: getToken(),
       },

@@ -887,6 +887,29 @@ export type IReportedListingResponse = {
   };
 };
 
+export type INotification = {
+  id: number;
+  creatorUserId: string;
+  lastModifierUserId: string;
+  deleterUserId: string;
+  creationTime: string;
+  lastModificationTime: string;
+  deletionTime: string;
+  isDeleted: true;
+  message: string;
+  title: string;
+  scheduleDate: string;
+  sentDate: string;
+  isSent: true;
+  isActive: true;
+};
+
+export type INotificationDataResponse = {
+  result: IPaginationResponse & {
+    data: INotification[];
+  };
+};
+
 export type IListingStatsResponse = {
   result: {
     pending: number;

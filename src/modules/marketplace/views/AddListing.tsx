@@ -210,7 +210,7 @@ export function AddListing() {
   const allCategory = useQuery(
     ["all-category"],
     () =>
-      NotificationService.getCategories().then((res) => {
+      NotificationService.getCategories(`?pageSize=1000`).then((res) => {
         return res.data.result?.data;
       }),
     {
