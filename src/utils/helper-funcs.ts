@@ -3,7 +3,12 @@ import {
   IPagination,
   IPaginationResponse,
 } from "@/types/globalTypes";
-import { format } from "date-fns";
+import { format, parseISO, addHours } from "date-fns";
+import {
+  format as fnFormat,
+  utcToZonedTime,
+  zonedTimeToUtc,
+} from "date-fns-tz";
 import { REFRESH_TOKEN_NAME, TOKEN_NAME } from "types/actionTypes";
 
 export const getCurrentYear = () => {
@@ -95,4 +100,10 @@ export const formatDate = (
 
 export const getIdName = (id: number, list: ICategory[]) => {
   return list?.find((x) => id === x?.id)?.name?.replaceAll(" ", "_") || "";
+};
+
+export const convertDateToTimZone = (d: string) => {
+  const parsedTime = parseISO(d);
+  const dd = addHours(parsedTime, 1); // one for UTC to GMT conversion
+  return dd;
 };

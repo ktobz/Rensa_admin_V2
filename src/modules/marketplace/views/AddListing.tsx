@@ -237,7 +237,6 @@ export function AddListing() {
   };
 
   const getId = (user: string, options: any) => {
-    console.log(user, options);
     const data = options;
     return data.find(
       (value: any) =>

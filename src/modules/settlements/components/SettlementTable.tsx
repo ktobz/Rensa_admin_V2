@@ -28,6 +28,7 @@ import {
 } from "@/types/globalTypes";
 import CustomTableSkeleton from "@/components/skeleton/CustomTableSkeleton";
 import {
+  convertDateToTimZone,
   createPaginationData,
   formatCurrency,
   getIdName,
@@ -274,9 +275,23 @@ export function SettlementTable({
             <MuiTableBody>
               {!isLoading &&
                 data?.map((row) => {
+                  // const time = row?.creationTime;
+                  // const duration = row?.durationInHours;
+                  // const date = new Date(time);
+                  // const today = new Date().getTime();
+
+                  // const endTime = date.setTime(
+                  //   date.getTime() + duration * 60 * 60 * 1000
+                  // );
+
+                  // const timeRemaining =
+                  //   endTime > today ? (endTime - today) / 1000 : 0;
+
                   const time = row?.creationTime;
                   const duration = row?.durationInHours;
-                  const date = new Date(time);
+                  const d = convertDateToTimZone(row?.creationTime);
+
+                  const date = new Date(d);
                   const today = new Date().getTime();
 
                   const endTime = date.setTime(
