@@ -136,7 +136,9 @@ export const ActionTimeStatus = ({
       type={
         catelogueStatus === "pending_payment"
           ? "on_hold"
-          : catelogueStatus !== "closed" && catelogueStatus !== "expired"
+          : catelogueStatus !== "closed" &&
+            catelogueStatus !== "expired" &&
+            catelogueStatus !== "active"
           ? "sold"
           : "closed"
       }
