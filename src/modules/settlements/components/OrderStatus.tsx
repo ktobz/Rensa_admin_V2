@@ -131,12 +131,14 @@ export const ActionTimeStatus = ({
   const statusType = minutes >= 10 ? "warning" : "error";
   const hasEnded = minutes === 0 && seconds === 0;
 
-  return hasEnded ? (
+  return hasEnded || catelogueStatus !== "active" ? (
     <OrderStatus
       type={
         catelogueStatus === "pending_payment"
           ? "on_hold"
-          : catelogueStatus !== "closed" && catelogueStatus !== "expired"
+          : catelogueStatus !== "closed" &&
+            catelogueStatus !== "expired" &&
+            catelogueStatus !== "active"
           ? "sold"
           : "closed"
       }
