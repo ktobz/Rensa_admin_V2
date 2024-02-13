@@ -18,10 +18,7 @@
     "autosuggest-highlight": "^3.3.4",
     "axios": "^0.26.1",
     "date-fns": "^2.29.3",
-<<<<<<< HEAD
-=======
     "date-fns-tz": "^2.0.0",
->>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
     "dayjs": "^1.11.0",
     "formik": "^2.2.9",
     "lodash.debounce": "^4.0.8",
