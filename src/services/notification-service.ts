@@ -58,6 +58,17 @@ const NotificationService = {
       },
     });
   },
+  sendPushById(id: string) {
+    return HTTP.post(
+      `${PATHS.notifications}/send-push-by-id/${id}`,
+      {},
+      {
+        headers: {
+          Authorization: getToken(),
+        },
+      }
+    );
+  },
 
   delete(id: string) {
     return HTTP.delete(`${PATHS.all}/${id}`, {
