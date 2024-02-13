@@ -887,8 +887,6 @@ export type IReportedListingResponse = {
   };
 };
 
-<<<<<<< HEAD
-=======
 export type INotification = {
   id: number;
   creatorUserId: string;
@@ -912,7 +910,6 @@ export type INotificationDataResponse = {
   };
 };
 
->>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
 export type IListingStatsResponse = {
   result: {
     pending: number;

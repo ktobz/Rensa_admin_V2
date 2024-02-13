@@ -123,10 +123,6 @@ export default function StatusFilter({
       typeof value === "string" ? value?.split(",") : value
     );
   };
-<<<<<<< HEAD
-  console.log(options, "OPTION");
-=======
->>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
 
   return (
     <MuiFormControl

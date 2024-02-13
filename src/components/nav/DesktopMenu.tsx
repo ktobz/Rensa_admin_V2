@@ -25,16 +25,10 @@ const StyledWrapper = styled.header`
 
   & .logo-section {
     width: 100%;
-<<<<<<< HEAD
-    height: 100px;
-    display: flex;
-    align-items: center;
-=======
     height: 30px;
     display: flex;
     align-items: center;
     margin-bottom: 40px;
->>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
     /* justify-content: center; */
 
     img {

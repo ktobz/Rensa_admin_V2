@@ -40,11 +40,6 @@ import { NotificationEntryForm } from "./NotificationEntryForm";
 
 import { DeleteNotificationConfirm } from "./DeleteNotificationConfirm";
 
-<<<<<<< HEAD
-import { INotificationData, IPagination } from "@/types/globalTypes";
-import NotificationService from "@/services/notification-service";
-import { SendNotificationConfirm } from "./SendNotificationConfirm";
-=======
 import {
   INotification,
   INotificationData,
@@ -53,7 +48,6 @@ import {
 import NotificationService from "@/services/notification-service";
 import { SendNotificationConfirm } from "./SendNotificationConfirm";
 import { createPaginationData, formatDate } from "@/utils/helper-funcs";
->>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
 
 const defaultQuery: IPagination = {
   pageSize: 15,
@@ -82,11 +76,7 @@ export function NotificationCenterTable() {
   const [updateData, setUpdateData] = React.useState<any[]>([]);
   const [notificationData, setNotificationData] = React.useState<any[]>([]);
 
-<<<<<<< HEAD
-  const [editData, setEditData] = React.useState<null | any>(null);
-=======
   const [editData, setEditData] = React.useState<null | INotification>(null);
->>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
   const [checked, setChecked] = React.useState(() => {
     const states: { [key: string]: boolean } = {};
 
@@ -164,11 +154,7 @@ export function NotificationCenterTable() {
     setShow((prev) => ({ ...prev, delete: true }));
   };
 
-<<<<<<< HEAD
-  const handleSetEditData = (data: INotificationData) => () => {
-=======
   const handleSetEditData = (data: INotification) => () => {
->>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
     setEditData(data);
     setShow((prev) => ({ ...prev, add: true }));
   };
@@ -179,22 +165,6 @@ export function NotificationCenterTable() {
       NotificationService.getAll(
         `?page=${pagination.page}&perPage=${pagination.pageSize}`
       ).then((res) => {
-<<<<<<< HEAD
-        const data = res.data?.data;
-        // const { hasNextPage, hasPrevPage, total, totalPages } =
-        //   createPaginationData(data, pagination);
-
-        // setPagination((prev) => ({
-        //   ...prev,
-        //   total,
-        //   totalPages,
-        //   hasNextPage,
-        //   hasPrevPage,
-        // }));
-        // return data;
-
-        return data as INotificationData[];
-=======
         const { data, ...paginationData } = res.data?.result;
         const { hasNextPage, hasPrevPage, total, totalPages } =
           createPaginationData(data, paginationData);
@@ -208,7 +178,6 @@ export function NotificationCenterTable() {
         }));
 
         return data;
->>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
       }),
     {
       retry: 0,
@@ -220,11 +189,7 @@ export function NotificationCenterTable() {
     setPagination((prev: any) => ({ ...prev, page }));
   };
 
-<<<<<<< HEAD
-  const handleViewDetails = (data: INotificationData) => () => {
-=======
   const handleViewDetails = (data: INotification) => () => {
->>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
     setUpdateData([data]);
     setShow((prev) => ({ ...prev, info: true }));
   };
@@ -237,11 +202,7 @@ export function NotificationCenterTable() {
       send: false,
       delete: false,
     }));
-<<<<<<< HEAD
-    setEditData(undefined);
-=======
     setEditData(null);
->>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
   };
 
   const handleRefresh = () => {
@@ -283,19 +244,11 @@ export function NotificationCenterTable() {
       });
   };
 
-<<<<<<< HEAD
-  const handleSetUpdateStatusData = (data: INotificationData) => () => {
-    setUpdateData(() => [data]);
-    setShow((prev) => ({ ...prev, updateStatus: true }));
-  };
-  const handleSetNotificationData = (data: INotificationData) => () => {
-=======
   const handleSetUpdateStatusData = (data: INotification) => () => {
     setUpdateData(() => [data]);
     setShow((prev) => ({ ...prev, updateStatus: true }));
   };
   const handleSetNotificationData = (data: INotification) => () => {
->>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
     setNotificationData(() => [data]);
     setShow((prev) => ({ ...prev, send: true }));
   };
@@ -354,11 +307,7 @@ export function NotificationCenterTable() {
             <MuiTableHead>
               <MuiTableRow>
                 <MuiTableCell className="heading" align="left">
-<<<<<<< HEAD
-                  <MuiCheckbox
-=======
                   {/* <MuiCheckbox
->>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
                     size="small"
                     checkedIcon={<IconChecked />}
                     icon={<IconUnchecked />}
@@ -369,11 +318,7 @@ export function NotificationCenterTable() {
                       numOfChecked < (data ? data?.length : 0)
                     }
                     onChange={handleChangeAll}
-<<<<<<< HEAD
-                  />
-=======
                   /> */}
->>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
                 </MuiTableCell>
                 <MuiTableCell
                   className="heading"
@@ -408,28 +353,12 @@ export function NotificationCenterTable() {
                       "&:last-child td, &:last-child th": { border: 0 },
                     }}>
                     <MuiTableCell className="order-id" align="center">
-<<<<<<< HEAD
-                      <MuiCheckbox
-=======
                       {/* <MuiCheckbox
->>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
                         size="small"
                         checkedIcon={<IconChecked />}
                         icon={<IconUnchecked />}
                         onChange={handleCheck(row.id)}
                         checked={checked[row.id]}
-<<<<<<< HEAD
-                      />
-                    </MuiTableCell>
-
-                    <MuiTableCell>{row?.title}</MuiTableCell>
-                    <MuiTableCell align="left">{row?.description}</MuiTableCell>
-                    <MuiTableCell align="left">
-                      {row?.last_sent || "-"}
-                    </MuiTableCell>
-
-                    <MuiTableCell align="left">-</MuiTableCell>
-=======
                       /> */}
                     </MuiTableCell>
 
@@ -442,17 +371,12 @@ export function NotificationCenterTable() {
                     <MuiTableCell align="left">
                       {row?.isSent ? "Sent" : "Not sent"}
                     </MuiTableCell>
->>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
 
                     <MuiTableCell align="left">
                       <MuiBox className="action-group">
                         <MuiIconButton
                           color="success"
-<<<<<<< HEAD
-                          onClick={handleSetNotificationData(row)}
-=======
                           // onClick={handleSetNotificationData(row)}
->>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
                           className="action-btn send-btn">
                           <IconSendNotification />
                         </MuiIconButton>
@@ -464,11 +388,7 @@ export function NotificationCenterTable() {
                         </MuiIconButton>
                         <MuiIconButton
                           color="error"
-<<<<<<< HEAD
-                          onClick={handleSetDeleteData(row)}
-=======
                           // onClick={handleSetDeleteData(row)}
->>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
                           className="action-btn delete-btn">
                           <IconDelete />
                         </MuiIconButton>
@@ -484,10 +404,6 @@ export function NotificationCenterTable() {
 
               {!isLoading && data && data?.length === 0 && !isError && (
                 <MuiTableRow>
-<<<<<<< HEAD
-                  {" "}
-=======
->>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
                   <MuiTableCell
                     colSpan={9}
                     align="center"

@@ -3,16 +3,12 @@ import {
   IPagination,
   IPaginationResponse,
 } from "@/types/globalTypes";
-<<<<<<< HEAD
-import { format } from "date-fns";
-=======
 import { format, parseISO, addHours } from "date-fns";
 import {
   format as fnFormat,
   utcToZonedTime,
   zonedTimeToUtc,
 } from "date-fns-tz";
->>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
 import { REFRESH_TOKEN_NAME, TOKEN_NAME } from "types/actionTypes";
 
 export const getCurrentYear = () => {
