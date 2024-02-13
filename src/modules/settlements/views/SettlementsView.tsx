@@ -57,10 +57,10 @@ export function SettlementsView() {
           defaultValue={listingStatsData?.expired}
         />
         <TotalCard
-          title="Total Listing"
+          title="Sold Listing"
           variant="order"
           showFilter={false}
-          defaultValue={listingStatsData?.active}
+          defaultValue={listingStatsData?.sold}
         />
       </div>
       <div className="activities">

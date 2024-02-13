@@ -64,13 +64,10 @@ export default function MergedModuleRoutes() {
       <Route path="/users/:c_id/:orderId" element={<OrderDetails />} />
 
       <Route
-        path="/customers/:c_id/transactions"
+        path="/users/:c_id/transactions"
         element={<CustomerTransactionsView />}
       />
-      <Route
-        path="/customers/:c_id/orders/:orderId"
-        element={<OrderDetails />}
-      />
+      <Route path="/users/:c_id/orders/:orderId" element={<OrderDetails />} />
 
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>

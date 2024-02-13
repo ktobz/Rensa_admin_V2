@@ -844,6 +844,7 @@ export type IListingData = {
     phoneNumber: string;
     profilePictureUrl: string;
     username: string;
+    isVerified: boolean | null;
   };
   state: string;
   city: string;
