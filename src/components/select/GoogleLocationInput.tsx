@@ -140,7 +140,7 @@ export default function GoogleLocationInput({
       options={options}
       autoComplete
       includeInputInList
-      placeholder="add your address"
+      // placeholder="add your address"
       filterSelectedOptions
       value={value}
       noOptionsText={inputValue ? "No Locations" : "Type to search location"}
@@ -153,7 +153,12 @@ export default function GoogleLocationInput({
         setInputValue(newInputValue);
       }}
       renderInput={(params) => (
-        <AppInput {...params} label="Item Location" error={error} />
+        <AppInput
+          {...params}
+          label="Item Location"
+          placeholder="add address"
+          error={error}
+        />
       )}
       renderOption={(props, option) => {
         const matches =

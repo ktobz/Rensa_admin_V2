@@ -20,6 +20,7 @@ interface MyAutocomplete<
   updateFieldValue: Function;
   optionTitle?: string;
   optionValue?: string;
+  placeholder?: string;
 }
 
 // interface AutoCompleteExtendedProps extends  ;
