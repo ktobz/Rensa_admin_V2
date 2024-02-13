@@ -168,7 +168,11 @@ export function AddListing() {
   const { errors, handleSubmit, handleChange, values, setFieldValue } = formik;
 
   const usersQuery = useQuery(
+<<<<<<< HEAD
     ["all-users-listing", name],
+=======
+    ["all-users-in-db", name],
+>>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
     () =>
       CustomerService.getAll(name ? `?searchText=${name}` : "").then((res) => {
         return res.data.result?.data?.map((x) => ({
@@ -210,7 +214,11 @@ export function AddListing() {
   const allCategory = useQuery(
     ["all-category"],
     () =>
+<<<<<<< HEAD
       NotificationService.getCategories().then((res) => {
+=======
+      NotificationService.getCategories(`?pageSize=1000`).then((res) => {
+>>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
         return res.data.result?.data;
       }),
     {
@@ -290,10 +298,17 @@ export function AddListing() {
                   }
                   if (reason === "reset") {
                     setFieldValue("userId_name", newInputValue);
+<<<<<<< HEAD
                     setFieldValue(
                       "userId",
                       getId(newInputValue, usersQuery.data)
                     );
+=======
+                    // setFieldValue(
+                    //   "userId",
+                    //   getId(newInputValue, usersQuery.data)
+                    // );
+>>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
                   }
                 }
               }}

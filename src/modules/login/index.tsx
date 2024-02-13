@@ -83,11 +83,16 @@ export default function Login() {
   });
 
   const initialData = {
+<<<<<<< HEAD
     // email: state?.email || "kingsconsult001@gmail.com",
     // password: "Kingssley123@",
 
     username: state?.email || "administrator@rensa.com",
     password: "Admin12345.",
+=======
+    username: state?.email || "",
+    password: "",
+>>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
   };
 
   const formik = useFormik({
@@ -124,7 +129,11 @@ export default function Login() {
 
   const customHandleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
+<<<<<<< HEAD
     setFieldValue("email", value.trim());
+=======
+    setFieldValue("username", value.trim());
+>>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
   };
 
   return (

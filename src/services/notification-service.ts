@@ -6,10 +6,19 @@ import {
   IConditionResponse,
   ICondition,
   IAutomatedMessageResponse,
+<<<<<<< HEAD
+=======
+  INotificationDataResponse,
+>>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
 } from "@/types/globalTypes";
 import { AxiosPromise } from "axios";
 const PATHS = {
   all: "/pushnotification",
+<<<<<<< HEAD
+=======
+  notifications: "/admin/push",
+  createNotification: "/admin/push/create-push-notification",
+>>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
   category: "/admin/cataloguecategory",
   messages: "/admin/automatedmessages",
   conditions: "/admin/cataloguecondition",
@@ -18,22 +27,35 @@ const PATHS = {
 
 const NotificationService = {
   create(data: FormData) {
+<<<<<<< HEAD
     return HTTP.post(`${PATHS.all}`, data, {
+=======
+    return HTTP.post(`${PATHS.createNotification}`, data, {
+>>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
       headers: {
         Authorization: getToken(),
       },
     });
   },
   update(id: string, data: FormData) {
+<<<<<<< HEAD
     return HTTP.put(`${PATHS.all}/${id}`, data, {
+=======
+    return HTTP.put(`${PATHS.notifications}/${id}`, data, {
+>>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
       headers: {
         Authorization: getToken(),
       },
     });
   },
 
+<<<<<<< HEAD
   getAll(query?: string) {
     return HTTP.get(`${PATHS.all}${query ? query : ""}`, {
+=======
+  getAll(query?: string): AxiosPromise<INotificationDataResponse> {
+    return HTTP.get(`${PATHS.notifications}${query ? query : ""}`, {
+>>>>>>> 670f71a8fd81ffb38354ff6197bfd8bbc66853e3
       headers: {
         Authorization: getToken(),
       },
