@@ -621,6 +621,8 @@ export type IOrderStatsResponse = {
     inTransit: number;
     delivered: number;
     cancelled: number;
+    pendingCancellation: number;
+    total: number;
   };
 };
 

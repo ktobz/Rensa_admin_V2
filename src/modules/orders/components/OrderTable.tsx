@@ -344,7 +344,7 @@ export function OrderTable({
             title=""
             variant="order"
             // showFilter={false}
-            defaultValue={0}
+            defaultValue={orderStatsData?.pendingCancellation}
             filterType="status"
             statusType="pending_cancellation"
           />
@@ -362,7 +362,7 @@ export function OrderTable({
             title="Total Orders"
             variant="order"
             showFilter={false}
-            defaultValue={0}
+            defaultValue={orderStatsData?.total}
             filterType="minimal"
           />
         </div>
