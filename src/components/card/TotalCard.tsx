@@ -123,9 +123,12 @@ export function TotalCard({
   return (
     <StyledWrapper className={className}>
       <div className="top-section">
-        <MuiTypography className="title" variant="subtitle2">
-          {title}
-        </MuiTypography>
+        {title && (
+          <MuiTypography className="title" variant="subtitle2">
+            {title}
+          </MuiTypography>
+        )}
+
         {showFilter && (
           <div className="actions">
             {filterType === "minimal" && (

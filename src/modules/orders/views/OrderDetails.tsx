@@ -220,7 +220,7 @@ export function OrderDetails() {
       ? "rejected"
       : data && data?.cancellationRequests?.[0]?.status > 1
       ? "confirmed"
-      : "pending";
+      : "";
 
   return (
     <PageContent>
@@ -652,17 +652,19 @@ export function OrderDetails() {
                 </div>
               </div>
 
-              <div className="cancel-status">
-                <div className={`status ${cancelAcceptanceStatus}`}>
-                  <MuiTypography variant="body1" className="status-text">
-                    {getIdName(
-                      data?.cancellationRequests?.[0]?.status || 0,
-                      catalogueOrderCancellationStatus
-                    )}{" "}
-                    Refund
-                  </MuiTypography>
+              {!!cancelAcceptanceStatus && (
+                <div className="cancel-status">
+                  <div className={`status ${cancelAcceptanceStatus}`}>
+                    <MuiTypography variant="body1" className="status-text">
+                      {getIdName(
+                        data?.cancellationRequests?.[0]?.status || 0,
+                        catalogueOrderCancellationStatus
+                      )}{" "}
+                      Refund
+                    </MuiTypography>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {showReasonsActions && (
                 <div className="actions">

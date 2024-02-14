@@ -72,7 +72,10 @@ const DATE_LIST = [
 type IProps = {
   variant?: "page" | "section" | "home" | "cards";
   page: "orders" | "dashboard" | "branches" | "branch-order";
-  apiFunc?: (query?: string) => AxiosPromise<IOrderResponse>;
+  apiFunc?: (
+    query?: string,
+    signal?: AbortSignal
+  ) => AxiosPromise<IOrderResponse>;
   id?: string;
   queryKey?: string;
   viewMode?: "grid" | "list";
@@ -155,19 +158,20 @@ export function OrderTable({
   };
 
   const { data, isLoading, isError } = useQuery(
-    [queryKey, id, filter, pagination.page, pagination.pageSize, searchText],
-    () =>
+    [queryKey, id, filter, pagination.page, pagination.pageSize, text],
+    ({ signal }) =>
       apiFunc(
         `?pageNumber=${pagination.page}&pageSize=${
           pagination?.pageSize
-        }&searchText=${searchText}${
+        }&searchText=${text}${
           filter?.length > 0
             ? `${filter.reduce((acc, val) => {
                 acc += `&status=${val}`;
                 return acc;
               }, "")}`
             : ""
-        }`
+        }`,
+        signal
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
         const { hasNextPage, hasPrevPage, total, totalPages } =
@@ -288,20 +292,20 @@ export function OrderTable({
   };
 
   const handleSetSearchText = (value: string) => () => {
-    if (value) {
-      setSearchText(value);
-    }
+    // if (value) {
+    setSearchText(value);
+    // }
   };
 
   const throttleChangeHandler = React.useMemo(
-    () => throttle(handleSetSearchText(text), 500),
+    () => throttle(handleSetSearchText(text), 600),
     [text]
   );
 
   const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    setText(value);
     throttleChangeHandler();
+    setText(value);
   };
 
   return (
@@ -310,16 +314,16 @@ export function OrderTable({
         <div className="cards">
           <TotalCard
             className="card"
-            title="New Orders"
+            title=""
             variant="order"
             // showFilter={false}
             defaultValue={orderStatsData?.pending}
             filterType="status"
-            statusType="new"
+            statusType="pending"
           />
           <TotalCard
             className="card"
-            title="Cancelled Orders"
+            title=""
             variant="order"
             // showFilter={false}
             defaultValue={orderStatsData?.cancelled}
@@ -328,7 +332,25 @@ export function OrderTable({
           />
           <TotalCard
             className="card"
-            title="Delivered Orders"
+            title=""
+            variant="order"
+            // showFilter={false}
+            defaultValue={orderStatsData?.inTransit}
+            filterType="status"
+            statusType="intransit"
+          />
+          <TotalCard
+            className="card"
+            title=""
+            variant="order"
+            // showFilter={false}
+            defaultValue={0}
+            filterType="status"
+            statusType="pending_cancellation"
+          />
+          <TotalCard
+            className="card"
+            title=""
             variant="order"
             // showFilter={false}
             defaultValue={orderStatsData?.delivered}
@@ -337,7 +359,7 @@ export function OrderTable({
           />
           <TotalCard
             className="card"
-            title="Total sales"
+            title="Total Orders"
             variant="order"
             showFilter={false}
             defaultValue={0}
@@ -602,12 +624,12 @@ const StyledPage = styled.section`
 
   & .cards {
     display: flex;
-    gap: 20px;
+    gap: 10px;
     flex-wrap: wrap;
     margin-bottom: 30px;
 
     & .card {
-      width: calc((100% - 60px) / 4);
+      width: calc((100% - 50px) / 6);
     }
   }
 

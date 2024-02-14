@@ -60,7 +60,10 @@ type IProps = {
   showMoreText?: boolean;
   showAddNew?: boolean;
   id?: string;
-  apiFunc?: (query?: string) => AxiosPromise<IListingResponse>;
+  apiFunc?: (
+    query?: string,
+    signal?: AbortSignal
+  ) => AxiosPromise<IListingResponse>;
   queryKey?: string;
 };
 
@@ -93,7 +96,7 @@ export function SettlementTable({
 
   const { data, isLoading, isError } = useQuery(
     [queryKey, id, filter, pagination.page, pagination.pageSize, searchText],
-    () =>
+    ({ signal }) =>
       apiFunc(
         `?pageNumber=${pagination.page}&pageSize=${
           pagination?.pageSize
@@ -104,7 +107,8 @@ export function SettlementTable({
                 return acc;
               }, "")}`
             : ""
-        }`
+        }`,
+        signal
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
         const { hasNextPage, hasPrevPage, total, totalPages } =

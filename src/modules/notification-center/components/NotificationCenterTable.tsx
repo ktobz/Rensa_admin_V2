@@ -330,9 +330,9 @@ export function NotificationCenterTable() {
                 <MuiTableCell className="heading" width={"40%"} align="left">
                   Body
                 </MuiTableCell>
-                <MuiTableCell className="heading" align="left">
+                {/* <MuiTableCell className="heading" align="left">
                   Last sent
-                </MuiTableCell>
+                </MuiTableCell> */}
 
                 <MuiTableCell className="heading" align="left">
                   Status
@@ -364,9 +364,9 @@ export function NotificationCenterTable() {
 
                     <MuiTableCell>{row?.title}</MuiTableCell>
                     <MuiTableCell align="left">{row?.message}</MuiTableCell>
-                    <MuiTableCell align="left">
+                    {/* <MuiTableCell align="left">
                       {row?.sentDate ? formatDate(row?.sentDate || "") : "-"}
-                    </MuiTableCell>
+                    </MuiTableCell> */}
 
                     <MuiTableCell align="left">
                       {row?.isSent ? "Sent" : "Not sent"}
@@ -386,12 +386,12 @@ export function NotificationCenterTable() {
                           className={`action-btn edit-btn `}>
                           <IconEdit />
                         </MuiIconButton>
-                        <MuiIconButton
+                        {/* <MuiIconButton
                           color="error"
-                          // onClick={handleSetDeleteData(row)}
+                          onClick={handleSetDeleteData(row)}
                           className="action-btn delete-btn">
                           <IconDelete />
-                        </MuiIconButton>
+                        </MuiIconButton> */}
                         <MuiIconButton
                           onClick={handleViewDetails(row)}
                           className="visible-btn">

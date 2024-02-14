@@ -22,7 +22,7 @@ const PATHS = {
 };
 
 const OrderService = {
-  getAll(query?: string): AxiosPromise<IOrderResponse> {
+  getAll(query?: string, signal?: AbortSignal): AxiosPromise<IOrderResponse> {
     return HTTP.get(
       `${PATHS.orders}${query ? `${query}` : ""}`,
 
@@ -30,6 +30,7 @@ const OrderService = {
         headers: {
           Authorization: getToken(),
         },
+        signal: signal || new AbortSignal(),
       }
     );
   },

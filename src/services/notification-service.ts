@@ -10,7 +10,7 @@ import {
 } from "@/types/globalTypes";
 import { AxiosPromise } from "axios";
 const PATHS = {
-  all: "/pushnotification",
+  all: "/admin/push",
   notifications: "/admin/push",
   createNotification: "/admin/push/create-push-notification",
   category: "/admin/cataloguecategory",
@@ -52,7 +52,7 @@ const NotificationService = {
   },
 
   sendNotification(data: { message: string; title: string }) {
-    return HTTP.post(`${PATHS.all}/admin/send-to-general`, data, {
+    return HTTP.post(`${PATHS.notifications}/send-to-general`, data, {
       headers: {
         Authorization: getToken(),
       },

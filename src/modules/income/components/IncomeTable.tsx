@@ -82,10 +82,11 @@ export function IncomeTable() {
   };
 
   const { data, isLoading, isError } = useQuery(
-    ["sales-revenue", pagination.page, pagination.pageSize, searchText],
-    () =>
+    ["sales-revenue", pagination.page, pagination.pageSize, text],
+    ({ signal }) =>
       TransactionService.getAllSales(
-        `?pageNumber=${pagination.page}&pageSize=${pagination.pageSize}&searchText=${searchText}`
+        `?pageNumber=${pagination.page}&pageSize=${pagination.pageSize}&searchText=${text}`,
+        signal
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
         const { hasNextPage, hasPrevPage, total, totalPages } =

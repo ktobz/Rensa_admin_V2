@@ -73,19 +73,20 @@ export function ReportTable({
   };
 
   const { data, isLoading, isError } = useQuery(
-    ["reported-listing", filter, pagination.page, pagination.pageSize],
-    () =>
+    ["reported-listing", filter, pagination.page, pagination.pageSize, text],
+    ({ signal }) =>
       ListingService.getAllReportedListing(
         `?pageNumber=${pagination.page}&pageSize=${
           pagination?.pageSize
-        }&searchText=${searchText}${
+        }&searchText=${text}${
           filter?.length > 0
             ? `${filter.reduce((acc, val) => {
                 acc += `&status=${val}`;
                 return acc;
               }, "")}`
             : ""
-        }`
+        }`,
+        signal
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
         const { hasNextPage, hasPrevPage, total, totalPages } =

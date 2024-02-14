@@ -16,27 +16,39 @@ const PATHS = {
 };
 
 const TransactionService = {
-  getAll(query?: string): AxiosPromise<ITransactionsResponse> {
+  getAll(
+    query?: string,
+    signal?: AbortSignal
+  ): AxiosPromise<ITransactionsResponse> {
     return HTTP.get(`${PATHS.transactions}${query ? query : ""}`, {
       headers: {
         Authorization: getToken(),
       },
+      signal,
     });
   },
 
-  getAllPayouts(query?: string): AxiosPromise<IPayoutResponse> {
+  getAllPayouts(
+    query?: string,
+    signal?: AbortSignal
+  ): AxiosPromise<IPayoutResponse> {
     return HTTP.get(`${PATHS.payout}${query ? query : ""}`, {
       headers: {
         Authorization: getToken(),
       },
+      signal,
     });
   },
 
-  getAllSales(query?: string): AxiosPromise<ISalesResponse> {
+  getAllSales(
+    query?: string,
+    signal?: AbortSignal
+  ): AxiosPromise<ISalesResponse> {
     return HTTP.get(`${PATHS.sales}${query ? query : ""}`, {
       headers: {
         Authorization: getToken(),
       },
+      signal,
     });
   },
 

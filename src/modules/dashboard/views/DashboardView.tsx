@@ -9,6 +9,7 @@ import OrderService from "@/services/order-service";
 import { IOrderTotalStats } from "@/types/globalTypes";
 import useCachedDataStore from "@/config/store-config/lookup";
 import DashboardService from "@/services/dashboard-service";
+import TransactionService from "@/services/transaction-service";
 
 export function DashboardView() {
   const { dashboardFilter } = useCachedDataStore(
@@ -78,12 +79,12 @@ export function DashboardView() {
           title="Sales"
           variant="order"
           subAction={{
-            action: handleGoTo("transactions"),
+            action: handleGoTo("sales-revenue"),
             name: "View more",
           }}
           defaultOptions={transformedFilter}
-          serviceFunc={DashboardService.getSales}
-          queryKey="dashboard-transactions"
+          serviceFunc={TransactionService.salesCount}
+          queryKey="sales-total"
           defaultOptionId={5}
         />
         <TotalCard
@@ -95,8 +96,10 @@ export function DashboardView() {
             name: "View more",
           }}
           defaultOptions={transformedFilter}
-          serviceFunc={DashboardService.revenue}
-          queryKey="dashboard-revenue"
+          // serviceFunc={DashboardService.revenue}
+          // queryKey="dashboard-revenue"
+          queryKey="sales-revenue"
+          serviceFunc={TransactionService.salesRevenue}
           defaultOptionId={5}
         />
       </div>

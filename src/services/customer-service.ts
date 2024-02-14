@@ -17,11 +17,12 @@ const PATHS = {
 };
 
 const CustomerService = {
-  getAll(query?: string): AxiosPromise<IUsersResponse> {
+  getAll(query?: string, signal?: AbortSignal): AxiosPromise<IUsersResponse> {
     return HTTP.get(`${PATHS.customers}${query ? query : ""}`, {
       headers: {
         Authorization: getToken(),
       },
+      signal,
     });
   },
 

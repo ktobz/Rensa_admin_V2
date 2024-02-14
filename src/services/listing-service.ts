@@ -20,7 +20,7 @@ const PATHS = {
 };
 
 const ListingService = {
-  getAll(query?: string): AxiosPromise<IListingResponse> {
+  getAll(query?: string, signal?: AbortSignal): AxiosPromise<IListingResponse> {
     return HTTP.get(
       `${PATHS.orders}${query ? `${query}` : ""}`,
 
@@ -28,6 +28,7 @@ const ListingService = {
         headers: {
           Authorization: getToken(),
         },
+        signal,
       }
     );
   },
@@ -50,7 +51,8 @@ const ListingService = {
   },
 
   getAllReportedListing(
-    query?: string
+    query?: string,
+    signal?: AbortSignal
   ): AxiosPromise<IReportedListingResponse> {
     return HTTP.get(
       `${PATHS.listing}${query ? `${query}` : ""}`,
@@ -59,6 +61,7 @@ const ListingService = {
         headers: {
           Authorization: getToken(),
         },
+        signal,
       }
     );
   },
