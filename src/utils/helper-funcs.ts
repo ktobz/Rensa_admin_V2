@@ -107,3 +107,27 @@ export const convertDateToTimZone = (d: string) => {
   const dd = addHours(parsedTime, 1); // one for UTC to GMT conversion
   return dd;
 };
+
+export const formatToPrice = (amount: string) => {
+  const stringedAmount = amount?.replaceAll(",", "");
+  const numberAmount = Number(stringedAmount);
+  // Check if the input is a valid number
+  if (isNaN(numberAmount)) {
+    return "";
+  }
+
+  // Convert the input to a string and split it into whole and decimal parts
+  // let [whole, decimal] = numberAmount.toFixed(2).toString().split(".");
+
+  let [whole, decimal] = numberAmount.toFixed(2).toString().split(".");
+  // Add commas to the whole part every three digits from the right
+  whole = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+  // Return the formatted currency string
+  return whole + "." + decimal;
+};
+
+export const formatNumber = (num: string) => {
+  const stringNumber = num?.replace(/[^0-9.]/g, "");
+  return stringNumber;
+};

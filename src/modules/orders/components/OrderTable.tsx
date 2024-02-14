@@ -631,6 +631,16 @@ const StyledPage = styled.section`
     & .card {
       width: calc((100% - 50px) / 6);
     }
+
+    display: grid;
+    gap: 10px;
+    /* grid-template-columns: repeat(5, minmax(auto-fit, 200px)); */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+
+    & .card {
+      /* width: calc((100% - 40px) / 5); */
+      width: 100%;
+    }
   }
 
   & .toggle-mode {

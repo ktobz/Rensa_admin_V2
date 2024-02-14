@@ -467,6 +467,7 @@ const StyledPage = styled.section`
     align-items: center;
     /* max-width: 700px; */
     gap: 10px;
+    flex-wrap: wrap;
   }
 
   & .top-section {
@@ -474,6 +475,7 @@ const StyledPage = styled.section`
     gap: 10px;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
 
     & .view-all {
       height: fit-content;
@@ -492,6 +494,7 @@ const StyledPage = styled.section`
     align-items: center;
     justify-content: space-between;
     margin: 30px 0 15px 0;
+    flex-wrap: wrap;
   }
 
   & .visible-btn {

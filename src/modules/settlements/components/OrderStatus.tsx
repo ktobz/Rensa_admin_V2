@@ -128,10 +128,10 @@ export const ActionTimeStatus = ({
     expiryTimestamp: currentTime,
     onExpire: () => {},
   });
-  const statusType = minutes >= 10 ? "warning" : "error";
+  const statusType = minutes < 10 ? "error" : "warning";
   const hasEnded = minutes === 0 && seconds === 0;
 
-  return catelogueStatus !== "active" || hasEnded  ? (
+  return catelogueStatus !== "active" || hasEnded ? (
     <OrderStatus
       type={
         catelogueStatus === "pending_payment"

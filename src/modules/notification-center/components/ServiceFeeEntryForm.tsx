@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import NotificationService from "@/services/notification-service";
 import ConfigService from "@/services/config-service";
 import { IServiceFeeReq } from "@/types/globalTypes";
+import { formatNumber } from "@/utils/helper-funcs";
 
 const SCHEMA = Yup.object().shape({
   buyerServiceFee: Yup.number().required("required"),
@@ -62,6 +63,33 @@ export const ServiceFeeEntryForm = ({
 
   const { errors, handleSubmit, handleChange, values, setFieldValue } = formik;
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, name } = e.target;
+    // console.log(
+    //   name === "buyerServiceFee",
+    //   value?.buyerServiceFee?.includes("."),
+    //   value?.endsWith(".")
+    // );
+    // if (
+    //   name === "buyerServiceFee" &&
+    //   value?.buyerServiceFee?.includes(".") &&
+    //   value?.endsWith(".")
+    // ) {
+    //   return;
+    // }
+
+    if (
+      name === "sellerServiceFee" &&
+      values?.sellerServiceFee?.includes(".") &&
+      value?.endsWith(".")
+    ) {
+      return;
+    }
+
+    // const v = formatNumber(value);
+    setFieldValue(name, value);
+  };
+
   return (
     <FormikProvider value={formik}>
       <StyledForm onSubmit={handleSubmit}>
@@ -73,7 +101,7 @@ export const ServiceFeeEntryForm = ({
             placeholder="₦0.00"
             type="number"
             value={values.buyerServiceFee}
-            onChange={handleChange}
+            onChange={handleInputChange}
             helperText={errors.buyerServiceFee}
             error={!!errors.buyerServiceFee}
             required
@@ -86,7 +114,7 @@ export const ServiceFeeEntryForm = ({
             placeholder="₦0.00"
             type="number"
             value={values.sellerServiceFee}
-            onChange={handleChange}
+            onChange={handleInputChange}
             helperText={errors.sellerServiceFee}
             error={!!errors.sellerServiceFee}
             required
