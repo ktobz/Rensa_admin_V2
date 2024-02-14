@@ -45,9 +45,11 @@ export function OrderDetails() {
   const [, copy] = useCopyToClipboard();
 
   const { orderId } = useParams<{ orderId: string }>();
-  const { catalogueOrderStatus, deliveryFeePickupMethod } = useCachedDataStore(
-    (state) => state.cache.lookup
-  );
+  const {
+    catalogueOrderStatus,
+    deliveryFeePickupMethod,
+    catalogueOrderCancellationStatus,
+  } = useCachedDataStore((state) => state.cache.lookup);
   const [show, setShow] = React.useState({
     modal: false,
     payout: false,
@@ -213,6 +215,12 @@ export function OrderDetails() {
   const showActions = data?.status === 1 && !isLoading;
 
   const showReasonsActions = data?.status === 5 && !isLoading;
+  const cancelAcceptanceStatus =
+    data && data?.cancellationRequests?.[0]?.status > 2
+      ? "rejected"
+      : data && data?.cancellationRequests?.[0]?.status > 1
+      ? "confirmed"
+      : "pending";
 
   return (
     <PageContent>
@@ -644,7 +652,17 @@ export function OrderDetails() {
                 </div>
               </div>
 
-              <div className="cancel-status"></div>
+              <div className="cancel-status">
+                <div className={`status ${cancelAcceptanceStatus}`}>
+                  <MuiTypography variant="body1" className="status-text">
+                    {getIdName(
+                      data?.cancellationRequests?.[0]?.status || 0,
+                      catalogueOrderCancellationStatus
+                    )}{" "}
+                    Refund
+                  </MuiTypography>
+                </div>
+              </div>
 
               {showReasonsActions && (
                 <div className="actions">
@@ -713,6 +731,31 @@ const PageContent = styled.section`
   display: flex;
   gap: 20px;
   height: auto;
+
+  & .cancel-status {
+    & .status {
+      padding: 10px;
+      width: fit-content;
+      border-radius: 5px;
+    }
+
+    & .rejected {
+      background: #fff5f8;
+
+      & .status-text {
+        color: #f53139;
+        font-weight: 500;
+      }
+    }
+    & .confirmed {
+      background: #e8fff3;
+
+      & .status-text {
+        color: #45b26b;
+        font-weight: 500;
+      }
+    }
+  }
 
   & .delivery-status {
     border-left: 7px solid tomato;

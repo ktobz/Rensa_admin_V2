@@ -212,8 +212,12 @@ export function IncomeTable() {
                   Delivery fee
                 </MuiTableCell>
                 <MuiTableCell className="heading" align="left">
-                  Buyers Ser. fee
+                  Buyer's Ser. fee
                 </MuiTableCell>
+                <MuiTableCell className="heading" align="left">
+                  Seller's Ser. fee
+                </MuiTableCell>
+
                 <MuiTableCell className="heading" align="left">
                   Sellers settl.
                 </MuiTableCell>
@@ -259,6 +263,13 @@ export function IncomeTable() {
                     ₦
                     {formatCurrency({
                       amount: row?.buyerServiceFee,
+                      style: "decimal",
+                    })}
+                  </MuiTableCell>
+                  <MuiTableCell align="left">
+                    ₦
+                    {formatCurrency({
+                      amount: row?.sellerServiceFee,
                       style: "decimal",
                     })}
                   </MuiTableCell>

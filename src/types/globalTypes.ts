@@ -592,6 +592,7 @@ export type IOrderFullDetails = {
   cancellationRequests: {
     cancellationReason: string;
     comment: string;
+    status: number;
   }[];
 };
 
@@ -989,6 +990,7 @@ export type ILookups = {
   dashboardFilter: ICategory[];
   durationHours: ICategory[];
   reportedListingCategory: ICategory[];
+  catalogueOrderCancellationStatus: ICategory[];
 };
 
 export type IListingProp = {
