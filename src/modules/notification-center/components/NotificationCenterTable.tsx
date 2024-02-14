@@ -231,7 +231,7 @@ export function NotificationCenterTable() {
 
   const handleSendNotification = (callback: () => void) => () => {
     const ids = notificationData.map((data) => data?.id);
-    NotificationService.sendNotification(ids?.[0] || 0)
+    NotificationService.sendPushById(ids?.[0] || 0)
       .then((res) => {
         handleRefresh?.();
         toast.success(res.data?.message || "");
@@ -376,7 +376,7 @@ export function NotificationCenterTable() {
                       <MuiBox className="action-group">
                         <MuiIconButton
                           color="success"
-                          // onClick={handleSetNotificationData(row)}
+                          onClick={handleSetNotificationData(row)}
                           className="action-btn send-btn">
                           <IconSendNotification />
                         </MuiIconButton>

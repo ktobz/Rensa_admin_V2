@@ -644,6 +644,8 @@ export function OrderDetails() {
                 </div>
               </div>
 
+              <div className="cancel-status"></div>
+
               {showReasonsActions && (
                 <div className="actions">
                   <MuiButton

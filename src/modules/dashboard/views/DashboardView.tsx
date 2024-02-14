@@ -91,7 +91,7 @@ export function DashboardView() {
           title="Revenue"
           variant="sales"
           subAction={{
-            action: handleGoTo("revenue"),
+            action: handleGoTo("sales-revenue"),
             name: "View more",
           }}
           defaultOptions={transformedFilter}

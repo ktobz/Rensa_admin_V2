@@ -291,6 +291,7 @@ export function PayoutTableView({
                       <MuiTableCell align="left">
                         <MuiBox className="action-group">
                           <MuiIconButton
+                            title="verify"
                             onClick={handleVerifyTransaction(row, "verify")}
                             disabled={!!verifyId || disableVerifyBtn}
                             className={`visible-btn ${
@@ -307,6 +308,7 @@ export function PayoutTableView({
                             )}
                           </MuiIconButton>
                           <MuiIconButton
+                            title="retry"
                             onClick={handleVerifyTransaction(row, "retry")}
                             disabled={!!verifyId || disableRetryBtn}
                             className={`visible-btn ${

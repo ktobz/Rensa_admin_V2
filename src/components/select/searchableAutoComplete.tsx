@@ -37,6 +37,7 @@ interface MyAutocomplete<
   hasPreviousResult?: boolean;
   variant?: "country" | "team";
   required?: boolean;
+  placeholder?: string;
 }
 
 // interface AutoCompleteExtendedProps extends  ;

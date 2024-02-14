@@ -29,6 +29,8 @@ export const SellerInfo = ({ listingData }: IProps) => {
             listingData?.sellerInfo?.lastName || "-"
           }`,
           body: `${listingData?.sellerInfo?.email || "-"}`,
+          image: listingData?.sellerInfo?.profilePictureUrl,
+          verStatus: listingData?.sellerInfo?.isVerified || false,
         }}
         viewDetailsLink={`/app/users/${listingData?.sellerInfo?.userId}`}
         className="user-card"

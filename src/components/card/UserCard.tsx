@@ -24,7 +24,7 @@ type IProps =
         image?: string;
         fullName?: never;
         date?: never;
-        verStatus?: never;
+        verStatus?: boolean;
       };
       style?: React.HTMLAttributes<HTMLDivElement>["style"];
       className?: string;

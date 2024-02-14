@@ -530,7 +530,7 @@ export function OrderTable({
                       <MuiTableCell align="left">
                         ₦
                         {formatCurrency({
-                          amount: row?.itemAmount,
+                          amount: row?.maxTotalAmount,
                           style: "decimal",
                         })}
                       </MuiTableCell>
