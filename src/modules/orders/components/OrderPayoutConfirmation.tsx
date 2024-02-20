@@ -61,12 +61,12 @@ export const OrderPayoutConfirmation = ({
         <IconConfirm className="delete-icon" />
       )}
       <MuiTypography variant="body2" className="heading">
-        {isToCancel ? "Cancel" : "Confirm"} order #{data?.id}
+        {isToCancel ? "Reject" : "Accept"} refund
       </MuiTypography>
       <MuiTypography variant="body2" className="body">
         {isToCancel
-          ? "Are you sure you want to cancel this order? Buyer will be refunded order amount."
-          : "Confirming this order will release funds from Buyer and disbursed to Seller"}
+          ? "Buyer request is rejected and funds will be sent to Seller"
+          : "Buyer will be reimbursed amount paid for item."}
       </MuiTypography>
 
       <AppInput
@@ -101,7 +101,7 @@ export const OrderPayoutConfirmation = ({
           onClick={handleSubmit}
           startIcon={isUpdating ? <MuiCircularProgress size={14} /> : null}
           className="primary-btn btn">
-          {isToCancel ? "Cancel order" : "Yes Confirm"}
+          {isToCancel ? "Reject refund" : "Refund"}
         </MuiButton>
       </div>
     </StyledSection>

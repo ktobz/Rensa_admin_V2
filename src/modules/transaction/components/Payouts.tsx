@@ -63,7 +63,10 @@ type IProps = {
   title?: string;
   showActionTab?: boolean;
   id?: string;
-  apiFunc?: (query?: string) => AxiosPromise<IPayoutResponse>;
+  apiFunc?: (
+    query?: string,
+    signal?: AbortSignal
+  ) => AxiosPromise<IPayoutResponse>;
   queryKey?: string;
 };
 export function PayoutTableView({
@@ -94,19 +97,20 @@ export function PayoutTableView({
   };
 
   const { data, isLoading, isError } = useQuery(
-    [queryKey, id, pagination.page, pagination.pageSize, searchText, filter],
-    () =>
+    [queryKey, id, pagination.page, pagination.pageSize, text, filter],
+    ({ signal }) =>
       apiFunc(
         `?pageNumber=${pagination.page}&pageSize=${
           pagination.pageSize
-        }&searchText=${searchText}${
+        }&searchText=${text}${
           filter?.length > 0
             ? `${filter.reduce((acc, val) => {
                 acc += `&status=${val}`;
                 return acc;
               }, "")}`
             : ""
-        }`
+        }`,
+        signal
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
         const { hasNextPage, hasPrevPage, total, totalPages } =

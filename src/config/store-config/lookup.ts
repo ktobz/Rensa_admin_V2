@@ -32,6 +32,7 @@ const defaultLookup: ILookups = {
   dashboardFilter: [],
   durationHours: [],
   reportedListingCategory: [],
+  catalogueOrderCancellationStatus: [],
 };
 
 const useCachedDataStore = create(

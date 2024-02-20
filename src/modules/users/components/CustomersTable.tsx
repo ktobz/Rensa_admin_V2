@@ -54,10 +54,11 @@ export function CustomersTable() {
   const [text, setText] = React.useState("");
 
   const { data, isLoading, isError } = useQuery(
-    ["all-users", pagination.page, pagination.pageSize, searchText],
-    () =>
+    ["all-users", pagination.page, pagination.pageSize, text],
+    ({ signal }) =>
       CustomerService.getAll(
-        `?PageNumber=${pagination.page}&PageSize=${pagination.pageSize}&searchText=${searchText}`
+        `?PageNumber=${pagination.page}&PageSize=${pagination.pageSize}&searchText=${text}`,
+        signal
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
         const { hasNextPage, hasPrevPage, total, totalPages } =

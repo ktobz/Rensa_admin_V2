@@ -82,10 +82,11 @@ export function IncomeTable() {
   };
 
   const { data, isLoading, isError } = useQuery(
-    ["sales-revenue", pagination.page, pagination.pageSize, searchText],
-    () =>
+    ["sales-revenue", pagination.page, pagination.pageSize, text],
+    ({ signal }) =>
       TransactionService.getAllSales(
-        `?pageNumber=${pagination.page}&pageSize=${pagination.pageSize}&searchText=${searchText}`
+        `?pageNumber=${pagination.page}&pageSize=${pagination.pageSize}&searchText=${text}`,
+        signal
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
         const { hasNextPage, hasPrevPage, total, totalPages } =
@@ -212,8 +213,12 @@ export function IncomeTable() {
                   Delivery fee
                 </MuiTableCell>
                 <MuiTableCell className="heading" align="left">
-                  Buyers Ser. fee
+                  Buyer's Ser. fee
                 </MuiTableCell>
+                <MuiTableCell className="heading" align="left">
+                  Seller's Ser. fee
+                </MuiTableCell>
+
                 <MuiTableCell className="heading" align="left">
                   Sellers settl.
                 </MuiTableCell>
@@ -259,6 +264,13 @@ export function IncomeTable() {
                     ₦
                     {formatCurrency({
                       amount: row?.buyerServiceFee,
+                      style: "decimal",
+                    })}
+                  </MuiTableCell>
+                  <MuiTableCell align="left">
+                    ₦
+                    {formatCurrency({
+                      amount: row?.sellerServiceFee,
                       style: "decimal",
                     })}
                   </MuiTableCell>

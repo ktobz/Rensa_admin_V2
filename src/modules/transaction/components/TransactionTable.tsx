@@ -61,7 +61,10 @@ type IProps = {
   title?: string;
   showActionTab?: boolean;
   id?: string;
-  apiFunc?: (query?: string) => AxiosPromise<ITransactionsResponse>;
+  apiFunc?: (
+    query?: string,
+    signal?: AbortSignal
+  ) => AxiosPromise<ITransactionsResponse>;
   queryKey?: string;
 };
 export function TransactionTable({
@@ -91,19 +94,20 @@ export function TransactionTable({
   };
 
   const { data, isLoading, isError } = useQuery(
-    [queryKey, id, pagination.page, pagination.pageSize, searchText, filter],
-    () =>
+    [queryKey, id, pagination.page, pagination.pageSize, text, filter],
+    ({ signal }) =>
       apiFunc(
         `?pageNumber=${pagination.page}&pageSize=${
           pagination.pageSize
-        }&searchText=${searchText}${
+        }&searchText=${text}${
           filter?.length > 0
             ? `${filter.reduce((acc, val) => {
                 acc += `&status=${val}`;
                 return acc;
               }, "")}`
             : ""
-        }`
+        }`,
+        signal
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
         const { hasNextPage, hasPrevPage, total, totalPages } =
@@ -200,7 +204,10 @@ export function TransactionTable({
         </div>
       )}
 
-      <TableWrapper showPagination pagination={pagination}>
+      <TableWrapper
+        showPagination
+        handleChangePagination={handleChange}
+        pagination={pagination}>
         <MuiTableContainer
           sx={{
             maxWidth: "100%",
@@ -263,7 +270,7 @@ export function TransactionTable({
                       <MuiTableCell align="left">
                         ₦
                         {formatCurrency({
-                          amount: Math.abs(row?.itemAmount),
+                          amount: Math.abs(row?.maxTotalAmount),
                           style: "decimal",
                         })}
                       </MuiTableCell>

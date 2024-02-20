@@ -28,11 +28,12 @@ import CustomImageUploader from "../components/CustomImageUploader";
 import ListingService from "@/services/listing-service";
 import { toast } from "react-toastify";
 import APP_VARS from "@/utils/env";
+import { formatToPrice } from "@/utils/helper-funcs";
 
 const SCHEMA = Yup.object().shape({
   name: Yup.string().required("required"),
   description: Yup.string().required("required"),
-  price: Yup.number().required("required").min(1, "required"),
+  price: Yup.string().required("required"),
   location: Yup.string().required("required"),
   userId: Yup.string().required("required"),
   pickupMethod: Yup.number().required("Required").min(1, "required"),
@@ -71,7 +72,7 @@ export function AddListing() {
     files: [],
     name: "",
     pickupMethod: 0,
-    price: 0,
+    price: "",
     userId: "",
     userId_name: "",
     files_preview: [],
@@ -112,13 +113,16 @@ export function AddListing() {
             const formattedAddress = place.formatted_address;
             const latitude = place.geometry.location.lat();
             const longitude = place.geometry.location.lng();
+            const price = values?.price?.replaceAll(",", "");
+
+            // return console.log(price);
 
             setIsSubmitting(true);
             const formData = new FormData();
             formData.append("Name", values?.name);
             formData.append("UserId", values?.userId);
             formData.append("Description", values.description);
-            formData.append("Price", values.price);
+            formData.append("Price", price);
             formData.append("LocationInfo.Location", formattedAddress);
             formData.append("LocationInfo.Latitude", latitude);
             formData.append("LocationInfo.Longitude", longitude);
@@ -204,7 +208,10 @@ export function AddListing() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
-    let formatted = value;
+
+    const v = formatToPrice(value, values.price);
+
+    setFieldValue(name, v);
   };
 
   const allCategory = useQuery(
@@ -368,9 +375,9 @@ export function AddListing() {
               name="price"
               label="Price"
               placeholder="Enter Price"
-              type="number"
+              type="text"
               value={values.price}
-              onChange={handleChange}
+              onChange={handleInputChange}
               helperText={errors.price}
               error={!!errors.price}
               required
