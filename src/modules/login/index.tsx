@@ -57,13 +57,17 @@ export default function Login() {
       setAccessToken(userData?.token, userData?.refreshToken);
 
       if (loginStatus === 200) {
-        const { data, status } = await OtherService.getLookup();
+        try {
+          const { data, status } = await OtherService.getLookup();
 
-        if (status === 200) {
-          updateLookup(data?.result);
+          if (status === 200) {
+            updateLookup(data?.result);
+            navigate("/app/dashboard", { replace: true });
+          }
+        } catch (error) {
+          navigate("/app/dashboard", { replace: true });
         }
 
-        navigate("/app/dashboard", { replace: true });
         return;
       }
     } catch (error: any) {
