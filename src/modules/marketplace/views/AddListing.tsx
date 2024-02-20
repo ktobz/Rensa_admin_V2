@@ -209,7 +209,7 @@ export function AddListing() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
 
-    const v = formatToPrice(value);
+    const v = formatToPrice(value, values.price);
 
     setFieldValue(name, v);
   };

@@ -10,7 +10,7 @@ import { toast } from "react-toastify";
 import NotificationService from "@/services/notification-service";
 import ConfigService from "@/services/config-service";
 import { IServiceFeeReq } from "@/types/globalTypes";
-import { formatNumber } from "@/utils/helper-funcs";
+import { formatNumber, isValidNumberInput } from "@/utils/helper-funcs";
 
 const SCHEMA = Yup.object().shape({
   buyerServiceFee: Yup.number().required("required"),
@@ -65,29 +65,9 @@ export const ServiceFeeEntryForm = ({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
-    // console.log(
-    //   name === "buyerServiceFee",
-    //   value?.buyerServiceFee?.includes("."),
-    //   value?.endsWith(".")
-    // );
-    // if (
-    //   name === "buyerServiceFee" &&
-    //   value?.buyerServiceFee?.includes(".") &&
-    //   value?.endsWith(".")
-    // ) {
-    //   return;
-    // }
-
-    if (
-      name === "sellerServiceFee" &&
-      values?.sellerServiceFee?.includes(".") &&
-      value?.endsWith(".")
-    ) {
-      return;
+    if (isValidNumberInput(value)) {
+      setFieldValue(name, value);
     }
-
-    // const v = formatNumber(value);
-    setFieldValue(name, value);
   };
 
   return (
@@ -99,12 +79,14 @@ export const ServiceFeeEntryForm = ({
             name="buyerServiceFee"
             label="Buyer service fee"
             placeholder="₦0.00"
-            type="number"
+            type="text"
             value={values.buyerServiceFee}
             onChange={handleInputChange}
             helperText={errors.buyerServiceFee}
             error={!!errors.buyerServiceFee}
             required
+            inputMode="numeric"
+            InputProps={{}}
           />
 
           <AppInput
@@ -112,12 +94,13 @@ export const ServiceFeeEntryForm = ({
             name="sellerServiceFee"
             label="Seller service fee"
             placeholder="₦0.00"
-            type="number"
+            type="text"
             value={values.sellerServiceFee}
             onChange={handleInputChange}
             helperText={errors.sellerServiceFee}
             error={!!errors.sellerServiceFee}
             required
+            inputMode="numeric"
           />
 
           <div className="btn-group">

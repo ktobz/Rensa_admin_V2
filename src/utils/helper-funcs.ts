@@ -108,26 +108,32 @@ export const convertDateToTimZone = (d: string) => {
   return dd;
 };
 
-export const formatToPrice = (amount: string) => {
+export const formatToPrice = (amount: string, oldValue = "") => {
   const stringedAmount = amount?.replaceAll(",", "");
+  const dupStringedAmount = amount?.replaceAll(",", "");
   const numberAmount = Number(stringedAmount);
+  const hasDecimal = dupStringedAmount.includes(".");
+  const decimalPart = dupStringedAmount.split(".")[1] || "";
+
   // Check if the input is a valid number
   if (isNaN(numberAmount)) {
-    return "";
+    return oldValue;
   }
 
-  // Convert the input to a string and split it into whole and decimal parts
-  // let [whole, decimal] = numberAmount.toFixed(2).toString().split(".");
-
-  let [whole, decimal] = numberAmount.toFixed(2).toString().split(".");
+  let [whole, decimal] = numberAmount?.toFixed(2).toString().split(".");
   // Add commas to the whole part every three digits from the right
   whole = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
   // Return the formatted currency string
-  return whole + "." + decimal;
+  return whole + `${hasDecimal ? `.${decimalPart}` : ""}`;
 };
 
 export const formatNumber = (num: string) => {
   const stringNumber = num?.replace(/[^0-9.]/g, "");
   return stringNumber;
 };
+
+export function isValidNumberInput(input: string) {
+  // Check if input contains only digits and at most one period
+  return /^[0-9]*\.?[0-9]*$/.test(input);
+}
