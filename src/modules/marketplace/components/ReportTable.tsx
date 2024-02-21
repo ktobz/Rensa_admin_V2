@@ -196,9 +196,11 @@ export function ReportTable({
                   style={{ minWidth: "270px" }}>
                   Listing
                 </MuiTableCell>
+
                 <MuiTableCell className="heading" align="left">
                   Category
                 </MuiTableCell>
+
                 <MuiTableCell
                   className="heading"
                   align="left"

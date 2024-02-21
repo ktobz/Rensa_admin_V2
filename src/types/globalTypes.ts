@@ -928,12 +928,14 @@ export type IListingStatsResponse = {
 
 export type IReportedListingCommentsResponse = {
   result: {
+    catalogue: IListingData;
     comments: {
       id: number;
       reason: string;
       status: number;
       category: number;
       creationTime: string;
+      username: string;
     }[];
   };
 };
