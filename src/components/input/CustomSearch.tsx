@@ -11,10 +11,10 @@ const Search = styled("div")(({ theme }) => ({
   "&:hover": {
     backgroundColor: alpha(theme.palette.common.white, 0.25),
   },
-  marginLeft: 0,
+  // marginLeft: "20px",
   width: "100%",
   [theme.breakpoints.up("mobile")]: {
-    marginLeft: theme.spacing(3),
+    marginLeft: 0,
     width: "auto",
   },
 }));
@@ -41,9 +41,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     transition: theme.transitions.create("width"),
     width: "100%",
     [theme.breakpoints.up("mobile")]: {
-      width: "35ch",
+      width: "100%",
       flex: 1,
-      maxWidth: "250px",
+      maxWidth: "300px",
     },
     "&::placeholder": {
       color: "#D1D1D1",

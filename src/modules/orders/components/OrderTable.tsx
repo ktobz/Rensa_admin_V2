@@ -714,21 +714,43 @@ const StyledPage = styled.section`
       flex-direction: column !important;
       justify-content: space-between !important;
     }
+
+    @media screen and (max-width: 700px) {
+      & .orders {
+        font-size: 10px;
+        min-width: 20px;
+      }
+
+      & abbr {
+        font-size: 12px;
+      }
+    }
+
+    @media screen and (max-width: 500px) {
+      & .react-calendar > button {
+        display: flex;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+      }
+    }
   }
 
   & .action-section {
     flex: 1;
     display: flex;
-    /* gap: 20px; */
+    gap: 10px;
     justify-content: end;
     align-items: center;
     max-width: 700px;
+    flex-wrap: wrap;
   }
   & .top-section {
     display: flex;
     gap: 20px;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
 
     & .heading {
       font-weight: 600;
@@ -743,6 +765,8 @@ const StyledPage = styled.section`
     align-items: center;
     justify-content: space-between;
     margin: 20px 0 25px 0;
+    flex-wrap: wrap;
+    gap: 20px;
   }
 
   & .visible-btn {
@@ -779,5 +803,15 @@ const StyledPage = styled.section`
   }
   & .delivered > path {
     stroke: #05a357;
+  }
+
+  @media screen and (max-width: 500px) {
+    & .calendar {
+      width: 100%;
+      padding: 0;
+      margin: 30px auto;
+      border-radius: 10px;
+      border: none;
+    }
   }
 `;

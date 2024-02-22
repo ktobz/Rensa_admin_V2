@@ -44,7 +44,7 @@ import { OrderStatus } from "@/components/feedback/OrderStatus";
 import StatusFilter from "@/components/select/StatusFillter";
 import useCachedDataStore from "@/config/store-config/lookup";
 import { AxiosPromise } from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import throttle from "lodash.throttle";
 import { toast } from "react-toastify";
 
@@ -83,6 +83,8 @@ export function PayoutTableView({
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  const [details, setDetails] = React.useState<IUserPayout>({} as IUserPayout);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [show, setShow] = React.useState(false);
   const [filter, setFilter] = React.useState<number[]>([]);
   const [searchText, setSearchText] = React.useState("");
@@ -94,6 +96,11 @@ export function PayoutTableView({
 
   const handleToggleShow = () => {
     setShow((prev) => !prev);
+  };
+
+  const handleShowDetails = (data: IUserPayout) => () => {
+    setDetails(data);
+    setShow(true);
   };
 
   const { data, isLoading, isError } = useQuery(
@@ -161,20 +168,21 @@ export function PayoutTableView({
   };
 
   const handleVerifyTransaction =
-    (data: IUserPayout, type: "verify" | "retry") => async () => {
+    (data: IUserPayout, type: "verify" | "retry", cb?: () => void) =>
+    async () => {
       setVerifyId(data?.transactionReference || "");
       setActionType(type);
 
       try {
-        const { data: resData } = await (actionType === "verify"
+        setIsSubmitting(true);
+        const { data: resData } = await (type === "verify"
           ? TransactionService.verifyPayout
-          : TransactionService.retryTransaction)(
-          data?.transactionReference || ""
-        );
-
+          : TransactionService.retryPayout)(data?.transactionReference || "");
+        setIsSubmitting(false);
         toast.success(resData?.message);
       } catch (error: any) {
         toast.error(error?.response?.data?.message);
+        setIsSubmitting(false);
       }
 
       queryClient.invalidateQueries([
@@ -202,12 +210,13 @@ export function PayoutTableView({
               selectedValue={filter}
               handleSetValue={handleSetFilter}
               options={catalogueTransactionStatus}
+              className="status"
             />
             <CustomSearch
               placeholder="Search transaction ref ID"
               value={text}
               onChange={handleChangeText}
-            />{" "}
+            />
           </div>
         </div>
       )}
@@ -270,9 +279,13 @@ export function PayoutTableView({
                       sx={{
                         "&:last-child td, &:last-child th": { border: 0 },
                       }}>
-                      <MuiTableCell>{row?.userId || "-"}</MuiTableCell>
+                      <MuiTableCell>{row?.accountName || "-"}</MuiTableCell>
                       <MuiTableCell align="left">
-                        {row?.orderNumber}
+                        <Link
+                          className="order-link"
+                          to={`/app/orders/${row?.orderNumber}`}>
+                          {row?.orderNumber}
+                        </Link>
                       </MuiTableCell>
                       <MuiTableCell align="left">
                         ₦
@@ -330,7 +343,7 @@ export function PayoutTableView({
                           </MuiIconButton>
                           <MuiIconButton
                             disabled={!!verifyId}
-                            onClick={handleViewDetails(row)}
+                            onClick={handleShowDetails(row)}
                             className="visible-btn">
                             <IconVisibility />
                           </MuiIconButton>
@@ -379,8 +392,14 @@ export function PayoutTableView({
         title="Transaction details"
         handleClose={handleToggleShow}
         open={show}
+        closeOnOutsideClick={false}
         showClose>
-        <TransactionDetails />
+        <TransactionDetails
+          isSubmitting={isSubmitting}
+          actionType={actionType}
+          onClick={handleVerifyTransaction}
+          data={details}
+        />
       </AppCustomModal>
     </StyledPage>
   );
@@ -388,6 +407,15 @@ export function PayoutTableView({
 
 const StyledPage = styled.section`
   width: 100%;
+
+  & .order-link {
+    text-decoration: none;
+    color: #1e75bb;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 
   & .group-selection {
     display: flex;
@@ -469,7 +497,7 @@ const StyledPage = styled.section`
     gap: 20px;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
 
     & .heading {
       font-weight: 600;
@@ -543,6 +571,25 @@ const StyledPage = styled.section`
 
     svg {
       color: #d1d1d1;
+    }
+  }
+
+  @media screen and (max-width: 689px) {
+    & .tab-section {
+      flex-wrap: wrap;
+
+      & .action-section {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: 1;
+        justify-content: end;
+        flex-wrap: wrap;
+      }
+    }
+
+    & .top-section {
+      margin-bottom: 0;
     }
   }
 `;

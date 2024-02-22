@@ -356,13 +356,14 @@ export function TransactionTable({
         </MuiTableContainer>
       </TableWrapper>
 
-      <AppCustomModal
+      {/* <AppCustomModal
         title="Transaction details"
         handleClose={handleToggleShow}
         open={show}
+        data={detail}
         showClose>
         <TransactionDetails />
-      </AppCustomModal>
+      </AppCustomModal> */}
     </StyledPage>
   );
 }
@@ -474,6 +475,7 @@ const StyledPage = styled.section`
       gap: 10px;
       flex: 1;
       justify-content: end;
+      flex-wrap: wrap;
     }
   }
 

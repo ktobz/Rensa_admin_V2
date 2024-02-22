@@ -1,22 +1,57 @@
 import * as React from "react";
-import { MuiIconButton, MuiTypography, styled } from "@/lib/index";
-import { IconCopy } from "@/lib/mui.lib.icons";
+import {
+  MuiButton,
+  MuiCircularProgress,
+  MuiIconButton,
+  MuiTypography,
+  styled,
+} from "@/lib/index";
+import { IconCopy, IconRetry, IconVerify } from "@/lib/mui.lib.icons";
 import { OrderStatus } from "@/components/feedback/OrderStatus";
+import { IStatus, IUserPayout } from "@/types/globalTypes";
+import { formatCurrency, formatDate, getIdName } from "@/utils/helper-funcs";
+import useCachedDataStore from "@/config/store-config/lookup";
+import { Link } from "react-router-dom";
 
-export function TransactionDetails() {
+type IProps = {
+  data: IUserPayout;
+  onClick: (
+    data: IUserPayout,
+    type: "verify" | "retry",
+    cb?: () => void
+  ) => () => void;
+  isSubmitting: boolean;
+  actionType: string;
+};
+
+export function TransactionDetails({
+  data,
+  onClick,
+  actionType,
+  isSubmitting,
+}: IProps) {
+  const { catalogueTransactionStatus } = useCachedDataStore(
+    (state) => state.cache.lookup
+  );
+
+  console.log(actionType, isSubmitting);
+  const type = getIdName(
+    data?.status,
+    catalogueTransactionStatus
+  )?.toLowerCase() as IStatus;
+  const disableRetryBtn = type !== "failed";
+  const disableVerifyBtn = type !== "pending";
+
   return (
     <PageContent>
       <div className="heading">
         <div className="group">
-          <MuiTypography variant="body1" className="header">
-            Payment Option
-          </MuiTypography>
           <MuiTypography variant="body2" className="body">
-            Refund
+            Status
           </MuiTypography>
         </div>
         <div className="status">
-          <OrderStatus type="completed" />
+          <OrderStatus type={type} />
         </div>
       </div>
       <div className="line" />
@@ -27,7 +62,9 @@ export function TransactionDetails() {
             User full name
           </MuiTypography>
           <MuiTypography variant="body2" className="body customer-name">
-            Josh Osazuwa
+            <Link className="order-link" to={`/app/users/${data?.userId}`}>
+              {data?.accountName}
+            </Link>
           </MuiTypography>
         </div>
         <div className="group">
@@ -35,7 +72,11 @@ export function TransactionDetails() {
             Amount
           </MuiTypography>
           <MuiTypography variant="body2" className="body">
-            ₦32,000.00
+            ₦
+            {formatCurrency({
+              amount: Math.abs(data?.amount),
+              style: "decimal",
+            })}
           </MuiTypography>
         </div>
         <div className="group">
@@ -43,7 +84,19 @@ export function TransactionDetails() {
             Date created
           </MuiTypography>
           <MuiTypography variant="body2" className="body">
-            25 Feb. 2023, 12:34 PM
+            {formatDate(data?.creationTime || "")}
+          </MuiTypography>
+        </div>
+        <div className="group">
+          <MuiTypography variant="body1" className="header">
+            Order ID
+          </MuiTypography>
+          <MuiTypography variant="body2" className="body">
+            <Link
+              className="order-link"
+              to={`/app/orders/${data?.orderNumber}`}>
+              #{data?.orderNumber}
+            </Link>
           </MuiTypography>
         </div>
         <div className="group">
@@ -51,19 +104,10 @@ export function TransactionDetails() {
             Transaction ref.
           </MuiTypography>
           <MuiTypography variant="body2" className="body">
-            EYVV3517616490000080{" "}
-            <MuiIconButton className="copy-btn">
+            {data?.transactionReference}
+            {/* <MuiIconButton className="copy-btn">
               <IconCopy />
-            </MuiIconButton>
-          </MuiTypography>
-        </div>
-
-        <div className="group">
-          <MuiTypography variant="body1" className="header">
-            Order ID
-          </MuiTypography>
-          <MuiTypography variant="body2" className="body">
-            #3028364550
+            </MuiIconButton> */}
           </MuiTypography>
         </div>
 
@@ -72,7 +116,7 @@ export function TransactionDetails() {
             Beneficiary account
           </MuiTypography>
           <MuiTypography variant="body2" className="body">
-            3028364550
+            {data?.accountNumber}
           </MuiTypography>
         </div>
         <div className="group">
@@ -80,7 +124,7 @@ export function TransactionDetails() {
             Beneficiary bank
           </MuiTypography>
           <MuiTypography variant="body2" className="body">
-            First Bank plc
+            {data?.bankName}
           </MuiTypography>
         </div>
         <div className="group">
@@ -88,8 +132,41 @@ export function TransactionDetails() {
             Beneficiary name
           </MuiTypography>
           <MuiTypography variant="body2" className="body">
-            Josh Osazuwa
+            {data?.accountName}
           </MuiTypography>
+        </div>
+
+        <div className="line" />
+
+        <div className="btn-group">
+          <MuiButton
+            className={`btn ${disableRetryBtn ? "" : "retry-btn"}`}
+            disabled={disableRetryBtn}
+            startIcon={
+              isSubmitting && actionType === "retry" ? (
+                <MuiCircularProgress size={12} />
+              ) : (
+                <IconRetry />
+              )
+            }
+            onClick={onClick(data, "retry")}
+            variant="contained">
+            Retry payout
+          </MuiButton>
+          <MuiButton
+            className={`btn ${disableVerifyBtn ? "" : "verify-btn"}`}
+            onClick={onClick(data, "verify")}
+            disabled={disableVerifyBtn}
+            startIcon={
+              isSubmitting && actionType === "verify" ? (
+                <MuiCircularProgress size={12} />
+              ) : (
+                <IconVerify />
+              )
+            }
+            variant="contained">
+            Verify payout
+          </MuiButton>
         </div>
       </div>
     </PageContent>
@@ -107,6 +184,59 @@ const PageContent = styled.section`
   flex-direction: column;
   gap: 30px;
   padding-top: 20px;
+
+  & .order-link {
+    text-decoration: none;
+    color: #1e75bb;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  & .btn-group {
+    display: flex;
+    gap: 20px;
+    justify-content: end;
+
+    & .btn {
+      padding: 10px 20px;
+      height: fit-content;
+    }
+
+    & .verify-btn {
+      background-color: #e8fff3;
+      color: #45b26b;
+
+      svg {
+        path {
+          fill: #45b26b;
+        }
+      }
+    }
+
+    & .retry-btn {
+      background-color: #fff9f6;
+      color: #fb651e;
+
+      svg {
+        path {
+          stroke: #fb651e;
+        }
+      }
+    }
+
+    & .disabled {
+      background-color: #f0f0f0;
+      color: #777e90;
+
+      svg {
+        path {
+          fill: #777e90;
+        }
+      }
+    }
+  }
 
   & .details {
     height: inherit;

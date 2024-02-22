@@ -39,11 +39,12 @@ import { SellerInfo } from "../components/SellerInfo";
 import { BidsView } from "../components/BidsView";
 import { ActionConfirm } from "../components/ActionConfirm";
 import ListingService from "@/services/listing-service";
-import { getIdName } from "@/utils/helper-funcs";
+import { convertDateToTimZone, getIdName } from "@/utils/helper-funcs";
 import useCachedDataStore from "@/config/store-config/lookup";
+import { toast } from "react-toastify";
 
 const options =
-  ["Place On-hold", "Close listing"]?.map((x) => ({
+  ["Close listing"]?.map((x) => ({
     id: x,
     name: x,
   })) || [];
@@ -65,7 +66,6 @@ export function ListingDetails() {
   const [action, setAction] = React.useState("");
   const [selectedVideo, setSelectedVideo] = React.useState("");
   const [selectedImage, setSelectedImage] = React.useState("");
-  const [showImageModal, setShowImageModal] = React.useState(false);
   const [show, setShow] = React.useState({
     video: false,
     image: false,
@@ -101,7 +101,7 @@ export function ListingDetails() {
   };
 
   const handleRefresh = () => {
-    queryClient.invalidateQueries(["order-details"]);
+    queryClient.invalidateQueries(["listing-details", reportId]);
     setAction("");
     handleClose();
   };
@@ -116,22 +116,23 @@ export function ListingDetails() {
   };
 
   const handleAction = (callback: () => void) => () => {
-    // ListingService.delete(ids?.[0] || 0)
-    //   .then((res) => {
-    //     handleRefresh?.();
-    //     toast.success(res.data?.message || "");
-    //   })
-    //   .catch((err) => {
-    //     toast.error(err?.response?.data?.message || "");
-    //   })
-    //   .finally(() => {
-    //     callback();
-    //   });
+    ListingService.closeListing(reportId || 0)
+      .then((res) => {
+        handleRefresh?.();
+        toast.success(res.data?.message || "");
+      })
+      .catch((err) => {
+        toast.error(err?.response?.data?.message || "");
+      })
+      .finally(() => {
+        callback();
+      });
   };
 
-  const time = data?.creationTime || "";
   const duration = data?.durationInHours || 0;
-  const date = new Date(time);
+  const d = convertDateToTimZone(data?.creationTime || "");
+
+  const date = new Date(d);
   const today = new Date().getTime();
 
   const endTime = date.setTime(date.getTime() + duration * 60 * 60 * 1000);
@@ -158,6 +159,7 @@ export function ListingDetails() {
   const imageFiles = data?.catalogueAttachments?.filter(
     (x) => !x?.cleansedName?.includes("mp4")
   );
+  const hideActions = data?.catalogueStatus === 1 && data;
 
   return (
     <PageContent>
@@ -166,17 +168,21 @@ export function ListingDetails() {
           <MuiTypography variant="h3" className="title">
             Listing ID: <b style={{ color: "#1E75BB" }}>#{trimmedId}</b>
           </MuiTypography>
-          <CustomStyledSelect
-            // value={value}
-            onChange={handleSetAction}
-            options={options || []}
-            optionTitle="name"
-            label="Action item"
-            optionValue="id"
-            style={{ width: "130px" }}
-            className="actions"
-            placeholder="Action Items"
-          />
+          {hideActions && (
+            <CustomStyledSelect
+              // value={value}
+              onChange={handleSetAction}
+              options={options || []}
+              optionTitle="name"
+              color="info"
+              label="Action item"
+              optionValue="id"
+              style={{ width: "130px" }}
+              className="actions"
+              placeholder="Action Items"
+            />
+          )}
+
           <OrderStatus
             style={{
               display: "inline-block",
@@ -436,11 +442,11 @@ const PageContent = styled.section`
       justify-content: end;
 
       & .MuiOutlinedInput-notchedOutline {
-        border-color: #fb651e;
+        border-color: #c6c6c6;
       }
 
       & .MuiOutlinedInput-input {
-        background-color: #fff9f6;
+        background-color: #ffffffbb;
       }
     }
   }

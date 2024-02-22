@@ -129,6 +129,13 @@ const TransactionService = {
       },
     });
   },
+  retryPayout(id: string) {
+    return HTTP.get(`${PATHS.payout}/resend/${id}`, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
 };
 
 export default TransactionService;

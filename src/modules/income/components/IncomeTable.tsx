@@ -343,6 +343,18 @@ const StyledPage = styled.section`
   width: 100%;
 
   & .cards {
+    display: grid;
+    gap: 10px;
+    /* grid-template-columns: repeat(5, minmax(auto-fit, 200px)); */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+
+    & .card {
+      /* width: calc((100% - 40px) / 5); */
+      width: 100%;
+    }
+  }
+
+  /* & .cards {
     display: flex;
     gap: 15px;
     flex-wrap: wrap;
@@ -350,7 +362,7 @@ const StyledPage = styled.section`
     & .card {
       width: calc((100% - 45px) / 3);
     }
-  }
+  } */
 
   & .top-section {
     display: flex;
@@ -358,6 +370,7 @@ const StyledPage = styled.section`
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
+    flex-wrap: wrap;
 
     & .heading {
       font-weight: 600;
@@ -372,6 +385,7 @@ const StyledPage = styled.section`
     align-items: center;
     justify-content: space-between;
     margin: 30px 0 15px 0;
+    flex-wrap: wrap;
   }
 
   & .visible-btn {

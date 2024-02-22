@@ -207,9 +207,9 @@ export function ReportTable({
                   style={{ minWidth: "180px" }}>
                   Reason
                 </MuiTableCell>
-                <MuiTableCell className="heading" align="left">
+                {/* <MuiTableCell className="heading" align="left">
                   Status
-                </MuiTableCell>
+                </MuiTableCell> */}
 
                 <MuiTableCell className="heading" align="center"></MuiTableCell>
               </MuiTableRow>
@@ -249,7 +249,7 @@ export function ReportTable({
                     )?.replaceAll("_", " ")}
                   </MuiTableCell>
                   <MuiTableCell align="left">{row?.reason || "-"}</MuiTableCell>
-                  <MuiTableCell align="left">
+                  {/* <MuiTableCell align="left">
                     <OrderStatus
                       style={{
                         width: "100%",
@@ -259,7 +259,7 @@ export function ReportTable({
                         getIdName(row?.catalogueStatus, catalogueStatus) as any
                       }
                     />
-                  </MuiTableCell>
+                  </MuiTableCell> */}
                   <MuiTableCell align="left">
                     <MuiIconButton
                       onClick={handleViewDetails(row)}
@@ -340,10 +340,11 @@ const StyledPage = styled.section`
   & .action-section {
     flex: 1;
     display: flex;
-    /* gap: 20px; */
+    gap: 20px;
     justify-content: end;
     align-items: center;
     max-width: 700px;
+    flex-wrap: wrap;
   }
 
   & .top-section {
@@ -351,6 +352,7 @@ const StyledPage = styled.section`
     gap: 10px;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
 
     & .view-all {
       height: fit-content;

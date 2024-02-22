@@ -128,7 +128,7 @@ export const ActionTimeStatus = ({
     expiryTimestamp: currentTime,
     onExpire: () => {},
   });
-  const statusType = minutes < 10 ? "error" : "warning";
+  const statusType = minutes < 10 && hours === 0 ? "error" : "warning";
   const hasEnded = minutes === 0 && seconds === 0;
 
   return catelogueStatus !== "active" || hasEnded ? (

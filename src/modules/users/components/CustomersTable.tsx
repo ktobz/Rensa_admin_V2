@@ -380,7 +380,6 @@ const StyledPage = styled.section`
     gap: 20px;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
 
     & .view-all {
       height: fit-content;
@@ -406,7 +405,6 @@ const StyledPage = styled.section`
     align-items: center;
     justify-content: space-between;
     margin: 30px 0 15px 0;
-
     flex-wrap: wrap;
     gap: 20px;
 
@@ -416,6 +414,8 @@ const StyledPage = styled.section`
       gap: 10px;
       flex: 1;
       justify-content: end;
+      flex-wrap: wrap;
+      min-width: 150px;
     }
   }
 

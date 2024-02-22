@@ -62,7 +62,10 @@ export default function Login() {
 
           if (status === 200) {
             updateLookup(data?.result);
+            setTimeout(() => {
             navigate("/app/dashboard", { replace: true });
+              
+            },1000);
           }
         } catch (error) {
           navigate("/app/dashboard", { replace: true });
