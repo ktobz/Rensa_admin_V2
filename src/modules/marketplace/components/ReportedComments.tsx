@@ -138,7 +138,7 @@ export function ReportedComments({
         //   hasPrevPage,
         // }));
 
-        return res?.data?.result?.comments || [];
+        return res?.data?.result || [];
       }),
     {
       retry: 0,
@@ -168,13 +168,13 @@ export function ReportedComments({
         <MuiTableContainer
           sx={{
             maxWidth: "100%",
-            minHeight: data?.length === 0 ? "inherit" : "unset",
+            minHeight: data?.comments?.length === 0 ? "inherit" : "unset",
             flex: 1,
           }}>
           <MuiTable
             sx={{
               minWidth: 750,
-              minHeight: data?.length === 0 ? "inherit" : "unset",
+              minHeight: data?.comments?.length === 0 ? "inherit" : "unset",
             }}
             aria-label="simple table">
             <MuiTableHead>
@@ -185,9 +185,9 @@ export function ReportedComments({
                   style={{ minWidth: "150px" }}>
                   Date
                 </MuiTableCell>
-                <MuiTableCell className="heading" align="left">
+                {/* <MuiTableCell className="heading" align="left">
                   Category
-                </MuiTableCell>
+                </MuiTableCell> */}
                 <MuiTableCell className="heading" align="left">
                   Reported by
                 </MuiTableCell>
@@ -200,7 +200,7 @@ export function ReportedComments({
             </MuiTableHead>
 
             <MuiTableBody>
-              {data?.map((row, index) => (
+              {data?.comments?.map((row, index) => (
                 <MuiTableRow
                   key={index}
                   sx={{
@@ -209,35 +209,38 @@ export function ReportedComments({
                   <MuiTableCell className="order-id" align="left">
                     {formatDate(row?.creationTime)}
                   </MuiTableCell>
-                  <MuiTableCell align="left">Appliances</MuiTableCell>
+                  {/* <MuiTableCell align="left">
+                    {" "}
+                    {data?.catalogue?.catalogueCategoryName || "-"}
+                  </MuiTableCell> */}
                   <MuiTableCell align="left">
                     <Link to="#" className="reporter">
-                      -
+                      {row?.username || "-"}
                     </Link>
                   </MuiTableCell>
-                  <MuiTableCell align="left">
-                    Price listed is ridiculous. Thats 50% more than cost for
-                    brand new.
-                  </MuiTableCell>
+                  <MuiTableCell align="left">{row?.reason}</MuiTableCell>
                 </MuiTableRow>
               ))}
 
-              {!isLoading && data && data?.length === 0 && !isError && (
-                <MuiTableRow>
-                  <MuiTableCell
-                    colSpan={4}
-                    align="center"
-                    className="no-data-cell"
-                    rowSpan={20}>
-                    <NoData
-                      title="No Reported comments"
-                      message="Reported comments will appear here"
-                    />
-                  </MuiTableCell>
-                </MuiTableRow>
-              )}
+              {!isLoading &&
+                data?.comments &&
+                data?.comments?.length === 0 &&
+                !isError && (
+                  <MuiTableRow>
+                    <MuiTableCell
+                      colSpan={4}
+                      align="center"
+                      className="no-data-cell"
+                      rowSpan={20}>
+                      <NoData
+                        title="No Reported comments"
+                        message="Reported comments will appear here"
+                      />
+                    </MuiTableCell>
+                  </MuiTableRow>
+                )}
 
-              {isError && !data && (
+              {isError && !data?.comments && (
                 <MuiTableRow>
                   <MuiTableCell
                     colSpan={8}

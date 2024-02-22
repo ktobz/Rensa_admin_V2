@@ -1,12 +1,9 @@
 import * as React from "react";
-import { MuiButton, MuiTypography, styled } from "@/lib/index";
+import { styled } from "@/lib/index";
 
 import { OrderTable } from "@/modules/orders";
 import { useNavigate } from "react-router-dom";
 import { TotalCard } from "@/components/index";
-import { useQuery } from "react-query";
-import OrderService from "@/services/order-service";
-import { IOrderTotalStats } from "@/types/globalTypes";
 import useCachedDataStore from "@/config/store-config/lookup";
 import DashboardService from "@/services/dashboard-service";
 import TransactionService from "@/services/transaction-service";
