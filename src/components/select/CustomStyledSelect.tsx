@@ -81,6 +81,7 @@ export default function CustomStyledSelect({
   name,
   iconName,
   helperText,
+  color,
   ...otherProps
 }: AppSelectProps) {
   return (
@@ -128,7 +129,7 @@ export default function CustomStyledSelect({
       )}
 
       <StyledSelect
-        color="primary"
+        color={color}
         error={error}
         id={name}
         placeholder={placeholder}

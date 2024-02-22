@@ -97,6 +97,14 @@ const ListingService = {
     });
   },
 
+  closeListing(id: number | string): AxiosPromise<IListingDetailsResponse> {
+    return HTTP.put(`${PATHS.orders}/close/${id}`, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+
   getTotals(): AxiosPromise<IListingStatsResponse> {
     return HTTP.get(`${PATHS.orders}/summary`, {
       headers: {

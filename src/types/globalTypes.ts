@@ -942,6 +942,8 @@ export type IReportedListingCommentsResponse = {
 
 export type IListingDetailsResponse = {
   result: IListingData;
+  message: string;
+  error: string;
 };
 export type IAddListingResponse = {
   result: {
