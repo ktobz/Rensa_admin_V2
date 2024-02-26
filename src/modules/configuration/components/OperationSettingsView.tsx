@@ -371,7 +371,9 @@ export function OperationSettingsView() {
         alignTitle="left"
         closeOnOutsideClick={false}
         title={`${
-          editData?.deliveryPickupMethod === 2 ? "Van" : "Bike"
+          editData?.deliveryPickupMethod === 2 || method?.id === 2
+            ? "Van"
+            : "Bike"
         } Delivery Fees`}
         showClose>
         <DeliverySettingsForm
