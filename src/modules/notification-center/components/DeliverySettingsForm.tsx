@@ -85,7 +85,7 @@ export const DeliverySettingsForm = ({
     <FormikProvider value={formik}>
       <StyledForm onSubmit={handleSubmit}>
         <div className="wrapper">
-          {initData?.deliveryPickupMethod === 1 ? (
+          {initData?.deliveryPickupMethod === 1 || method?.id === 1 ? (
             <AppInput
               id="baseFee"
               name="baseFee"
@@ -117,7 +117,7 @@ export const DeliverySettingsForm = ({
             id="pricePerKm"
             name="pricePerKm"
             label={
-              initData?.deliveryPickupMethod === 1
+              initData?.deliveryPickupMethod === 1 || method?.id === 1
                 ? "Bike fee per km"
                 : "Van fee per km"
             }
