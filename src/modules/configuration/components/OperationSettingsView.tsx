@@ -134,6 +134,7 @@ export function OperationSettingsView() {
       payout: false,
     });
     setEditData(null);
+    setMethod(null);
   };
 
   const handleRefreshService = () => {
@@ -377,6 +378,7 @@ export function OperationSettingsView() {
           initData={editData}
           refreshQuery={handleRefreshDelivery}
           handleClose={handleCloseModal}
+          method={method}
         />
       </AppCustomModal>
 
