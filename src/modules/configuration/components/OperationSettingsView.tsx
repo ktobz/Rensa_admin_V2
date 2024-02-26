@@ -12,7 +12,11 @@ import {
 } from "@/lib/mui.lib.icons";
 import AppCustomModal from "@/components/modal/Modal";
 
-import { IDeliverySettingsReq, IPagination } from "@/types/globalTypes";
+import {
+  ICategory,
+  IDeliverySettingsReq,
+  IPagination,
+} from "@/types/globalTypes";
 import ConfigService from "@/services/config-service";
 
 import { formatCurrency } from "@/utils/helper-funcs";
@@ -38,6 +42,8 @@ export function OperationSettingsView() {
     (state) => state?.cache?.lookup
   );
 
+  // console.log(deliveryFeePickupMethod);
+
   const [show, setShow] = React.useState({
     service: false,
     delivery: false,
@@ -47,12 +53,18 @@ export function OperationSettingsView() {
   const [editData, setEditData] = React.useState<null | IDeliverySettingsReq>(
     null
   );
+  const [method, setMethod] = React.useState<null | ICategory>(null);
 
   const handleToggleShow =
-    (type: "delivery" | "service" | "payout", data?: any) => () => {
+    (type: "delivery" | "service" | "payout", data?: any, method?: ICategory) =>
+    () => {
       setShow((prev) => ({ ...prev, [type]: !prev[type] }));
       if (type === "delivery") {
-        setEditData(data);
+        if (data) {
+          setEditData(data);
+        } else {
+          setMethod(method || null);
+        }
       }
     };
 
@@ -122,6 +134,7 @@ export function OperationSettingsView() {
       payout: false,
     });
     setEditData(null);
+    setMethod(null);
   };
 
   const handleRefreshService = () => {
@@ -240,7 +253,11 @@ export function OperationSettingsView() {
               <MuiBox className="action-group">
                 <MuiIconButton
                   color="warning"
-                  onClick={handleToggleShow("delivery", deliverySetting?.bike)}
+                  onClick={handleToggleShow(
+                    "delivery",
+                    deliverySetting?.bike,
+                    deliveryFeePickupMethod[0]
+                  )}
                   className={`action-btn edit-btn btn `}>
                   <IconEdit />
                 </MuiIconButton>
@@ -361,6 +378,7 @@ export function OperationSettingsView() {
           initData={editData}
           refreshQuery={handleRefreshDelivery}
           handleClose={handleCloseModal}
+          method={method}
         />
       </AppCustomModal>
 

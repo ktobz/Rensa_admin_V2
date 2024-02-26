@@ -93,6 +93,15 @@ const ConfigService = {
       },
     });
   },
+
+  createDeliveryFeeSettings(data: IDeliverySettingsReq) {
+    return HTTP.post(`${PATHS.delivery}`, data, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+
   deleteFAQ(id: string) {
     return HTTP.delete(`${PATHS.all}/${id}`, {
       headers: {

@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import NotificationService from "@/services/notification-service";
 import ConfigService from "@/services/config-service";
 import {
+  ICategory,
   IDeliverySettingsData,
   IDeliverySettingsReq,
 } from "@/types/globalTypes";
@@ -24,16 +25,18 @@ type IViewProps = {
   initData?: any;
   refreshQuery?: () => void;
   handleClose: () => void;
+  method?: null | ICategory;
 };
 
 export const DeliverySettingsForm = ({
   initData,
   handleClose,
   refreshQuery,
+  method,
 }: IViewProps) => {
   const initialData: IDeliverySettingsData = {
     id: initData?.id || "",
-    deliveryPickupMethod: initData?.deliveryPickupMethod || "",
+    deliveryPickupMethod: initData?.deliveryPickupMethod || method?.id || "",
     pricePerKm: initData?.pricePerKm || "",
     baseFee: initData?.baseFee || "",
   };
@@ -42,16 +45,27 @@ export const DeliverySettingsForm = ({
 
   const handleSetFees = (formValues: any) => {
     setIsSaving(true);
-
-    ConfigService.setDeliveryFeeSettings(initData?.id, formValues)
-      .then((res) => {
-        refreshQuery?.();
-        toast.success(res.data?.message || "");
-      })
-      .catch((err) => {
-        toast.error(err?.response?.data?.message || "");
-      })
-      .finally(() => setIsSaving(false));
+    if (initData) {
+      ConfigService.setDeliveryFeeSettings(initData?.id, formValues)
+        .then((res) => {
+          refreshQuery?.();
+          toast.success(res.data?.message || "");
+        })
+        .catch((err) => {
+          toast.error(err?.response?.data?.message || "");
+        })
+        .finally(() => setIsSaving(false));
+    } else {
+      ConfigService.createDeliveryFeeSettings(formValues)
+        .then((res) => {
+          refreshQuery?.();
+          toast.success(res.data?.message || "");
+        })
+        .catch((err) => {
+          toast.error(err?.response?.data?.message || "");
+        })
+        .finally(() => setIsSaving(false));
+    }
   };
 
   const formik = useFormik({
