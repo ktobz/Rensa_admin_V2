@@ -210,7 +210,11 @@ export function OperationSettingsView() {
               <MuiBox className="action-group">
                 <MuiIconButton
                   color="warning"
-                  onClick={handleToggleShow("delivery", deliverySetting?.van)}
+                  onClick={handleToggleShow(
+                    "delivery",
+                    deliverySetting?.van,
+                    deliveryFeePickupMethod[1]
+                  )}
                   className={`action-btn edit-btn btn `}>
                   <IconEdit />
                 </MuiIconButton>
