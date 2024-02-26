@@ -45,7 +45,7 @@ import { DeleteConfirm } from "./DeleteConfirm";
 import { createPaginationData } from "@/utils/helper-funcs";
 
 const defaultQuery: IPagination = {
-  pageSize: 15,
+  pageSize: 500,
   page: 1,
   total: 1,
   hasNextPage: false,
