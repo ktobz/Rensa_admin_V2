@@ -78,8 +78,22 @@ const ConfigService = {
       },
     });
   },
+  createPayoutSettings(data: IPayoutData) {
+    return HTTP.post(`${PATHS.payout}`, data, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
   setServiceFeeSettings(id: number, data: IServiceFeeReq) {
     return HTTP.put(`${PATHS.service}/${id}`, data, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+  createServiceFeeSettings(data: IServiceFeeReq) {
+    return HTTP.post(`${PATHS.service}`, data, {
       headers: {
         Authorization: getToken(),
       },
