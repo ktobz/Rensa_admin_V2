@@ -39,15 +39,27 @@ export const ServiceFeeEntryForm = ({
   const handleSetFees = (formValues: IServiceFeeReq) => {
     setIsSaving(true);
 
-    ConfigService.setServiceFeeSettings(initData?.id || 0, formValues)
-      .then((res) => {
-        refreshQuery?.();
-        toast.success(res.data?.message || "");
-      })
-      .catch((err) => {
-        toast.error(err?.response?.data?.message || "");
-      })
-      .finally(() => setIsSaving(false));
+    if (initData?.id) {
+      ConfigService.setServiceFeeSettings(initData?.id || 0, formValues)
+        .then((res) => {
+          refreshQuery?.();
+          toast.success(res.data?.message || "");
+        })
+        .catch((err) => {
+          toast.error(err?.response?.data?.message || "");
+        })
+        .finally(() => setIsSaving(false));
+    } else {
+      ConfigService.createServiceFeeSettings(formValues)
+        .then((res) => {
+          refreshQuery?.();
+          toast.success(res.data?.message || "");
+        })
+        .catch((err) => {
+          toast.error(err?.response?.data?.message || "");
+        })
+        .finally(() => setIsSaving(false));
+    }
   };
 
   const formik = useFormik({

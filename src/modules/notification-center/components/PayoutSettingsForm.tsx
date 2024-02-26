@@ -1,15 +1,12 @@
 import * as React from "react";
 import * as Yup from "yup";
 import { useFormik, FormikProvider } from "formik";
+import { toast } from "react-toastify";
 
 import { styled, MuiButton, MuiCircularProgress } from "@/lib/index";
 import AppInput from "@/components/input";
-
-import { toast } from "react-toastify";
-
-import NotificationService from "@/services/notification-service";
 import ConfigService from "@/services/config-service";
-import { IPayoutData, IServiceFeeReq } from "@/types/globalTypes";
+import { IPayoutData } from "@/types/globalTypes";
 
 const SCHEMA = Yup.object().shape({
   waitTimeInHours: Yup.number().required("required"),
@@ -36,15 +33,27 @@ export const PayoutSettingsForm = ({
   const handleSetFees = (formValues: IPayoutData) => {
     setIsSaving(true);
 
-    ConfigService.setPayoutSettings(initData?.id || 0, formValues)
-      .then((res) => {
-        refreshQuery?.();
-        toast.success(res.data?.message || "");
-      })
-      .catch((err) => {
-        toast.error(err?.response?.data?.message || "");
-      })
-      .finally(() => setIsSaving(false));
+    if (initData.id) {
+      ConfigService.setPayoutSettings(initData?.id || 0, formValues)
+        .then((res) => {
+          refreshQuery?.();
+          toast.success(res.data?.message || "");
+        })
+        .catch((err) => {
+          toast.error(err?.response?.data?.message || "");
+        })
+        .finally(() => setIsSaving(false));
+    } else {
+      ConfigService.createPayoutSettings(formValues)
+        .then((res) => {
+          refreshQuery?.();
+          toast.success(res.data?.message || "");
+        })
+        .catch((err) => {
+          toast.error(err?.response?.data?.message || "");
+        })
+        .finally(() => setIsSaving(false));
+    }
   };
 
   const formik = useFormik({
