@@ -18,7 +18,7 @@ const PATHS = {
   logout: "/token/logout",
   sendOTP: "/send-otp",
   verifyOTP: "/verify-otp",
-  banks: "/admin/banks",
+  banks: "/admin/bank",
   confirmBankAccount: "/banks/confirm-account-name",
   signup: "/signup",
   setPassword: "/change-password",

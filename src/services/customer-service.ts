@@ -13,6 +13,7 @@ const PATHS = {
   admin: "/admin",
   findUser: "/admin/find-user",
   userOrders: "/admin/order",
+  payout: "/admin/bank/set-user-bank-account",
   bankDetails: "/admin/bank/get-user-bank-account",
 };
 
@@ -114,6 +115,21 @@ const CustomerService = {
 
   getCustomerTransactions(id: number | string) {
     return HTTP.get(`${PATHS.customers}/${id}/transactions`, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+
+  getCustomerPayoutAccount(id: number | string) {
+    return HTTP.get(`${PATHS.bankDetails}/${id}`, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+  setCustomerPayoutAccount(id: number | string, data: any) {
+    return HTTP.post(`${PATHS.payout}/${id}`, data, {
       headers: {
         Authorization: getToken(),
       },
