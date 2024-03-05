@@ -18,10 +18,11 @@ import { SettlementTable } from "@/modules/settlements/components/SettlementTabl
 
 import ListingService from "@/services/listing-service";
 import TransactionService from "@/services/transaction-service";
-import { PayoutAccountView } from "./PayoutAccountView";
+
 import { CustomSwitch } from "@/components/input/CustomSwitch";
 import { TransactionTable } from "@/modules/transaction/components/TransactionTable";
 import { BlockUserConfirm } from "../components/BlockUserConfirm";
+import { PayoutAccountView } from "../components/PayoutAccountView";
 
 type TStatus = "block" | "unblock";
 
