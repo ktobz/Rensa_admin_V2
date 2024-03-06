@@ -90,7 +90,7 @@ export const PayoutAccountView = ({ userId }: { userId: string }) => {
   const branches = useQuery(
     ["all-banks"],
     () =>
-      AuthService.allBanks(`?PageNumber=${1}&PageSize=${100}&searchText=`).then(
+      AuthService.allBanks(`?PageNumber=${1}&PageSize=${1000}&searchText=`).then(
         (res) => {
           return res.data.result?.data;
         }
