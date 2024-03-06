@@ -87,19 +87,40 @@ export const PayoutAccountView = ({ userId }: { userId: string }) => {
     setShow(false);
   };
 
-  // const handleCustomChange = (name: string, value: string | number) => {
-  //   setFieldValue(name, value);
-  // };
-
   const branches = useQuery(
     ["all-banks"],
     () =>
-      AuthService.allBanks().then((res) => {
-        return res.data.result?.data;
-      }),
+      AuthService.allBanks(`?PageNumber=${1}&PageSize=${100}&searchText=`).then(
+        (res) => {
+          return res.data.result?.data;
+        }
+      ),
     {
       refetchOnWindowFocus: false,
       retry: 0,
+    }
+  );
+
+  useQuery(
+    ["verify-bank-nme", values.accountNumber, values.internalCode],
+    () =>
+      AuthService.confirmBankAccount({
+        accountnumber: values.accountNumber,
+        internalcode: values.internalCode,
+      })
+        .then((res) => {
+          const data = res?.data?.result;
+          setFieldValue("accountName", data?.accountName);
+          return data;
+        })
+        .catch((err) => {
+          setFieldValue("accountName", "");
+          setFieldError("accountName", err?.response?.data?.message);
+        }),
+    {
+      refetchOnWindowFocus: false,
+      retry: 0,
+      enabled: !!(values.accountNumber?.length >= 10 && values.internalCode),
     }
   );
 

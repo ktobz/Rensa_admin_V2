@@ -111,7 +111,10 @@ import { ReactComponent as IconRetry } from "assets/icon/retry.svg";
 import { ReactComponent as IconVerify } from "assets/icon/verify.svg";
 import { ReactComponent as IconPayout } from "assets/icon/payout.svg";
 
+import { ReactComponent as IconBankList } from "assets/icon/bank.svg";
+
 export {
+  IconBankList,
   IconPlus,
   IconPlay,
   IconEye,

@@ -73,6 +73,7 @@ export default function CustomSearch({
           inputProps={{ "aria-label": "search" }}
           value={value}
           onChange={onChange}
+          fullWidth
         />
       </Search>
     </Box>

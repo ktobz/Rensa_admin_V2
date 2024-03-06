@@ -38,8 +38,8 @@ export type IAddBankProps = {
 };
 
 export interface IBankConfirmProps {
-  account_number: string;
-  bank_code: string;
+  accountnumber: string;
+  internalcode: string;
 }
 
 export type IPayoutAccountProps = {
@@ -469,6 +469,11 @@ export type IUsersResponse = {
   };
 };
 
+export type IBanksResponse = {
+  result: IPaginationResponse & {
+    data: IBank[];
+  };
+};
 export type IUserDetailResponse = {
   result: IUserData;
 };
@@ -631,13 +636,20 @@ export type IOrderStatsResponse = {
 export type IDeliverySettingsResponse = {
   result: IDeliverySettingsData[];
 };
+
+export type IBank = {
+  bankName: string;
+  internalCode: string;
+  accountName: string;
+  accountNumber: string;
+  id: string;
+  isActive: boolean;
+  name: string;
+  flutterwaveCode: string;
+};
+
 export type IBankDetailsResponse = {
-  result: {
-    bankName: string | null;
-    internalCode: string | null;
-    accountName: string | null;
-    accountNumber: string | null;
-  };
+  result: IBank;
 };
 // CATALOGUE CATEGORY
 export type ICategoryData = {
@@ -950,6 +962,7 @@ export type IAddListingResponse = {
     message: string;
   };
 };
+
 // LOOKUPS
 
 export type ILookupGroupName =
