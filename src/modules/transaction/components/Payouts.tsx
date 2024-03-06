@@ -271,7 +271,8 @@ export function PayoutTableView({
                     catalogueTransactionStatus
                   )?.toLowerCase() as IStatus;
                   const disableRetryBtn = type !== "failed";
-                  const disableVerifyBtn = type !== "pending";
+                  const disableVerifyBtn =
+                    type !== "pending" && type !== "invalid_account";
 
                   return (
                     <MuiTableRow
