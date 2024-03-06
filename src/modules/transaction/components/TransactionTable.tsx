@@ -254,7 +254,7 @@ export function TransactionTable({
                     catalogueTransactionStatus
                   )?.toLowerCase() as IStatus;
                   const disableVerifyBtn = type !== "pending";
-
+                  const disableView = type === "cancelled";
                   return (
                     <MuiTableRow
                       key={row?.id}
@@ -310,9 +310,11 @@ export function TransactionTable({
                             )}
                           </MuiIconButton>
                           <MuiIconButton
-                            disabled={!!verifyId}
+                            disabled={!!verifyId || disableView}
                             onClick={handleViewDetails(row)}
-                            className="visible-btn">
+                            className={`visible-btn ${
+                              disableView ? "disabled" : ""
+                            }`}>
                             <IconVisibility />
                           </MuiIconButton>
                         </MuiBox>
