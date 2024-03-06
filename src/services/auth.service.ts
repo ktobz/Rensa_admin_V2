@@ -20,7 +20,7 @@ const PATHS = {
   sendOTP: "/send-otp",
   verifyOTP: "/verify-otp",
   banks: "/admin/bank",
-  updateBankStatus: "/admin/bank/toggle-active",
+  updateBankStatus: "/admin/bank/bulk-toggle-active",
   confirmBankAccount: "/admin/bank/resolve-name",
   signup: "/signup",
   setPassword: "/change-password",
@@ -66,12 +66,16 @@ const AuthService = {
       },
     });
   },
-  updateBankStatus(id: string) {
-    return HTTP.put(`${PATHS.updateBankStatus}/${id}`, {
-      headers: {
-        Authorization: getToken(),
-      },
-    });
+  updateBankStatus(ids: number[]) {
+    return HTTP.put(
+      `${PATHS.updateBankStatus}`,
+      { ids },
+      {
+        headers: {
+          Authorization: getToken(),
+        },
+      }
+    );
   },
   confirmBankAccount(data: IBankConfirmProps) {
     return HTTP.get(
