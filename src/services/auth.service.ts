@@ -8,6 +8,7 @@ import {
   IBankConfirmProps,
   IPayoutAccountProps,
   ILoginResponse,
+  IBanksResponse,
 } from "types/globalTypes";
 
 import { getToken } from "utils/helper-funcs";
@@ -19,7 +20,8 @@ const PATHS = {
   sendOTP: "/send-otp",
   verifyOTP: "/verify-otp",
   banks: "/admin/bank",
-  confirmBankAccount: "/banks/confirm-account-name",
+  updateBankStatus: "/admin/bank/toggle-active",
+  confirmBankAccount: "/admin/bank/resolve-name",
   signup: "/signup",
   setPassword: "/change-password",
   changePassword: "/change-password",
@@ -57,19 +59,29 @@ const AuthService = {
       },
     });
   },
-  allBanks() {
-    return HTTP.get(PATHS.banks, {
+  allBanks(query: string): AxiosPromise<IBanksResponse> {
+    return HTTP.get(`${PATHS.banks}${query}`, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+  updateBankStatus(id: string) {
+    return HTTP.put(`${PATHS.updateBankStatus}/${id}`, {
       headers: {
         Authorization: getToken(),
       },
     });
   },
   confirmBankAccount(data: IBankConfirmProps) {
-    return HTTP.post(PATHS.confirmBankAccount, data, {
-      headers: {
-        Authorization: getToken(),
-      },
-    });
+    return HTTP.get(
+      `${PATHS.confirmBankAccount}?accountnumber=${data?.accountnumber}&internalcode=${data?.internalcode}`,
+      {
+        headers: {
+          Authorization: getToken(),
+        },
+      }
+    );
   },
   setPayoutAccount(data: IPayoutAccountProps) {
     return HTTP.post(PATHS.payoutAccount, data, {

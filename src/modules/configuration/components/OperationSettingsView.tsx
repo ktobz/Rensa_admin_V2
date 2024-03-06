@@ -9,6 +9,7 @@ import {
   IconClock,
   IconWallet,
   IconBike,
+  IconBankList,
 } from "@/lib/mui.lib.icons";
 import AppCustomModal from "@/components/modal/Modal";
 
@@ -24,6 +25,8 @@ import useCachedDataStore from "@/config/store-config/lookup";
 import { ServiceFeeEntryForm } from "@/modules/notification-center/components/ServiceFeeEntryForm";
 import { DeliverySettingsForm } from "@/modules/notification-center/components/DeliverySettingsForm";
 import { PayoutSettingsForm } from "@/modules/notification-center/components/PayoutSettingsForm";
+import AuthService from "@/services/auth.service";
+import { BankList } from "@/modules/notification-center/components/BankList";
 
 const defaultQuery: IPagination = {
   pageSize: 15,
@@ -48,6 +51,7 @@ export function OperationSettingsView() {
     service: false,
     delivery: false,
     payout: false,
+    bank: false,
   });
 
   const [editData, setEditData] = React.useState<null | IDeliverySettingsReq>(
@@ -56,7 +60,11 @@ export function OperationSettingsView() {
   const [method, setMethod] = React.useState<null | ICategory>(null);
 
   const handleToggleShow =
-    (type: "delivery" | "service" | "payout", data?: any, method?: ICategory) =>
+    (
+      type: "delivery" | "service" | "payout" | "bank",
+      data?: any,
+      method?: ICategory
+    ) =>
     () => {
       setShow((prev) => ({ ...prev, [type]: !prev[type] }));
       if (type === "delivery") {
@@ -132,6 +140,7 @@ export function OperationSettingsView() {
       delivery: false,
       service: false,
       payout: false,
+      bank: false,
     });
     setEditData(null);
     setMethod(null);
@@ -294,6 +303,30 @@ export function OperationSettingsView() {
             </div>
           </div>
         </div>
+
+        <div className="settings-group">
+          <IconBankList className="icon" />
+          <div className="rows">
+            <div className="heading">
+              <MuiTypography variant="h3" className="group-heading">
+                Bank list
+              </MuiTypography>
+              <MuiBox className="action-group">
+                <MuiIconButton
+                  color="warning"
+                  onClick={handleToggleShow("bank")}
+                  className={`action-btn edit-btn btn `}>
+                  <IconEdit />
+                </MuiIconButton>
+              </MuiBox>
+            </div>
+            <div className="data-row border">
+              <MuiTypography variant="body1" className="label">
+                Update bank list
+              </MuiTypography>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="section">
@@ -400,6 +433,16 @@ export function OperationSettingsView() {
           refreshQuery={handleRefreshPayout}
           handleClose={handleCloseModal}
         />
+      </AppCustomModal>
+
+      <AppCustomModal
+        handleClose={handleToggleShow("bank")}
+        open={show.bank}
+        alignTitle="left"
+        closeOnOutsideClick={false}
+        title={"Bank Lists"}
+        showClose>
+        <BankList handleClose={handleCloseModal} />
       </AppCustomModal>
     </StyledPage>
   );

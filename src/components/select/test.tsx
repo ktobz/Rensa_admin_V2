@@ -144,6 +144,7 @@ interface MyAutocomplete<
   wrapperStyle?: React.CSSProperties;
   hasPreviousResult?: boolean;
   placeholder?: string;
+  options: any[];
 }
 
 export default function AppVirtualizedCountriesSelect<
