@@ -642,7 +642,7 @@ export type IBank = {
   internalCode: string;
   accountName: string;
   accountNumber: string;
-  id: string;
+  id: number;
   isActive: boolean;
   name: string;
   flutterwaveCode: string;

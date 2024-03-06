@@ -25,18 +25,18 @@ type IViewProps = {
 };
 
 export const BankList = ({ handleClose }: IViewProps) => {
+  const queryId = React.useRef(new Date().getTime());
   const queryClient = useQueryClient();
-  const [current, setCurrent] = React.useState(() => {
-    return 1;
-  });
-  const [show, setShow] = React.useState({
-    updateStatus: false,
-  });
+
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [searchText, setSearchText] = React.useState("");
   const [text, setText] = React.useState("");
 
   const [allData, setAllData] = React.useState<IBank[]>([]);
+  const [ids, setIds] = React.useState<number[]>([]);
+  const [changedStatusIds, setChangedStatusIDs] = React.useState<{
+    [key: string]: boolean;
+  }>({});
 
   const [checked, setChecked] = React.useState(() => {
     const states: { [key: string]: boolean } = {};
@@ -56,9 +56,17 @@ export const BankList = ({ handleClose }: IViewProps) => {
     }
     setChecked(states);
   };
+  const handleSetDefaultCheckStatus = (data: IBank[]) => {
+    const states: { [key: string]: boolean } = {};
+
+    for (let i = 0; i < data.length; i += 1) {
+      states[data[i]?.id] = data[i]?.isActive;
+    }
+    setChangedStatusIDs(states);
+  };
 
   const { data, isLoading } = useQuery(
-    ["all-banks", text],
+    ["all-banks", text, queryId],
     () =>
       AuthService.allBanks(
         `?PageNumber=${1}&PageSize=${1000}&searchText=${text}`
@@ -74,6 +82,8 @@ export const BankList = ({ handleClose }: IViewProps) => {
         });
         setAllData(data);
         handleSetCheckStatus(data);
+        handleSetDefaultCheckStatus(data);
+
         return data as IBank[];
       }),
 
@@ -83,42 +93,40 @@ export const BankList = ({ handleClose }: IViewProps) => {
     }
   );
 
-  const handleCloseModal = () => {
-    setShow((prev) => ({
-      updateStatus: false,
-    }));
-  };
-
   const handleRefresh = () => {
-    queryClient.invalidateQueries(["all-bank"]);
-    handleCloseModal();
+    queryClient.invalidateQueries(["all-bank", text, queryId]);
     handleClose();
   };
 
   const handleUpdateProductStatus = () => {
-    let ids: { [key: number]: boolean } = {};
-    for (let i = 0; data && i < data?.length; i += 1) {}
-    console.log(allData, data);
+    setIsSubmitting(true);
 
-    // setIsSubmitting(true);
-
-    // AuthService.updateBankStatus(ids)
-    //   .then((res) => {
-    //     handleRefresh?.();
-    //     toast.success(res.data?.message || "");
-    //   })
-    //   .catch((err) => {
-    //     toast.error(err?.response?.data?.message || "");
-    //   })
-    //   .finally(() => {
-    //     setIsSubmitting(false);
-    //   });
+    AuthService.updateBankStatus(ids)
+      .then((res) => {
+        handleRefresh?.();
+        toast.success(res.data?.message || "");
+      })
+      .catch((err) => {
+        toast.error(err?.response?.data?.message || "");
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
   };
 
   const handleCheck =
-    (id: string) =>
+    (id: number) =>
     (event: React.ChangeEvent<HTMLInputElement>, value: boolean) => {
+      // const statusInCheck = checked[id];
+      const statusInDefault = changedStatusIds[id];
+      const isChanged = value !== statusInDefault;
       setChecked((prev) => ({ ...prev, [id]: value }));
+
+      if (isChanged) {
+        setIds((prev) => [...prev, id]);
+      } else {
+        ids?.filter((x) => x === id);
+      }
     };
 
   const handleSetSearchText = (value: string) => () => {
@@ -162,24 +170,29 @@ export const BankList = ({ handleClose }: IViewProps) => {
               />
             </MuiTypography>
           ))}
+        <MuiTypography
+          variant="body2"
+          className="item"
+          style={{ height: "40px", marginTop: "40px", display: "block" }}>
+          <span></span>
+        </MuiTypography>
 
         {!data && isLoading && <LineListSkeleton rows={7} />}
 
         {data && data?.length === 0 && !isLoading && (
           <NoData title="No banks added" message=""></NoData>
         )}
-
-        <MuiButton
-          type="button"
-          onClick={handleUpdateProductStatus}
-          color="primary"
-          variant="contained"
-          startIcon={isSubmitting ? <MuiCircularProgress size={18} /> : null}
-          disabled={isSubmitting}
-          className="primary-btn btn">
-          Save
-        </MuiButton>
       </div>
+      <MuiButton
+        type="button"
+        onClick={handleUpdateProductStatus}
+        color="primary"
+        variant="contained"
+        startIcon={isSubmitting ? <MuiCircularProgress size={18} /> : null}
+        disabled={isSubmitting}
+        className="primary-btn btn">
+        Save
+      </MuiButton>
 
       {/* <div className="action-group"></div> */}
     </StyledSection>
@@ -237,6 +250,8 @@ const StyledSection = styled.section`
     align-items: center;
     flex-direction: column;
     min-height: 300px;
+    position: relative;
+    padding-bottom: 100px;
   }
 
   & .item {
@@ -305,16 +320,19 @@ const StyledSection = styled.section`
 
   & .btn {
     width: 100%;
-    margin-top: 45px;
-    display: flex !important;
+    max-width: 500px;
+    /* margin-top: 45px; */
+    display: flex;
     align-items: center;
     justify-content: center;
     padding: 10px;
     margin-bottom: 10px;
+    position: absolute;
+    bottom: 0;
   }
 
   & .MuiInputBase-input {
     width: 100%;
-    max-width: 100%;
+    max-width: 100% !important;
   }
 `;
