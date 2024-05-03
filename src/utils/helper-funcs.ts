@@ -102,9 +102,12 @@ export const getIdName = (id: number, list: ICategory[]) => {
   return list?.find((x) => id === x?.id)?.name?.replaceAll(" ", "_") || "";
 };
 
-export const convertDateToTimZone = (d: string) => {
+export const convertDateToTimZone = (d: string, hours: number) => {
   const parsedTime = parseISO(d);
-  const dd = addHours(parsedTime, 1); // one for UTC to GMT conversion
+  console.log(parsedTime, "pAersd");
+  const dd = addHours(parsedTime, hours);
+  console.log(dd, "dd");
+
   return dd;
 };
 
@@ -137,3 +140,21 @@ export function isValidNumberInput(input: string) {
   // Check if input contains only digits and at most one period
   return /^[0-9]*\.?[0-9]*$/.test(input);
 }
+
+export const getListingTimeRemaining = (
+  creationTime: string,
+  durationInHours: number
+) => {
+  const HR_TO_MILLISECONDS = 3600000;
+  const startDateFromBD = creationTime?.replace("Z", "");
+
+  const duration = durationInHours;
+  const endTime =
+    new Date(`${startDateFromBD}Z`).getTime() + duration * HR_TO_MILLISECONDS;
+
+  const today = new Date().getTime();
+
+  const timeRemaining = endTime > today ? (endTime - today) / 1000 : 0;
+
+  return timeRemaining;
+};

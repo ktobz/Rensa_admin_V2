@@ -32,6 +32,7 @@ import {
   createPaginationData,
   formatCurrency,
   getIdName,
+  getListingTimeRemaining,
 } from "utils/helper-funcs";
 import TableWrapper from "@/components/table/TableWrapper";
 import { IconAdd, IconVisibility } from "@/lib/mui.lib.icons";
@@ -279,31 +280,10 @@ export function SettlementTable({
             <MuiTableBody>
               {!isLoading &&
                 data?.map((row) => {
-                  // const time = row?.creationTime;
-                  // const duration = row?.durationInHours;
-                  // const date = new Date(time);
-                  // const today = new Date().getTime();
-
-                  // const endTime = date.setTime(
-                  //   date.getTime() + duration * 60 * 60 * 1000
-                  // );
-
-                  // const timeRemaining =
-                  //   endTime > today ? (endTime - today) / 1000 : 0;
-
-                  const time = row?.creationTime;
-                  const duration = row?.durationInHours;
-                  const d = convertDateToTimZone(row?.creationTime);
-
-                  const date = new Date(d);
-                  const today = new Date().getTime();
-
-                  const endTime = date.setTime(
-                    date.getTime() + duration * 60 * 60 * 1000
+                  const timeRemaining = getListingTimeRemaining(
+                    row?.creationTime,
+                    row?.durationInHours
                   );
-
-                  const timeRemaining =
-                    endTime > today ? (endTime - today) / 1000 : 0;
 
                   return (
                     <MuiTableRow

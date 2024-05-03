@@ -56,17 +56,28 @@ export const NotificationEntryForm = ({
       .finally(() => setIsSaving(false));
   };
 
-  const handleSendNotification = (formValues: any) => {
+  const handleSendNotification = async (formValues: any) => {
     setIsSending(true);
-    NotificationService.sendNotification(formValues)
-      .then((res) => {
-        refreshQuery?.();
-        toast.success(res.data?.message || "");
-      })
-      .catch((err) => {
-        toast.error(err?.response?.data?.message || "");
-      })
-      .finally(() => setIsSending(false));
+
+    try {
+      const { data } = await NotificationService.sendNotification(formValues);
+
+      await NotificationService.create(formValues);
+      refreshQuery?.();
+      toast.success(data?.message || "");
+      setIsSending(false);
+    } catch (error) {
+      setIsSending(false);
+    }
+
+    // .then((res) => {
+    //   refreshQuery?.();
+    //   toast.success(res.data?.message || "");
+    // })
+    // .catch((err) => {
+    //   toast.error(err?.response?.data?.message || "");
+    // })
+    // .finally(() => setIsSending(false));
   };
 
   const formik = useFormik({

@@ -39,7 +39,11 @@ import { SellerInfo } from "../components/SellerInfo";
 import { BidsView } from "../components/BidsView";
 import { ActionConfirm } from "../components/ActionConfirm";
 import ListingService from "@/services/listing-service";
-import { convertDateToTimZone, getIdName } from "@/utils/helper-funcs";
+import {
+  convertDateToTimZone,
+  getIdName,
+  getListingTimeRemaining,
+} from "@/utils/helper-funcs";
 import useCachedDataStore from "@/config/store-config/lookup";
 import { toast } from "react-toastify";
 
@@ -129,15 +133,10 @@ export function ListingDetails() {
       });
   };
 
-  const duration = data?.durationInHours || 0;
-  const d = convertDateToTimZone(data?.creationTime || "");
-
-  const date = new Date(d);
-  const today = new Date().getTime();
-
-  const endTime = date.setTime(date.getTime() + duration * 60 * 60 * 1000);
-
-  const timeRemaining = endTime > today ? (endTime - today) / 1000 : 0;
+  const timeRemaining = getListingTimeRemaining(
+    data?.creationTime || "",
+    data?.durationInHours || 0
+  );
 
   const handleSetImage = (image: string) => () => {
     setSelectedImage(image);
