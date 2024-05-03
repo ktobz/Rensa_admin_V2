@@ -32,6 +32,7 @@ import {
   createPaginationData,
   formatCurrency,
   getIdName,
+  getListingTimeRemaining,
 } from "utils/helper-funcs";
 import TableWrapper from "@/components/table/TableWrapper";
 import { IconAdd, IconVisibility } from "@/lib/mui.lib.icons";
@@ -44,8 +45,6 @@ import ListingService from "@/services/listing-service";
 import useCachedDataStore from "@/config/store-config/lookup";
 import { OrderStatus } from "@/components/feedback/OrderStatus";
 import throttle from "lodash.throttle";
-
-const HR_TO_MILLISECONDS = 3600000;
 
 const defaultQuery: IPagination = {
   pageSize: 10,
@@ -281,22 +280,10 @@ export function SettlementTable({
             <MuiTableBody>
               {!isLoading &&
                 data?.map((row) => {
-                  const startDateFromBD = row?.creationTime?.replace("Z", "");
-
-                  const duration = row?.durationInHours;
-                  // const resolvedEndDate = convertDateToTimZone(
-                  //   `${startDateFromBD}Z`,
-                  //   duration
-                  // ); // +1 for UTC to GMT
-
-                  const endTime =
-                    new Date(`${startDateFromBD}Z`).getTime() +
-                    duration * HR_TO_MILLISECONDS;
-
-                  const today = new Date().getTime();
-
-                  const timeRemaining =
-                    endTime > today ? (endTime - today) / 1000 : 0;
+                  const timeRemaining = getListingTimeRemaining(
+                    row?.creationTime,
+                    row?.durationInHours
+                  );
 
                   return (
                     <MuiTableRow

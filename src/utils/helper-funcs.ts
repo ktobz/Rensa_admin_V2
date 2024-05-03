@@ -140,3 +140,21 @@ export function isValidNumberInput(input: string) {
   // Check if input contains only digits and at most one period
   return /^[0-9]*\.?[0-9]*$/.test(input);
 }
+
+export const getListingTimeRemaining = (
+  creationTime: string,
+  durationInHours: number
+) => {
+  const HR_TO_MILLISECONDS = 3600000;
+  const startDateFromBD = creationTime?.replace("Z", "");
+
+  const duration = durationInHours;
+  const endTime =
+    new Date(`${startDateFromBD}Z`).getTime() + duration * HR_TO_MILLISECONDS;
+
+  const today = new Date().getTime();
+
+  const timeRemaining = endTime > today ? (endTime - today) / 1000 : 0;
+
+  return timeRemaining;
+};

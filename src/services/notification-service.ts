@@ -20,14 +20,14 @@ const PATHS = {
 };
 
 const NotificationService = {
-  create(data: FormData) {
+  async create(data: FormData) {
     return HTTP.post(`${PATHS.createNotification}`, data, {
       headers: {
         Authorization: getToken(),
       },
     });
   },
-  update(id: string, data: FormData) {
+  async update(id: string, data: FormData) {
     return HTTP.put(`${PATHS.notifications}/${id}`, data, {
       headers: {
         Authorization: getToken(),
@@ -51,7 +51,7 @@ const NotificationService = {
     });
   },
 
-  sendNotification(data: { message: string; title: string }) {
+  async sendNotification(data: { message: string; title: string }) {
     return HTTP.post(`${PATHS.notifications}/send-to-general`, data, {
       headers: {
         Authorization: getToken(),
