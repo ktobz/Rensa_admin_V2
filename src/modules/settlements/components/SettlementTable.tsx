@@ -45,6 +45,8 @@ import useCachedDataStore from "@/config/store-config/lookup";
 import { OrderStatus } from "@/components/feedback/OrderStatus";
 import throttle from "lodash.throttle";
 
+const HR_TO_MILLISECONDS = 3600000;
+
 const defaultQuery: IPagination = {
   pageSize: 10,
   page: 1,
@@ -279,28 +281,19 @@ export function SettlementTable({
             <MuiTableBody>
               {!isLoading &&
                 data?.map((row) => {
-                  // const time = row?.creationTime;
-                  // const duration = row?.durationInHours;
-                  // const date = new Date(time);
-                  // const today = new Date().getTime();
+                  const startDateFromBD = row?.creationTime?.replace("Z", "");
 
-                  // const endTime = date.setTime(
-                  //   date.getTime() + duration * 60 * 60 * 1000
-                  // );
-
-                  // const timeRemaining =
-                  //   endTime > today ? (endTime - today) / 1000 : 0;
-
-                  const time = row?.creationTime;
                   const duration = row?.durationInHours;
-                  const d = convertDateToTimZone(row?.creationTime);
+                  // const resolvedEndDate = convertDateToTimZone(
+                  //   `${startDateFromBD}Z`,
+                  //   duration
+                  // ); // +1 for UTC to GMT
 
-                  const date = new Date(d);
+                  const endTime =
+                    new Date(`${startDateFromBD}Z`).getTime() +
+                    duration * HR_TO_MILLISECONDS;
+
                   const today = new Date().getTime();
-
-                  const endTime = date.setTime(
-                    date.getTime() + duration * 60 * 60 * 1000
-                  );
 
                   const timeRemaining =
                     endTime > today ? (endTime - today) / 1000 : 0;

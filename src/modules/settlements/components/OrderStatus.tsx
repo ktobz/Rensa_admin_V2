@@ -129,9 +129,9 @@ export const ActionTimeStatus = ({
     onExpire: () => {},
   });
   const statusType = minutes < 10 && hours === 0 ? "error" : "warning";
-  const hasEnded = minutes === 0 && seconds === 0;
+  const hasEnded = hours === 0 && minutes === 0 && seconds === 0;
 
-  return catelogueStatus !== "active" || hasEnded ? (
+  return hasEnded ? (
     <OrderStatus
       type={
         catelogueStatus === "pending_payment"

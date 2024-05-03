@@ -102,9 +102,12 @@ export const getIdName = (id: number, list: ICategory[]) => {
   return list?.find((x) => id === x?.id)?.name?.replaceAll(" ", "_") || "";
 };
 
-export const convertDateToTimZone = (d: string) => {
+export const convertDateToTimZone = (d: string, hours: number) => {
   const parsedTime = parseISO(d);
-  const dd = addHours(parsedTime, 1); // one for UTC to GMT conversion
+  console.log(parsedTime, "pAersd");
+  const dd = addHours(parsedTime, hours);
+  console.log(dd, "dd");
+
   return dd;
 };
 
