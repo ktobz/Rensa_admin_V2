@@ -10,6 +10,7 @@ import {
   zonedTimeToUtc,
 } from "date-fns-tz";
 import { REFRESH_TOKEN_NAME, TOKEN_NAME } from "types/actionTypes";
+const HR_TO_MILLISECONDS = 3600000;
 
 export const getCurrentYear = () => {
   return new Date().getFullYear();
@@ -145,7 +146,6 @@ export const getListingTimeRemaining = (
   creationTime: string,
   durationInHours: number
 ) => {
-  const HR_TO_MILLISECONDS = 3600000;
   const startDateFromBD = creationTime?.replace("Z", "");
 
   const duration = durationInHours;

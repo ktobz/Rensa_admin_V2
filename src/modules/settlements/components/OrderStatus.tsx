@@ -124,12 +124,13 @@ export const ActionTimeStatus = ({
   const currentTime = new Date();
   currentTime.setSeconds(currentTime.getSeconds() + time);
 
-  const { seconds, minutes, hours, restart } = useTimer({
+  const { seconds, minutes, hours, days } = useTimer({
     expiryTimestamp: currentTime,
     onExpire: () => {},
   });
-  const statusType = minutes < 10 && hours === 0 ? "error" : "warning";
-  const hasEnded = hours === 0 && minutes === 0 && seconds === 0;
+  const daysToHours = days * 24 + hours;
+  const statusType = minutes < 10 && daysToHours === 0 ? "error" : "warning";
+  const hasEnded = daysToHours === 0 && minutes === 0 && seconds === 0;
 
   return catelogueStatus !== "active" || hasEnded ? (
     <OrderStatus
@@ -156,7 +157,7 @@ export const ActionTimeStatus = ({
         textAlign: "center",
       }}>
       {statusData[statusType]?.text ||
-        `${hours > 9 ? hours : `0${hours}`}:${
+        `${daysToHours > 9 ? daysToHours : `0${daysToHours}`}:${
           minutes > 9 ? minutes : `0${minutes}`
         }:${seconds > 9 ? seconds : `0${seconds}`}`}
     </span>
