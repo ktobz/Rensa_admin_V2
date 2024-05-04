@@ -255,6 +255,9 @@ export function SettlementTable({
                 <MuiTableCell className="heading" align="left">
                   Offers
                 </MuiTableCell>
+                <MuiTableCell className="heading" align="left">
+                  Offerers
+                </MuiTableCell>
                 <MuiTableCell
                   className="heading"
                   align="left"
@@ -322,6 +325,9 @@ export function SettlementTable({
                       </MuiTableCell>
                       <MuiTableCell align="left">
                         {row?.totalOffers}
+                      </MuiTableCell>
+                      <MuiTableCell align="left">
+                        {row?.totalOfferers || 0}
                       </MuiTableCell>
                       <MuiTableCell align="left">{row?.location}</MuiTableCell>
                       <MuiTableCell align="left">
