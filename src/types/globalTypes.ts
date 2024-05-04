@@ -829,6 +829,7 @@ export type IListingData = {
   totalBidders: number;
   totalBids: number;
   totalOffers: number;
+  totalOfferers: number;
   durationInHours: number;
   pickupMethod: number;
   catalogueStatus: number;
