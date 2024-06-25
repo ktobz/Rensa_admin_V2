@@ -988,6 +988,9 @@ export type ICategory = {
   name: string;
   id: number;
 };
+export type CategoryWithDescription = ICategory & {
+  description: string;
+};
 
 export type ILookups = {
   automatedMessageCategory: ICategory[];
@@ -1009,10 +1012,10 @@ export type ILookups = {
   verificationStatus: ICategory[];
   bankProvider: ICategory[];
   dashboardFilter: ICategory[];
-  durationHours: ICategory[];
+  durationHours: CategoryWithDescription[];
   reportedListingCategory: ICategory[];
   catalogueOrderCancellationStatus: ICategory[];
-  listingType:ICategory[];
+  listingType: ICategory[];
 };
 
 export type IListingProp = {

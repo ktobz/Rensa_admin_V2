@@ -26,6 +26,7 @@ import NotificationService from "@/services/notification-service";
 import CustomerService from "@/services/customer-service";
 import ListingService from "@/services/listing-service";
 import { formatToPrice } from "@/utils/helper-funcs";
+import { SelectChangeEvent } from "@mui/material";
 import { toast } from "react-toastify";
 import CustomImageUploader from "../components/CustomImageUploader";
 
@@ -46,6 +47,16 @@ export function AddListing() {
   const {
     lookup: { deliveryFeePickupMethod, durationHours, listingType },
   } = useCachedDataStore((state) => state.cache);
+
+  const optionsForShelfListing = durationHours?.filter((x) =>
+    x?.description?.toLowerCase().includes("shelf")
+  );
+  const optionsForAuctionListing = durationHours?.filter((x) =>
+    x?.description?.toLowerCase().includes("auction")
+  );
+
+  console.log({ optionsForShelfListing, optionsForAuctionListing });
+
   const navigate = useNavigate();
 
   // const queryClient = useQueryClient();
@@ -136,7 +147,7 @@ export function AddListing() {
             formData.append("CatalogueCategoryId", values?.catalogueCategoryId);
             formData.append("DurationInHours", values?.durationInHours);
             formData.append("PickupMethod", values?.pickupMethod);
-
+            formData.append("PickupMethod", values?.listingType);
             for (let i = 0; i < values.files.length; i += 1) {
               formData.append("Files", values.files[i] as any);
             }
@@ -166,7 +177,7 @@ export function AddListing() {
     validateOnChange: false,
     validateOnMount: false,
     onSubmit: async (values: any) => {
-      createListing(values as any);
+      createListing(values);
     },
   });
 
@@ -244,6 +255,14 @@ export function AddListing() {
     setFieldValue("location", value?.description);
   };
 
+  const handleChangeListing = (
+    e: SelectChangeEvent<unknown>,
+    child: React.ReactNode
+  ) => {
+    handleChange(e);
+    setFieldValue("durationInHours", 0);
+  };
+
   // const getId = (user: string, options: any) => {
   //   const data = options;
   //   return data.find(
@@ -309,7 +328,9 @@ export function AddListing() {
           <MuiDivider className="divider" />
 
           <div className="image-listing">
-            <MuiTypography variant="body1" style={{fontWeight:'600'}}>Listing Images</MuiTypography>
+            <MuiTypography variant="body1" style={{ fontWeight: "600" }}>
+              Listing Images
+            </MuiTypography>
             <CustomImageUploader
               // label="Listing Images"
               instruction="Maximum of 5 photos. PNG, JPG, MP4 | 5MB max."
@@ -391,7 +412,7 @@ export function AddListing() {
               label="Listing Type"
               placeholder="Select"
               value={values.listingType}
-              onChange={handleChange}
+              onChange={handleChangeListing}
               helperText={errors.listingType}
               options={listingType}
               error={!!errors.listingType}
@@ -403,10 +424,16 @@ export function AddListing() {
               name="durationInHours"
               label="Listing Duration"
               placeholder="Enter duration"
-              value={values.durationInHours}
+              value={values?.durationInHours}
               onChange={handleChange}
               helperText={errors.durationInHours}
-              options={durationHours || []}
+              options={
+                values?.listingType === 0
+                  ? []
+                  : values?.listingType > 1
+                  ? optionsForAuctionListing
+                  : optionsForShelfListing
+              }
               error={!!errors.durationInHours}
               required
             />
