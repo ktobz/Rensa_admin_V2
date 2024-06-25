@@ -1,15 +1,13 @@
-import * as React from "react";
-import { useNavigate } from "react-router-dom";
-import { useQuery } from "react-query";
-import debounce from "lodash.debounce";
 import { AxiosPromise } from "axios";
+import * as React from "react";
+import { useQuery } from "react-query";
+import { useNavigate } from "react-router-dom";
 
 import { NoData } from "@/components/feedback/NoData";
 import {
   MuiButton,
   MuiCardMedia,
   MuiIconButton,
-  MuiPagination,
   MuiTable,
   MuiTableBody,
   MuiTableCell,
@@ -17,33 +15,32 @@ import {
   MuiTableHead,
   MuiTableRow,
   MuiTypography,
-  styled,
+  styled
 } from "@/lib/index";
 
+import CustomTableSkeleton from "@/components/skeleton/CustomTableSkeleton";
+import TableWrapper from "@/components/table/TableWrapper";
+import { IconAdd, IconVisibility } from "@/lib/mui.lib.icons";
 import {
   IListingData,
   IListingResponse,
   IPagination,
   IStatus,
 } from "@/types/globalTypes";
-import CustomTableSkeleton from "@/components/skeleton/CustomTableSkeleton";
 import {
-  convertDateToTimZone,
   createPaginationData,
   formatCurrency,
   getIdName,
-  getListingTimeRemaining,
+  getListingTimeRemaining
 } from "utils/helper-funcs";
-import TableWrapper from "@/components/table/TableWrapper";
-import { IconAdd, IconVisibility } from "@/lib/mui.lib.icons";
 
 import { ActionTimeStatus, IActiveStatus } from "./OrderStatus";
 
+import { OrderStatus } from "@/components/feedback/OrderStatus";
 import CustomSearch from "@/components/input/CustomSearch";
 import StatusFilter from "@/components/select/StatusFillter";
-import ListingService from "@/services/listing-service";
 import useCachedDataStore from "@/config/store-config/lookup";
-import { OrderStatus } from "@/components/feedback/OrderStatus";
+import ListingService from "@/services/listing-service";
 import throttle from "lodash.throttle";
 
 const defaultQuery: IPagination = {
@@ -69,14 +66,13 @@ type IProps = {
 };
 
 export function SettlementTable({
-  showMoreText = true,
   showFilter = false,
   showPagination = false,
   showAddNew = false,
   id = "",
   apiFunc = ListingService.getAll,
   queryKey = "all-orders",
-}: IProps) {
+}: Readonly<IProps>) {
   const { catalogueStatus } = useCachedDataStore(
     (state) => state.cache?.lookup
   );
@@ -111,7 +107,7 @@ export function SettlementTable({
         }`,
         signal
       ).then((res) => {
-        const { data, ...paginationData } = res.data?.result;
+        const { data, ...paginationData } = res?.data?.result;
         const { hasNextPage, hasPrevPage, total, totalPages } =
           createPaginationData(data, paginationData);
 
@@ -180,14 +176,6 @@ export function SettlementTable({
             variant="body2">
             {pagination?.total || 0}
           </MuiTypography>
-          {/* {showMoreText && (
-            <MuiButton
-              onClick={handleViewMore}
-              className="view-all"
-              variant="text">
-              View all
-            </MuiButton>
-          )} */}
         </div>
 
         <div className="action-section">
@@ -264,14 +252,14 @@ export function SettlementTable({
                   style={{ minWidth: "250px" }}>
                   Location
                 </MuiTableCell>
-                <MuiTableCell className="heading" align="left">
-                  Auction
+                <MuiTableCell className="heading" align="left" style={{ minWidth: "180px" }}>
+                  Duration
                 </MuiTableCell>
                 <MuiTableCell
                   className="heading"
                   align="left"
                   style={{ minWidth: "120px" }}>
-                  Price
+                 Starting Price
                 </MuiTableCell>
                 <MuiTableCell className="heading" align="left">
                   Status
@@ -327,7 +315,7 @@ export function SettlementTable({
                         {row?.totalOffers}
                       </MuiTableCell>
                       <MuiTableCell align="left">
-                        {row?.totalOfferers || 0}
+                        {row?.totalOfferors || 0}
                       </MuiTableCell>
                       <MuiTableCell align="left">{row?.location}</MuiTableCell>
                       <MuiTableCell align="left">

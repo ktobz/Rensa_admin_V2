@@ -1,7 +1,7 @@
+import { FormikProvider, useFormik } from "formik";
+import debounceFunc from "lodash.throttle";
 import * as React from "react";
 import * as Yup from "yup";
-import { useFormik, FormikProvider } from "formik";
-import debounceFunc from "lodash.throttle";
 
 import {
   MuiButton,
@@ -10,25 +10,24 @@ import {
   MuiTypography,
   styled,
 } from "@/lib/index";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-import { useQuery, useQueryClient } from "react-query";
-import { IListingProp, IUserData, PlaceType } from "@/types/globalTypes";
+import { PlaceType } from "@/types/globalTypes";
+import { useQuery } from "react-query";
 
-import { useIds } from "@/utils/hooks";
-import AppVirtualizedCountriesSelect from "@/components/select/test";
-import AppSelect from "@/components/select/autoComplete";
+// import { useIds } from "@/utils/hooks";
 import AppInput from "@/components/input";
-import useCachedDataStore from "@/config/store-config/lookup";
 import GoogleLocationInput from "@/components/select/GoogleLocationInput";
+import AppSelect from "@/components/select/autoComplete";
+import AppVirtualizedCountriesSelect from "@/components/select/test";
+import useCachedDataStore from "@/config/store-config/lookup";
 import NotificationService from "@/services/notification-service";
 
 import CustomerService from "@/services/customer-service";
-import CustomImageUploader from "../components/CustomImageUploader";
 import ListingService from "@/services/listing-service";
-import { toast } from "react-toastify";
-import APP_VARS from "@/utils/env";
 import { formatToPrice } from "@/utils/helper-funcs";
+import { toast } from "react-toastify";
+import CustomImageUploader from "../components/CustomImageUploader";
 
 const SCHEMA = Yup.object().shape({
   name: Yup.string().required("required"),
@@ -40,17 +39,18 @@ const SCHEMA = Yup.object().shape({
   durationInHours: Yup.number().required("Required").min(1, "required"),
   catalogueConditionId: Yup.number().required("required").min(1, "required"),
   catalogueCategoryId: Yup.number().required("required").min(1, "required"),
+  listingType: Yup.number().required("required").min(1, "required"),
 });
 
 export function AddListing() {
   const {
-    lookup: { deliveryFeePickupMethod, durationHours },
+    lookup: { deliveryFeePickupMethod, durationHours, listingType },
   } = useCachedDataStore((state) => state.cache);
   const navigate = useNavigate();
 
-  const queryClient = useQueryClient();
-  const { state } = useLocation();
-  const { reportId } = useIds();
+  // const queryClient = useQueryClient();
+  // const { state } = useLocation();
+  // const { reportId } = useIds();
 
   const [name, setName] = React.useState("");
   const [compText, setCompText] = React.useState("");
@@ -76,6 +76,7 @@ export function AddListing() {
     userId: "",
     userId_name: "",
     files_preview: [],
+    listingType: 0,
   };
 
   const createListing = (values: any) => {
@@ -92,7 +93,7 @@ export function AddListing() {
 
       placesAPI.getDetails(
         {
-          placeId: locationValue?.place_id || "",
+          placeId: locationValue?.place_id ?? "",
           fields: [
             "name",
             "formatted_address",
@@ -243,13 +244,13 @@ export function AddListing() {
     setFieldValue("location", value?.description);
   };
 
-  const getId = (user: string, options: any) => {
-    const data = options;
-    return data.find(
-      (value: any) =>
-        `${value?.userName?.toLowerCase()}` === user?.toLowerCase()
-    )?.id;
-  };
+  // const getId = (user: string, options: any) => {
+  //   const data = options;
+  //   return data.find(
+  //     (value: any) =>
+  //       `${value?.userName?.toLowerCase()}` === user?.toLowerCase()
+  //   )?.id;
+  // };
 
   return (
     <FormikProvider value={formik}>
@@ -297,10 +298,6 @@ export function AddListing() {
                   }
                   if (reason === "reset") {
                     setFieldValue("userId_name", newInputValue);
-                    // setFieldValue(
-                    //   "userId",
-                    //   getId(newInputValue, usersQuery.data)
-                    // );
                   }
                 }
               }}
@@ -312,7 +309,7 @@ export function AddListing() {
           <MuiDivider className="divider" />
 
           <div className="image-listing">
-            <MuiTypography variant="body1">Listing Images</MuiTypography>
+            <MuiTypography variant="body1" style={{fontWeight:'600'}}>Listing Images</MuiTypography>
             <CustomImageUploader
               // label="Listing Images"
               instruction="Maximum of 5 photos. PNG, JPG, MP4 | 5MB max."
@@ -388,17 +385,42 @@ export function AddListing() {
               value={locationValue}
               error={!!errors?.location}
             />
+            <AppSelect
+              id="listingType"
+              name="listingType"
+              label="Listing Type"
+              placeholder="Select"
+              value={values.listingType}
+              onChange={handleChange}
+              helperText={errors.listingType}
+              options={listingType}
+              error={!!errors.listingType}
+              required
+            />
 
             <AppSelect
               id="durationInHours"
               name="durationInHours"
-              label="Auction Duration"
+              label="Listing Duration"
               placeholder="Enter duration"
               value={values.durationInHours}
               onChange={handleChange}
               helperText={errors.durationInHours}
               options={durationHours || []}
               error={!!errors.durationInHours}
+              required
+            />
+
+            <AppSelect
+              id="pickupMethod"
+              name="pickupMethod"
+              label="Pickup method"
+              placeholder="Select"
+              value={values.pickupMethod}
+              onChange={handleChange}
+              helperText={errors.pickupMethod}
+              options={deliveryFeePickupMethod}
+              error={!!errors.pickupMethod}
               required
             />
 
@@ -418,18 +440,6 @@ export function AddListing() {
               required
               rows={2}
               multiline
-            />
-            <AppSelect
-              id="pickupMethod"
-              name="pickupMethod"
-              label="Pickup method"
-              placeholder="Select"
-              value={values.pickupMethod}
-              onChange={handleChange}
-              helperText={errors.pickupMethod}
-              options={deliveryFeePickupMethod}
-              error={!!errors.pickupMethod}
-              required
             />
           </div>
 

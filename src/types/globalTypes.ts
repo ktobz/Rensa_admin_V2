@@ -829,7 +829,7 @@ export type IListingData = {
   totalBidders: number;
   totalBids: number;
   totalOffers: number;
-  totalOfferers: number;
+  totalOfferors: number;
   durationInHours: number;
   pickupMethod: number;
   catalogueStatus: number;
@@ -864,6 +864,7 @@ export type IListingData = {
   };
   state: string;
   city: string;
+  listingType: number;
 };
 
 export type IReportedListingData = {
@@ -1011,6 +1012,7 @@ export type ILookups = {
   durationHours: ICategory[];
   reportedListingCategory: ICategory[];
   catalogueOrderCancellationStatus: ICategory[];
+  listingType:ICategory[];
 };
 
 export type IListingProp = {

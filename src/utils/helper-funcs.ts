@@ -1,14 +1,8 @@
 import {
   ICategory,
-  IPagination,
-  IPaginationResponse,
+  IPaginationResponse
 } from "@/types/globalTypes";
-import { format, parseISO, addHours } from "date-fns";
-import {
-  format as fnFormat,
-  utcToZonedTime,
-  zonedTimeToUtc,
-} from "date-fns-tz";
+import { addHours, format, parseISO } from "date-fns";
 import { REFRESH_TOKEN_NAME, TOKEN_NAME } from "types/actionTypes";
 const HR_TO_MILLISECONDS = 3600000;
 
@@ -99,15 +93,14 @@ export const formatDate = (
   return value;
 };
 
-export const getIdName = (id: number, list: ICategory[]) => {
-  return list?.find((x) => id === x?.id)?.name?.replaceAll(" ", "_") || "";
+export const getIdName = (id: number, list: ICategory[], replaceWith = "_") => {
+  return list?.find((x) => id === x?.id)?.name?.replaceAll(" ", replaceWith) ?? "";
 };
 
 export const convertDateToTimZone = (d: string, hours: number) => {
   const parsedTime = parseISO(d);
-  console.log(parsedTime, "pAersd");
+
   const dd = addHours(parsedTime, hours);
-  console.log(dd, "dd");
 
   return dd;
 };

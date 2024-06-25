@@ -1,51 +1,35 @@
 import * as React from "react";
-import { format } from "date-fns";
 import { Lightbox } from "react-modal-image";
 
+import { OrderStatus } from "@/components/feedback/OrderStatus";
+import AppCustomModal from "@/components/modal/Modal";
+import CustomStyledSelect from "@/components/select/CustomStyledSelect";
 import {
   MuiButton,
   MuiCardMedia,
-  MuiIconButton,
   MuiSelectChangeEvent,
   MuiTypography,
   styled,
 } from "@/lib/index";
-import { useLocation } from "react-router-dom";
-import {
-  IconEye,
-  IconLocation,
-  IconPetrol,
-  IconPlay,
-  IconShipping,
-  IconTicket,
-} from "@/lib/mui.lib.icons";
-import { useQuery, useQueryClient } from "react-query";
-import OrderService from "@/services/order-service";
-import { IListingData, IOrderDetails, IStatus } from "@/types/globalTypes";
-import { UserDetailCard } from "@/components/card/UserCard";
-import AppCustomModal from "@/components/modal/Modal";
-import { OrderStatus } from "@/components/feedback/OrderStatus";
+import { IconEye, IconPlay } from "@/lib/mui.lib.icons";
 import {
   ActionTimeStatus,
   IActiveStatus,
-  SettlementStatus,
 } from "@/modules/settlements/components/OrderStatus";
+import { IListingData, IStatus } from "@/types/globalTypes";
 import { useIds } from "@/utils/hooks";
-import CustomStyledSelect from "@/components/select/CustomStyledSelect";
+import { useQuery, useQueryClient } from "react-query";
+import { useLocation } from "react-router-dom";
 
+import useCachedDataStore from "@/config/store-config/lookup";
+import ListingService from "@/services/listing-service";
+import { getIdName, getListingTimeRemaining } from "@/utils/helper-funcs";
+import { toast } from "react-toastify";
 import SimpleBar from "simplebar-react";
+import { ActionConfirm } from "../components/ActionConfirm";
+import { BidsView } from "../components/BidsView";
 import { ReportedComments } from "../components/ReportedComments";
 import { SellerInfo } from "../components/SellerInfo";
-import { BidsView } from "../components/BidsView";
-import { ActionConfirm } from "../components/ActionConfirm";
-import ListingService from "@/services/listing-service";
-import {
-  convertDateToTimZone,
-  getIdName,
-  getListingTimeRemaining,
-} from "@/utils/helper-funcs";
-import useCachedDataStore from "@/config/store-config/lookup";
-import { toast } from "react-toastify";
 
 const options =
   ["Close listing"]?.map((x) => ({
@@ -61,9 +45,8 @@ const trimText = (text: string) => {
 };
 
 export function ListingDetails() {
-  const { catalogueStatus, deliveryFeePickupMethod } = useCachedDataStore(
-    (state) => state.cache?.lookup
-  );
+  const { catalogueStatus, deliveryFeePickupMethod, listingType } =
+    useCachedDataStore((state) => state.cache?.lookup);
   const queryClient = useQueryClient();
   const { state } = useLocation();
   const { reportId } = useIds();
@@ -134,8 +117,8 @@ export function ListingDetails() {
   };
 
   const timeRemaining = getListingTimeRemaining(
-    data?.creationTime || "",
-    data?.durationInHours || 0
+    data?.creationTime ?? "",
+    data?.durationInHours ?? 0
   );
 
   const handleSetImage = (image: string) => () => {
@@ -189,7 +172,7 @@ export function ListingDetails() {
             }}
             type={
               getIdName(
-                data?.catalogueStatus || 1,
+                data?.catalogueStatus ?? 1,
                 catalogueStatus
               )?.toLowerCase() as IStatus
             }
@@ -211,7 +194,7 @@ export function ListingDetails() {
               }
               catelogueStatus={
                 getIdName(
-                  data?.catalogueStatus || 1,
+                  data?.catalogueStatus ?? 1,
                   catalogueStatus
                 )?.toLowerCase() as IStatus
               }
@@ -227,7 +210,7 @@ export function ListingDetails() {
                 Item name
               </MuiTypography>
               <MuiTypography variant="body2" className="body">
-                {data?.name || "-"}
+                {data?.name ?? "-"}
               </MuiTypography>
             </div>
           </div>
@@ -238,6 +221,14 @@ export function ListingDetails() {
               </MuiTypography>
               <MuiTypography variant="body2" className="body">
                 {data?.catalogueCategory?.name}
+              </MuiTypography>
+            </div>
+            <div className="group">
+              <MuiTypography variant="body1" className="header">
+                Listing type
+              </MuiTypography>
+              <MuiTypography variant="body2" className="body">
+                {getIdName(data?.listingType ?? 1, listingType, " ") || ""}
               </MuiTypography>
             </div>
             <div className="group">
@@ -253,7 +244,7 @@ export function ListingDetails() {
                 Pickup method
               </MuiTypography>
               <MuiTypography variant="body2" className="body">
-                {getIdName(data?.pickupMethod || 1, deliveryFeePickupMethod) ||
+                {getIdName(data?.pickupMethod ?? 1, deliveryFeePickupMethod) ||
                   ""}
               </MuiTypography>
             </div>
@@ -274,9 +265,10 @@ export function ListingDetails() {
             <SimpleBar className="">
               <div className="image-wrapper">
                 {videoFile?.map((file, index) => (
-                  <div className="listing-image">
+                  <div
+                    className="listing-image"
+                    key={file?.cleansedName || index}>
                     <MuiCardMedia
-                      key={index}
                       component="img"
                       src={imageFiles?.[0]?.url}
                       className="product"
@@ -290,9 +282,10 @@ export function ListingDetails() {
                   </div>
                 ))}
                 {imageFiles?.map((file, index) => (
-                  <div className="listing-image">
+                  <div
+                    className="listing-image"
+                    key={file?.cleansedName || index}>
                     <MuiCardMedia
-                      key={index}
                       component="img"
                       src={file?.url}
                       className="product"
