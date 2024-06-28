@@ -25,10 +25,10 @@ export const SellerInfo = ({ listingData }: IProps) => {
       <UserDetailCard
         variant="user"
         data={{
-          title: `${listingData?.sellerInfo?.firstName || "-"} ${
-            listingData?.sellerInfo?.lastName || "-"
+          title: `${listingData?.sellerInfo?.firstName ?? "-"} ${
+            listingData?.sellerInfo?.lastName ?? "-"
           }`,
-          body: `${listingData?.sellerInfo?.email || "-"}`,
+          body: `${listingData?.sellerInfo?.email ?? "-"}`,
           image: listingData?.sellerInfo?.profilePictureUrl,
           verStatus: listingData?.sellerInfo?.isVerified || false,
         }}
@@ -43,7 +43,7 @@ export const SellerInfo = ({ listingData }: IProps) => {
             Contact number
           </MuiTypography>
           <MuiTypography variant="body1" className="body">
-            {listingData?.sellerInfo?.phoneNumber || "-"}
+            {listingData?.sellerInfo?.phoneNumber ?? "-"}
           </MuiTypography>
         </div>
       </div>
@@ -56,7 +56,7 @@ export const SellerInfo = ({ listingData }: IProps) => {
             Item Pickup location
           </MuiTypography>
           <MuiTypography variant="body1" className="body">
-            {listingData?.city || "-"}, {listingData?.state || "-"}
+          {listingData?.location} {listingData?.city ?? "-"}, {listingData?.state ?? "-"}
           </MuiTypography>
         </div>
       </div>
