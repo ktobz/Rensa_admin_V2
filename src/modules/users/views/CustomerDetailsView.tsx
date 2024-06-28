@@ -1,18 +1,17 @@
 import * as React from "react";
-import { format } from "date-fns";
 import { useQuery, useQueryClient } from "react-query";
-import { toast } from "react-toastify";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
+import { VerificationStatus } from "@/components/feedback/VerfiedStatus";
+import AppCustomModal from "@/components/modal/Modal";
+import CustomTab from "@/components/other/CustomTab";
+import CustomTabPanel from "@/components/other/CustomTabPanel";
+import CustomTabs from "@/components/other/CustomTabs";
 import { MuiInputLabel, MuiTypography, styled } from "@/lib/index";
 import { OrderTable } from "@/modules/orders";
 import CustomerService from "@/services/customer-service";
 import { IUserData } from "@/types/globalTypes";
-import { VerificationStatus } from "@/components/feedback/VerfiedStatus";
-import AppCustomModal from "@/components/modal/Modal";
-import CustomTabs from "@/components/other/CustomTabs";
-import CustomTab from "@/components/other/CustomTab";
-import CustomTabPanel from "@/components/other/CustomTabPanel";
 
 import { SettlementTable } from "@/modules/settlements/components/SettlementTable";
 
@@ -21,6 +20,7 @@ import TransactionService from "@/services/transaction-service";
 
 import { CustomSwitch } from "@/components/input/CustomSwitch";
 import { TransactionTable } from "@/modules/transaction/components/TransactionTable";
+import { formatDate } from "@/utils/helper-funcs";
 import { BlockUserConfirm } from "../components/BlockUserConfirm";
 import { PayoutAccountView } from "../components/PayoutAccountView";
 
@@ -131,8 +131,8 @@ export function CustomerDetailsView() {
               </MuiTypography>
               <MuiTypography variant="body2" className="body">
                 {data?.creationTime
-                  ? format(new Date(data?.creationTime || ""), "LL MMMM, yyyy")
-                  : ""}
+                  ? formatDate(data?.creationTime || "")
+                  : "-"}
               </MuiTypography>
             </div>
             <div className="info-detail">

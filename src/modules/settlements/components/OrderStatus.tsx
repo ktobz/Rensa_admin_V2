@@ -128,27 +128,31 @@ export const ActionTimeStatus = ({
     expiryTimestamp: currentTime,
     onExpire: () => {},
   });
-  const daysToHours = days * 24 + hours;
-  const statusType = minutes < 10 && daysToHours === 0 ? "error" : "warning";
-  const hasEnded = daysToHours === 0 && minutes === 0 && seconds === 0;
+  // const daysToHours = days * 24 + hours;
+  const statusType =
+    minutes < 10 && days === 0 && hours === 0 ? "error" : "warning";
+  const hasEnded = days === 0 && hours === 0 && minutes === 0 && seconds === 0;
+  const soldStatus =
+    catelogueStatus !== "closed" &&
+    catelogueStatus !== "expired" &&
+    catelogueStatus !== "active"
+      ? "sold"
+      : "closed";
+
+  const secondsString = seconds > 9 ? `${seconds}s` : `0${seconds}s`;
+  const minutesString = minutes > 9 ? `${minutes}m` : `0${minutes}m`;
+  const hoursString = hours > 9 ? `${hours}h` : `0${hours}h`;
+  const daysString = days > 9 ? `${days}d` : `0${days}d`;
 
   return catelogueStatus !== "active" || hasEnded ? (
     <OrderStatus
-      type={
-        catelogueStatus === "pending_payment"
-          ? "on_hold"
-          : catelogueStatus !== "closed" &&
-            catelogueStatus !== "expired" &&
-            catelogueStatus !== "active"
-          ? "sold"
-          : "closed"
-      }
+      type={catelogueStatus === "pending_payment" ? "on_hold" : soldStatus}
     />
   ) : (
     <span
       style={{
-        color: statusData[statusType]?.color || "",
-        background: statusData[statusType]?.bg || "",
+        color: statusData[statusType]?.color ?? "",
+        background: statusData[statusType]?.bg ?? "",
         padding: "10px 15px",
         borderRadius: "10px",
         fontWeight: "bold",
@@ -157,9 +161,7 @@ export const ActionTimeStatus = ({
         textAlign: "center",
       }}>
       {statusData[statusType]?.text ||
-        `${daysToHours > 9 ? daysToHours : `0${daysToHours}`}:${
-          minutes > 9 ? minutes : `0${minutes}`
-        }:${seconds > 9 ? seconds : `0${seconds}`}`}
+        `${daysString}:${hoursString}:${minutesString}:${secondsString}`}
     </span>
   );
 };
@@ -168,21 +170,21 @@ export const OrderIcon = ({ type }: { type: IActiveStatus }) => {
   return (
     <span
       style={{
-        color: statusData[type]?.color || "",
-        background: statusData[type]?.bg || "",
+        color: statusData[type]?.color ?? "",
+        background: statusData[type]?.bg ?? "",
         borderRadius: "5px",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         width: "32px",
         height: "32px",
-        stroke: `${statusData[type]?.color || "grey"} !important`,
+        stroke: `${statusData[type]?.color ?? "grey"} !important`,
       }}>
       <IconOrder
         className={type}
         style={{
-          color: statusData[type]?.color || "",
-          stroke: `${statusData[type]?.color || "grey"} !important`,
+          color: statusData[type]?.color ?? "",
+          stroke: `${statusData[type]?.color ?? "grey"} !important`,
           width: "20px",
           height: "20px",
         }}

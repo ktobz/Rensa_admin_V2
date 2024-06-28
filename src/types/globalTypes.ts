@@ -829,7 +829,7 @@ export type IListingData = {
   totalBidders: number;
   totalBids: number;
   totalOffers: number;
-  totalOfferers: number;
+  totalOfferors: number;
   durationInHours: number;
   pickupMethod: number;
   catalogueStatus: number;
@@ -864,6 +864,7 @@ export type IListingData = {
   };
   state: string;
   city: string;
+  listingType: number;
 };
 
 export type IReportedListingData = {
@@ -987,6 +988,9 @@ export type ICategory = {
   name: string;
   id: number;
 };
+export type CategoryWithDescription = ICategory & {
+  description: string;
+};
 
 export type ILookups = {
   automatedMessageCategory: ICategory[];
@@ -1008,9 +1012,10 @@ export type ILookups = {
   verificationStatus: ICategory[];
   bankProvider: ICategory[];
   dashboardFilter: ICategory[];
-  durationHours: ICategory[];
+  durationHours: CategoryWithDescription[];
   reportedListingCategory: ICategory[];
   catalogueOrderCancellationStatus: ICategory[];
+  listingType: ICategory[];
 };
 
 export type IListingProp = {
