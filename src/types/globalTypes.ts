@@ -567,11 +567,13 @@ export type IOrderFullDetails = {
     itemAmount: number;
     buyerServiceFee: number;
     maxDeliveryFee: number;
+    buyerServiceFeePercentage: number;
     buyerPayment: number;
   };
   sellerPayment: {
     itemAmount: number;
     sellerServiceFee: number;
+    sellerServiceFeePercentage: number;
     sellerSettlement: number;
   };
   salesRevenue: number;
