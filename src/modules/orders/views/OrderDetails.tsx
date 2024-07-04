@@ -1,4 +1,3 @@
-import * as React from "react";
 import {
   MuiButton,
   MuiCardMedia,
@@ -7,7 +6,6 @@ import {
   MuiTypography,
   styled,
 } from "@/lib/index";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   IconBike,
   IconCopyFilled,
@@ -15,19 +13,21 @@ import {
   IconTicket,
   IconVan,
 } from "@/lib/mui.lib.icons";
-import { useQuery, useQueryClient } from "react-query";
 import OrderService from "@/services/order-service";
 import { IStatus } from "@/types/globalTypes";
+import * as React from "react";
+import { useQuery, useQueryClient } from "react-query";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import AppCustomModal from "@/components/modal/Modal";
 
 import { OrderStatus } from "@/components/feedback/OrderStatus";
-import { formatCurrency, formatDate, getIdName } from "@/utils/helper-funcs";
 import useCachedDataStore from "@/config/store-config/lookup";
-import { OrderConfirmation } from "../components/OrderConfirmation";
 import ConfigService from "@/services/config-service";
+import { formatCurrency, formatDate, getIdName } from "@/utils/helper-funcs";
 import useCopyToClipboard from "@/utils/useCopyToClipboard";
 import { toast } from "react-toastify";
+import { OrderConfirmation } from "../components/OrderConfirmation";
 import { OrderPayoutConfirmation } from "../components/OrderPayoutConfirmation";
 
 const mapPickupMethod: { [key: number]: React.ReactNode } = {
@@ -557,7 +557,7 @@ export function OrderDetails() {
               </div>
               <div className="price-line">
                 <MuiTypography variant="body1" className="entry">
-                  Service fee ({serviceFee?.buyerServiceFee}%):
+                  Service fee ({data?.buyerPayment?.buyerServiceFeePercentage}%):
                 </MuiTypography>
                 <MuiTypography variant="body1" className="entry">
                   ₦
@@ -614,7 +614,7 @@ export function OrderDetails() {
               </div>
               <div className="price-line">
                 <MuiTypography variant="body1" className="entry">
-                  Service fee ({serviceFee?.sellerServiceFee}%):
+                  Service fee ({data?.sellerPayment?.sellerServiceFeePercentage}%):
                 </MuiTypography>
                 <MuiTypography variant="body1" className="entry">
                   ₦
