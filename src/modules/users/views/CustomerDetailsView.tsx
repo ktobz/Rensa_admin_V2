@@ -8,7 +8,15 @@ import AppCustomModal from "@/components/modal/Modal";
 import CustomTab from "@/components/other/CustomTab";
 import CustomTabPanel from "@/components/other/CustomTabPanel";
 import CustomTabs from "@/components/other/CustomTabs";
-import { MuiInputLabel, MuiTypography, styled } from "@/lib/index";
+import {
+  IconDelete,
+  IconEdit,
+  MuiBox,
+  MuiIconButton,
+  MuiInputLabel,
+  MuiTypography,
+  styled,
+} from "@/lib/index";
 import { OrderTable } from "@/modules/orders";
 import CustomerService from "@/services/customer-service";
 import { IUserData } from "@/types/globalTypes";
@@ -23,8 +31,11 @@ import { TransactionTable } from "@/modules/transaction/components/TransactionTa
 import { formatDate } from "@/utils/helper-funcs";
 import { BlockUserConfirm } from "../components/BlockUserConfirm";
 import { PayoutAccountView } from "../components/PayoutAccountView";
+import { ProSellerStatusConfirm } from "../components/ProSellerStatusConfirm";
+import { UpdateUserForm } from "../components/UpdateUserForm";
 
 type TStatus = "block" | "unblock";
+type TProSellerStatus = "enable" | "disable";
 
 export function CustomerDetailsView() {
   const { c_id } = useParams<{ c_id: string }>();
@@ -33,8 +44,14 @@ export function CustomerDetailsView() {
   const { state } = useLocation();
   const customerId = c_id || "";
 
-  const [show, setShow] = React.useState(false);
+  const [show, setShow] = React.useState({
+    proSellerShow: false,
+    activityShow: false,
+    update_profile: false,
+  });
   const [status, setStatus] = React.useState<TStatus>("unblock");
+  const [proSellerStatus, setProSellerStatus] =
+    React.useState<TProSellerStatus>("disable");
 
   const [current, setCurrent] = React.useState(() => {
     return 0;
@@ -64,12 +81,30 @@ export function CustomerDetailsView() {
   );
 
   const handleToggleShow = () => {
-    setShow((prev) => !prev);
+    setShow((prev) => ({ ...prev, activityShow: !prev.activityShow }));
+  };
+
+  const handleToggleShowProfile = () => {
+    setShow((prev) => ({ ...prev, update_profile: !prev.activityShow }));
+  };
+
+  const handleClose = () => {
+    setShow((prev) => ({
+      ...prev,
+      proSellerShow: false,
+      activityShow: false,
+      update_profile: false,
+    }));
   };
 
   const handleToggleUserActiveStatus = (status: TStatus) => () => {
     setStatus(status);
-    setShow(true);
+    setShow((prev) => ({ ...prev, activityShow: true }));
+  };
+
+  const handleToggleUserProSellerStatus = (status: TProSellerStatus) => () => {
+    setProSellerStatus(status);
+    setShow((prev) => ({ ...prev, proSellerShow: true }));
   };
 
   const handleRefresh = () => {
@@ -81,7 +116,22 @@ export function CustomerDetailsView() {
       .then((res) => {
         handleRefresh?.();
         toast.success(res.data?.result?.message || "");
-        setShow(false);
+        setShow((prev) => ({ ...prev, activityShow: false }));
+      })
+      .catch((err) => {
+        toast.error(err?.response?.data?.message || "");
+      })
+      .finally(() => {
+        callback();
+      });
+  };
+
+  const handleUpdateProSellerStatus = (callback: () => void) => () => {
+    CustomerService.updateProSellerStatus(customerId || "", proSellerStatus)
+      .then((res) => {
+        handleRefresh?.();
+        toast.success(res.data?.result?.message || "");
+        setShow((prev) => ({ ...prev, proSellerShow: false }));
       })
       .catch((err) => {
         toast.error(err?.response?.data?.message || "");
@@ -99,6 +149,21 @@ export function CustomerDetailsView() {
             <MuiTypography variant="h3" className="name">
               {data?.firstName || "-"} {data?.lastName || "-"}
             </MuiTypography>
+
+            <MuiBox className="action-group">
+              <MuiIconButton
+                color="warning"
+                onClick={handleToggleShowProfile}
+                className={`action-btn edit-btn `}>
+                <IconEdit />
+              </MuiIconButton>
+              <MuiIconButton
+                color="error"
+                // onClick={handleSetDeleteData(row)}
+                className="action-btn delete-btn">
+                <IconDelete />
+              </MuiIconButton>
+            </MuiBox>
           </div>
           <div className="outlet-info">
             <div className="info-detail">
@@ -148,6 +213,32 @@ export function CustomerDetailsView() {
                   }}
                   type={data?.isVerified ? "true" : "false"}
                 />
+              </MuiTypography>
+            </div>
+            <div className="info-detail">
+              <MuiTypography variant="body2" className="title">
+                Pro-seller Privilege
+              </MuiTypography>
+              <MuiTypography variant="body2" className="body">
+                <VerificationStatus
+                  style={{
+                    padding: "5px 12px",
+                    borderRadius: "5px",
+                    fontSize: "12px",
+                  }}
+                  type={data?.isVerified ? "true" : "false"}
+                />
+                <MuiInputLabel
+                  style={{ cursor: "pointer" }}
+                  onClick={handleToggleUserProSellerStatus(
+                    data?.isActive ? "disable" : "enable"
+                  )}>
+                  <CustomSwitch
+                    disabled
+                    checked={!data?.isActive}
+                    defaultChecked={!data?.isActive}
+                  />
+                </MuiInputLabel>
               </MuiTypography>
             </div>
           </div>
@@ -246,7 +337,7 @@ export function CustomerDetailsView() {
 
       <AppCustomModal
         handleClose={handleToggleShow}
-        open={show}
+        open={show.activityShow}
         showClose
         closeOnOutsideClick={false}>
         <BlockUserConfirm
@@ -254,6 +345,31 @@ export function CustomerDetailsView() {
           handleAction={handleUpdateStatus}
           handleClose={handleToggleShow}
           action={status}
+        />
+      </AppCustomModal>
+
+      <AppCustomModal
+        handleClose={handleClose}
+        open={show.proSellerShow}
+        showClose
+        closeOnOutsideClick={false}>
+        <ProSellerStatusConfirm
+          data={data}
+          handleAction={handleUpdateProSellerStatus}
+          handleClose={handleClose}
+          action={proSellerStatus}
+        />
+      </AppCustomModal>
+
+      <AppCustomModal
+        title="Update User Profile"
+        handleClose={handleClose}
+        open={show.update_profile}
+        closeOnOutsideClick={false}>
+        <UpdateUserForm
+          handleClose={handleClose}
+          initData={data}
+          refreshQuery={handleRefresh}
         />
       </AppCustomModal>
     </PageContent>
@@ -342,6 +458,42 @@ const PageContent = styled.section`
         font-weight: 500;
         font-size: 18px;
         text-transform: capitalize;
+      }
+    }
+
+    & .action-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    & .visible-btn {
+      background-color: #e8f1f8;
+      border-radius: 10px;
+      color: #1e75bb;
+      padding: 12px;
+
+      svg {
+        width: 15px;
+        height: 15px;
+      }
+    }
+
+    & .delete-btn {
+      background: #ef50501a;
+      color: #d78950;
+
+      svg {
+        color: #d78950;
+      }
+    }
+
+    & .edit-btn {
+      background: #ffc5021a;
+      color: #d78950;
+
+      svg {
+        color: #d78950;
       }
     }
   }

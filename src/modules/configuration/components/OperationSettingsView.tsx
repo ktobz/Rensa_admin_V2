@@ -1,32 +1,32 @@
 import * as React from "react";
 import { useQuery, useQueryClient } from "react-query";
 
+import AppCustomModal from "@/components/modal/Modal";
 import { MuiBox, MuiIconButton, MuiTypography, styled } from "@/lib/index";
 import {
-  IconEdit,
-  IconOrder,
-  IconFee,
-  IconClock,
-  IconWallet,
-  IconBike,
   IconBankList,
+  IconBike,
+  IconClock,
+  IconEdit,
+  IconFee,
+  IconOrder,
+  IconWallet,
 } from "@/lib/mui.lib.icons";
-import AppCustomModal from "@/components/modal/Modal";
 
+import ConfigService from "@/services/config-service";
 import {
   ICategory,
   IDeliverySettingsReq,
   IPagination,
 } from "@/types/globalTypes";
-import ConfigService from "@/services/config-service";
 
-import { formatCurrency } from "@/utils/helper-funcs";
 import useCachedDataStore from "@/config/store-config/lookup";
-import { ServiceFeeEntryForm } from "@/modules/notification-center/components/ServiceFeeEntryForm";
+import { BankList } from "@/modules/notification-center/components/BankList";
 import { DeliverySettingsForm } from "@/modules/notification-center/components/DeliverySettingsForm";
 import { PayoutSettingsForm } from "@/modules/notification-center/components/PayoutSettingsForm";
-import AuthService from "@/services/auth.service";
-import { BankList } from "@/modules/notification-center/components/BankList";
+import { PickupLocation } from "@/modules/notification-center/components/PickupLocation";
+import { ServiceFeeEntryForm } from "@/modules/notification-center/components/ServiceFeeEntryForm";
+import { formatCurrency } from "@/utils/helper-funcs";
 
 const defaultQuery: IPagination = {
   pageSize: 15,
@@ -52,6 +52,7 @@ export function OperationSettingsView() {
     delivery: false,
     payout: false,
     bank: false,
+    pickup: false,
   });
 
   const [editData, setEditData] = React.useState<null | IDeliverySettingsReq>(
@@ -61,7 +62,7 @@ export function OperationSettingsView() {
 
   const handleToggleShow =
     (
-      type: "delivery" | "service" | "payout" | "bank",
+      type: "delivery" | "service" | "payout" | "bank" | "pickup",
       data?: any,
       method?: ICategory
     ) =>
@@ -141,6 +142,7 @@ export function OperationSettingsView() {
       service: false,
       payout: false,
       bank: false,
+      pickup: false,
     });
     setEditData(null);
     setMethod(null);
@@ -387,6 +389,29 @@ export function OperationSettingsView() {
             </div>
           </div>
         </div>
+        <div className="settings-group">
+          <IconWallet className="icon" />
+          <div className="rows">
+            <div className="heading">
+              <MuiTypography variant="h3" className="group-heading">
+                Pickup Location
+              </MuiTypography>
+              <MuiBox className="action-group">
+                <MuiIconButton
+                  color="warning"
+                  onClick={handleToggleShow("pickup")}
+                  className={`action-btn edit-btn btn `}>
+                  <IconEdit />
+                </MuiIconButton>
+              </MuiBox>
+            </div>
+            <div className="data-row">
+              <MuiTypography variant="body1" className="label">
+                Creative Bloc Carnival - Muri Okunola Park, VI Lagos
+              </MuiTypography>
+            </div>
+          </div>
+        </div>
       </div>
 
       <AppCustomModal
@@ -429,6 +454,20 @@ export function OperationSettingsView() {
         title={"Payout Settings"}
         showClose>
         <PayoutSettingsForm
+          initData={payoutSetting}
+          refreshQuery={handleRefreshPayout}
+          handleClose={handleCloseModal}
+        />
+      </AppCustomModal>
+
+      <AppCustomModal
+        handleClose={handleToggleShow("pickup")}
+        open={show.pickup}
+        alignTitle="left"
+        closeOnOutsideClick={false}
+        title="Pickup Location"
+        showClose>
+        <PickupLocation
           initData={payoutSetting}
           refreshQuery={handleRefreshPayout}
           handleClose={handleCloseModal}
