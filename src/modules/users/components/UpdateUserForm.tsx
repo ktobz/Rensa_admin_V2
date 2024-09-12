@@ -38,7 +38,12 @@ export const UpdateUserForm = ({
     setIsSaving(true);
 
     try {
-      const { data } = await CustomerService.updateProfile(formValues);
+      const formData = new FormData();
+      formData.append('FirstName',formValues.firstName );
+      formData.append('LastName',formValues.lastName );
+      formData.append('Username',formValues.userName );
+      
+      const { data } = await CustomerService.updateProfile(formData);
 
       if (data) {
         refreshQuery?.();

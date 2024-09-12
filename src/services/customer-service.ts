@@ -72,11 +72,10 @@ const CustomerService = {
   },
 
   updateProSellerStatus(
-    id: number | string,
-    status: "enable" | "disable"
+    id: number | string
   ): AxiosPromise<IUserStatusUpdateResponse> {
     return HTTP.put(
-      `/admin/${status}user/${id}`,
+      `/admin/toggle-proseller/${id}`,
       {},
       {
         headers: {
@@ -86,14 +85,11 @@ const CustomerService = {
     );
   },
 
-  async updateProfile(data: {
-    firstName: string;
-    lastName: string;
-    userName: string;
-  }) {
+  updateProfile(data: FormData) {
     return HTTP.post(`${PATHS.updateUserProfile}`, data, {
       headers: {
         Authorization: getToken(),
+        "Content-Type": "multipart/form-data",
       },
     });
   },

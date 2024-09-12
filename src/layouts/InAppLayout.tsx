@@ -1,19 +1,19 @@
+import { SwipeableDrawer } from "@mui/material";
 import * as React from "react";
 import SimpleBar from "simplebar-react";
-import { SwipeableDrawer } from "@mui/material";
 
-import { IconLogout, MuiBox, MuiButton, styled } from "@/lib/index";
-import Header from "@/components/header/Header";
-import DesktopMenu from "@/components/nav/DesktopMenu";
-import CustomMenu from "@/components/nav/CustomMenu";
-import { Logo } from "@/components/logo";
-import AppContext from "@/providers/appContext";
-import AppCustomModal from "@/components/modal/Modal";
-import { useUserStore } from "@/config/store-config/store.config";
-import BreadCrumbs from "@/components/other/Breadcrumb";
-import InAppRoutes from "@/routes/auth-routes";
-import NotAuthorized from "@/components/other/401";
 import UserIdlenessFeedback from "@/components/feedback/UserIdlenessFeedback";
+import Header from "@/components/header/Header";
+import { Logo } from "@/components/logo";
+import AppCustomModal from "@/components/modal/Modal";
+import CustomMenu from "@/components/nav/CustomMenu";
+import DesktopMenu from "@/components/nav/DesktopMenu";
+import NotAuthorized from "@/components/other/401";
+import BreadCrumbs from "@/components/other/Breadcrumb";
+import { useUserStore } from "@/config/store-config/store.config";
+import { IconLogout, MuiBox, MuiButton, styled } from "@/lib/index";
+import AppContext from "@/providers/appContext";
+import InAppRoutes from "@/routes/auth-routes";
 
 export default function AppContentLayout() {
   const { isAuthorized, logout } = useUserStore((state) => state);
@@ -178,7 +178,7 @@ const Layout = styled.section`
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  padding-bottom: 30px;
+  /* padding-bottom: 30px; */
   /* background: #fff; */
 
   & .menu {

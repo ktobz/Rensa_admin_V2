@@ -461,6 +461,7 @@ export type IUserData = {
   isVerified: boolean;
   isActive: boolean;
   profilePictureUrl: string;
+  isProSeller:boolean;
 };
 
 export type IUsersResponse = {
@@ -482,6 +483,10 @@ export type IUserStatusUpdateResponse = {
   result: {
     message: string;
   };
+  responseCode:string;
+  successful:boolean;
+  message: string;
+
 };
 
 // APP RELEASE
