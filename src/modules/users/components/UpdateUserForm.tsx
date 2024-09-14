@@ -12,6 +12,7 @@ import CustomerService from "@/services/customer-service";
 const SCHEMA = Yup.object().shape({
   firstName: Yup.string().required("required"),
   lastName: Yup.string().required("required"),
+  id: Yup.string(),
 });
 
 type IViewProps = {
