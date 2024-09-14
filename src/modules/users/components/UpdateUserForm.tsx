@@ -29,7 +29,7 @@ export const UpdateUserForm = ({
   const initialData = {
     firstName: initData?.firstName || "",
     lastName: initData?.lastName || "",
-    userId: initData?.id || "",
+    id: initData?.id || "",
   };
 
   const [isSaving, setIsSaving] = React.useState(false);
@@ -41,7 +41,7 @@ export const UpdateUserForm = ({
       const formData = new FormData();
       formData.append('FirstName',formValues.firstName );
       formData.append('LastName',formValues.lastName );
-      formData.append('UserId',formValues.userId );
+      formData.append('UserId',formValues.id );
       
       const { data } = await CustomerService.updateProfile(formData);
 
