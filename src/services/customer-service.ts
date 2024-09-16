@@ -1,12 +1,12 @@
-import { getToken } from "utils/helper-funcs";
-import HTTP from "./Http";
 import {
+  IBankDetailsResponse,
   IUserDetailResponse,
   IUsersResponse,
   IUserStatusUpdateResponse,
-  IBankDetailsResponse,
 } from "@/types/globalTypes";
 import { AxiosPromise } from "axios";
+import { getToken } from "utils/helper-funcs";
+import HTTP from "./Http";
 
 const PATHS = {
   customers: "/admin/users",
@@ -15,6 +15,7 @@ const PATHS = {
   userOrders: "/admin/order",
   payout: "/admin/bank/set-user-bank-account",
   bankDetails: "/admin/bank/get-user-bank-account",
+  updateUserProfile: "/admin/updateprofile",
 };
 
 const CustomerService = {
@@ -68,6 +69,29 @@ const CustomerService = {
         },
       }
     );
+  },
+
+  updateProSellerStatus(
+    id: number | string
+  ): AxiosPromise<IUserStatusUpdateResponse> {
+    return HTTP.put(
+      `/admin/toggle-proseller/${id}`,
+      {},
+      {
+        headers: {
+          Authorization: getToken(),
+        },
+      }
+    );
+  },
+
+  updateProfile(data: FormData) {
+    return HTTP.post(`${PATHS.updateUserProfile}`, data, {
+      headers: {
+        Authorization: getToken(),
+        "Content-Type": "multipart/form-data",
+      },
+    });
   },
 
   getCustomerProducts(id: number | string) {

@@ -1,6 +1,6 @@
 import { IconDot } from "@/lib/mui.lib.icons";
 import { TabProps } from "@mui/material";
-import { MuiButton, MuiTab, styled } from "lib/index";
+import { MuiTab, styled } from "lib/index";
 
 function a11yProps(index: number) {
   return {
@@ -82,6 +82,8 @@ const StyledTab = styled.div<{
     padding: 15px;
     width: 100%;
     text-transform: capitalize;
+    white-space:nowrap;
+
 
     & svg > path {
       fill: ${({ variant }) => (variant === "secondary" ? "#FB651E" : "")};
@@ -101,6 +103,7 @@ const StyledTab = styled.div<{
     border-radius: 10px;
     min-height: 36px;
     text-transform: capitalize;
+    white-space:nowrap;
 
     & svg > path {
       fill: ${({ variant }) => (variant === "secondary" ? "#777E90" : "")};

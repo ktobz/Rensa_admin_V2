@@ -4,37 +4,53 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { VerificationStatus } from "@/components/feedback/VerfiedStatus";
+import { CustomSwitch } from "@/components/input/CustomSwitch";
 import AppCustomModal from "@/components/modal/Modal";
 import CustomTab from "@/components/other/CustomTab";
 import CustomTabPanel from "@/components/other/CustomTabPanel";
 import CustomTabs from "@/components/other/CustomTabs";
-import { MuiInputLabel, MuiTypography, styled } from "@/lib/index";
+import {
+  IconDelete,
+  IconEdit,
+  MuiBox,
+  MuiIconButton,
+  MuiInputLabel,
+  MuiTypography,
+  styled,
+} from "@/lib/index";
 import { OrderTable } from "@/modules/orders";
-import CustomerService from "@/services/customer-service";
-import { IUserData } from "@/types/globalTypes";
-
 import { SettlementTable } from "@/modules/settlements/components/SettlementTable";
-
+import { TransactionTable } from "@/modules/transaction/components/TransactionTable";
+import CustomerService from "@/services/customer-service";
 import ListingService from "@/services/listing-service";
 import TransactionService from "@/services/transaction-service";
-
-import { CustomSwitch } from "@/components/input/CustomSwitch";
-import { TransactionTable } from "@/modules/transaction/components/TransactionTable";
+import { IUserData } from "@/types/globalTypes";
 import { formatDate } from "@/utils/helper-funcs";
 import { BlockUserConfirm } from "../components/BlockUserConfirm";
+import { DeleteUserConfirm } from "../components/DeleteProductConfirm";
 import { PayoutAccountView } from "../components/PayoutAccountView";
+import { ProSellerStatusConfirm } from "../components/ProSellerStatusConfirm";
+import { UpdateUserForm } from "../components/UpdateUserForm";
 
 type TStatus = "block" | "unblock";
+type TProSellerStatus = "enable" | "disable";
 
 export function CustomerDetailsView() {
   const { c_id } = useParams<{ c_id: string }>();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { state } = useLocation();
-  const customerId = c_id || "";
+  const customerId = c_id ?? "";
 
-  const [show, setShow] = React.useState(false);
+  const [show, setShow] = React.useState({
+    proSellerShow: false,
+    activityShow: false,
+    update_profile: false,
+    delete: false,
+  });
   const [status, setStatus] = React.useState<TStatus>("unblock");
+  const [proSellerStatus, setProSellerStatus] =
+    React.useState<TProSellerStatus>("disable");
 
   const [current, setCurrent] = React.useState(() => {
     return 0;
@@ -44,11 +60,11 @@ export function CustomerDetailsView() {
     setCurrent(index);
   };
 
-  const handleViewTransactions = () => {
-    navigate("transactions");
+  const handleGoBack = () => {
+    navigate("/app/users");
   };
 
-  const { data, isLoading, isError } = useQuery(
+  const { data } = useQuery(
     ["user-details", customerId],
     () =>
       CustomerService.getCustomerDetails(customerId || "").then((res) => {
@@ -64,24 +80,81 @@ export function CustomerDetailsView() {
   );
 
   const handleToggleShow = () => {
-    setShow((prev) => !prev);
+    setShow((prev) => ({ ...prev, activityShow: !prev.activityShow }));
+  };
+
+  const handleShowModal = (modal: keyof typeof show) => () => {
+    setShow((prev) => ({ ...prev, [modal]: true }));
+  };
+
+  const handleClose = () => {
+    setShow((prev) => ({
+      ...prev,
+      proSellerShow: false,
+      activityShow: false,
+      update_profile: false,
+      delete: false,
+    }));
   };
 
   const handleToggleUserActiveStatus = (status: TStatus) => () => {
     setStatus(status);
-    setShow(true);
+    setShow((prev) => ({ ...prev, activityShow: true }));
+  };
+
+  const handleToggleUserProSellerStatus = (status: TProSellerStatus) => () => {
+    setProSellerStatus(status);
+    setShow((prev) => ({ ...prev, proSellerShow: true }));
   };
 
   const handleRefresh = () => {
     queryClient.invalidateQueries(["user-details", customerId]);
   };
 
-  const handleUpdateStatus = (callback: () => void) => () => {
-    CustomerService.updateUserActiveStatus(customerId || "", status)
-      .then((res) => {
-        handleRefresh?.();
+  const handleUpdateStatus = (callback: () => void) => async () => {
+    try {
+      const res = await CustomerService.updateUserActiveStatus(
+        customerId || "",
+        status
+      );
+      if (res.data?.successful) {
+        handleRefresh();
         toast.success(res.data?.result?.message || "");
-        setShow(false);
+        handleClose();
+        return;
+      }
+
+      toast.success(res.data?.message || "");
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "");
+    }
+
+    callback();
+  };
+
+  const handleUpdateProSellerStatus = (callback: () => void) => async () => {
+    try {
+      const res = await CustomerService.updateProSellerStatus(customerId || "");
+      if (res.data?.successful) {
+        handleRefresh();
+        toast.success(res.data?.result?.message || "");
+        handleClose();
+        return;
+      }
+
+      toast.success(res.data?.message || "");
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "");
+    }
+
+    callback();
+  };
+
+  const handleDelete = (callback: () => void) => () => {
+    CustomerService.deactivate(customerId || "")
+      .then((res) => {
+        handleGoBack();
+        toast.success(res.data?.message || "");
       })
       .catch((err) => {
         toast.error(err?.response?.data?.message || "");
@@ -97,8 +170,23 @@ export function CustomerDetailsView() {
         <div className="left">
           <div className="header">
             <MuiTypography variant="h3" className="name">
-              {data?.firstName || "-"} {data?.lastName || "-"}
+              {data?.firstName ?? "-"} {data?.lastName ?? "-"}
             </MuiTypography>
+
+            <MuiBox className="action-group">
+              <MuiIconButton
+                color="warning"
+                onClick={handleShowModal("update_profile")}
+                className={`action-btn edit-btn `}>
+                <IconEdit />
+              </MuiIconButton>
+              <MuiIconButton
+                color="error"
+                onClick={handleShowModal("delete")}
+                className="action-btn delete-btn">
+                <IconDelete />
+              </MuiIconButton>
+            </MuiBox>
           </div>
           <div className="outlet-info">
             <div className="info-detail">
@@ -148,6 +236,32 @@ export function CustomerDetailsView() {
                   }}
                   type={data?.isVerified ? "true" : "false"}
                 />
+              </MuiTypography>
+            </div>
+            <div className="info-detail">
+              <MuiTypography variant="body2" className="title">
+                Pro-seller Privilege
+              </MuiTypography>
+              <MuiTypography variant="body2" className="body">
+                <VerificationStatus
+                  style={{
+                    padding: "5px 12px",
+                    borderRadius: "5px",
+                    fontSize: "12px",
+                  }}
+                  type={data?.isProSeller ? "true" : "false"}
+                />
+                <MuiInputLabel
+                  style={{ cursor: "pointer" }}
+                  onClick={handleToggleUserProSellerStatus(
+                    data?.isProSeller ? "disable" : "enable"
+                  )}>
+                  <CustomSwitch
+                    disabled
+                    checked={data?.isProSeller}
+                    defaultChecked={data?.isProSeller}
+                  />
+                </MuiInputLabel>
               </MuiTypography>
             </div>
           </div>
@@ -246,7 +360,7 @@ export function CustomerDetailsView() {
 
       <AppCustomModal
         handleClose={handleToggleShow}
-        open={show}
+        open={show.activityShow}
         showClose
         closeOnOutsideClick={false}>
         <BlockUserConfirm
@@ -254,6 +368,39 @@ export function CustomerDetailsView() {
           handleAction={handleUpdateStatus}
           handleClose={handleToggleShow}
           action={status}
+        />
+      </AppCustomModal>
+
+      <AppCustomModal
+        handleClose={handleClose}
+        open={show.proSellerShow}
+        showClose
+        closeOnOutsideClick={false}>
+        <ProSellerStatusConfirm
+          data={data}
+          handleAction={handleUpdateProSellerStatus}
+          handleClose={handleClose}
+          action={proSellerStatus}
+        />
+      </AppCustomModal>
+
+      <AppCustomModal
+        title="Update User Profile"
+        handleClose={handleClose}
+        open={show.update_profile}
+        closeOnOutsideClick={false}>
+        <UpdateUserForm
+          handleClose={handleClose}
+          initData={data}
+          refreshQuery={handleRefresh}
+        />
+      </AppCustomModal>
+
+      <AppCustomModal handleClose={handleClose} open={show.delete} showClose>
+        <DeleteUserConfirm
+          data={data ? [data] : []}
+          handleClose={handleClose}
+          handleDelete={handleDelete}
         />
       </AppCustomModal>
     </PageContent>
@@ -344,6 +491,42 @@ const PageContent = styled.section`
         text-transform: capitalize;
       }
     }
+
+    & .action-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    & .visible-btn {
+      background-color: #e8f1f8;
+      border-radius: 10px;
+      color: #1e75bb;
+      padding: 12px;
+
+      svg {
+        width: 15px;
+        height: 15px;
+      }
+    }
+
+    & .delete-btn {
+      background: #ef50501a;
+      color: #d78950;
+
+      svg {
+        color: #d78950;
+      }
+    }
+
+    & .edit-btn {
+      background: #ffc5021a;
+      color: #d78950;
+
+      svg {
+        color: #d78950;
+      }
+    }
   }
   & .page-title {
     font-size: 30px;
@@ -371,6 +554,15 @@ const PageContent = styled.section`
       & .view-all {
         height: fit-content;
         min-height: fit-content;
+      }
+
+      @media screen and (max-width: 700px) {
+        flex-direction: column-reverse;
+        align-items: flex-start;
+
+        & .action-section {
+          align-self: end;
+        }
       }
     }
   }

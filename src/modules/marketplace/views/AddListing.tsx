@@ -55,8 +55,6 @@ export function AddListing() {
     x?.description?.toLowerCase().includes("auction")
   );
 
-  console.log({ optionsForShelfListing, optionsForAuctionListing });
-
   const navigate = useNavigate();
 
   // const queryClient = useQueryClient();

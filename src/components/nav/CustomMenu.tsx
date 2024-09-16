@@ -8,22 +8,22 @@ import {
   MuiMenuList,
   styled,
 } from "@/lib/index";
+import AppContext from "@/providers/appContext";
+import { useUserStore } from "config/store-config/store.config";
 import {
-  IconHome,
+  IconAppRelease,
   IconBars,
-  IconConfig,
-  IconNotification,
-  IconCustomers,
   IconBox,
+  IconConfig,
+  IconCustomers,
+  IconHome,
+  IconNotification,
+  IconPayout,
   IconReport,
   IconSales,
   IconShop,
-  IconAppRelease,
-  IconPayout,
 } from "lib/mui.lib.icons";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useUserStore } from "config/store-config/store.config";
-import AppContext from "@/providers/appContext";
 
 const menuLinks = [
   {
@@ -110,38 +110,37 @@ export default function CustomMenu() {
           position: "relative",
           paddingRight: "15px",
           paddingBottom: "20px",
+          height: 'calc(100vh - 123px)'
         }}>
         <div className="menu-section">
-          <>
-            <div className="menu-wrapper">
-              <MuiMenuList style={{ width: "100%" }}>
-                {menuLinks.map((link) => (
-                  <MuiMenuItem
-                    key={link.path}
-                    onClick={handleNavigate(link.path)}
-                    className={`list ${
-                      isCurrent(`${link.path}`) ? "current" : ""
-                    }`}>
-                    <MuiListItemIcon className="icon">
-                      {link.icon}
-                    </MuiListItemIcon>
-                    <MuiListItemText className="text">
-                      <span>{link.title}</span>
-                    </MuiListItemText>
-                  </MuiMenuItem>
-                ))}
-              </MuiMenuList>
-            </div>
-          </>
+          <div className="menu-wrapper">
+            <MuiMenuList style={{ width: "100%" }}>
+              {menuLinks.map((link) => (
+                <MuiMenuItem
+                  key={link.path}
+                  onClick={handleNavigate(link.path)}
+                  className={`list ${
+                    isCurrent(`${link.path}`) ? "current" : ""
+                  }`}>
+                  <MuiListItemIcon className="icon">
+                    {link.icon}
+                  </MuiListItemIcon>
+                  <MuiListItemText className="text">
+                    <span>{link.title}</span>
+                  </MuiListItemText>
+                </MuiMenuItem>
+              ))}
+            </MuiMenuList>
+          </div>
         </div>
       </SimpleBar>
     </StyledWrapper>
   );
 }
 
-const StyledWrapper = styled.header`
+const StyledWrapper = styled.section`
   width: 100%;
-  padding-bottom: 20px;
+  /* padding-bottom: 20px; */
   background-color: #fdfdfd;
 
   & .mobile-only {

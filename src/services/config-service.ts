@@ -1,21 +1,22 @@
-import { getToken } from "utils/helper-funcs";
-import HTTP from "./Http";
 import {
-  IServiceFeeReq,
   IDeliverySettingsReq,
   IDeliverySettingsResponse,
-  IServiceFeeResponse,
-  IPayoutDataResponse,
   IPayoutData,
+  IPayoutDataResponse,
+  IServiceFeeReq,
+  IServiceFeeResponse,
   ITermiiResponse,
 } from "@/types/globalTypes";
 import { AxiosPromise } from "axios";
+import { getToken } from "utils/helper-funcs";
+import HTTP from "./Http";
 const PATHS = {
   all: "/admin/faqs",
   service: "/admin/configuration/service-fee",
   delivery: "/admin/configuration/delivery-fee",
   payout: "/admin/configuration/payout",
   balance: "/admin/termii/balance",
+  pickupLocation: "/admin/configuration/pickup",
 };
 
 const ConfigService = {
@@ -92,6 +93,14 @@ const ConfigService = {
       },
     });
   },
+  setPickupLocation(data: any) {
+    return HTTP.put(`${PATHS.pickupLocation}`, data, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+
   createServiceFeeSettings(data: IServiceFeeReq) {
     return HTTP.post(`${PATHS.service}`, data, {
       headers: {

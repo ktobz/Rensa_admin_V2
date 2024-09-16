@@ -1,14 +1,14 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import Autocomplete from "@mui/material/Autocomplete";
+import { PlaceType } from "@/types/globalTypes";
+import APP_VARS from "@/utils/env";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
+import Autocomplete from "@mui/material/Autocomplete";
+import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
-import parse from "autosuggest-highlight/parse";
 import { debounce } from "@mui/material/utils";
-import APP_VARS from "@/utils/env";
+import parse from "autosuggest-highlight/parse";
+import * as React from "react";
 import AppInput from "../input";
-import { PlaceType } from "@/types/globalTypes";
 // import { Autocomplete, LoadScript, useLoadScript } from "@react-google-maps/api";
 
 const GOOGLE_MAPS_API_KEY = APP_VARS.googleAPI;
@@ -45,11 +45,12 @@ type IProps = {
   updateInput: (value: any) => void;
   value: any;
   error?: boolean;
+  label?:string;
 };
 export default function GoogleLocationInput({
   updateInput,
   value,
-  error,
+  error,label='Item Location'
 }: IProps) {
   const [inputValue, setInputValue] = React.useState("");
   const [options, setOptions] = React.useState<readonly PlaceType[]>([]);
@@ -155,8 +156,8 @@ export default function GoogleLocationInput({
       renderInput={(params) => (
         <AppInput
           {...params}
-          label="Item Location"
-          placeholder="add address"
+          label={label}
+          placeholder="enter address"
           error={error}
         />
       )}

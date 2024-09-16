@@ -1,6 +1,5 @@
-import * as React from "react";
-import { styled } from "lib";
 import { Logo } from "components/logo";
+import { styled } from "lib";
 import CustomMenu from "./CustomMenu";
 
 export default function DesktopMenu() {
@@ -22,6 +21,7 @@ const StyledWrapper = styled.header`
   display: flex;
   flex-direction: column;
   gap: 10px;
+  padding-bottom: 0;
 
   & .logo-section {
     width: 100%;
