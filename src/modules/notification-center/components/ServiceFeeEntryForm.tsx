@@ -1,16 +1,15 @@
+import { FormikProvider, useFormik } from "formik";
 import * as React from "react";
 import * as Yup from "yup";
-import { useFormik, FormikProvider } from "formik";
 
-import { styled, MuiButton, MuiCircularProgress } from "@/lib/index";
 import AppInput from "@/components/input";
+import { MuiButton, MuiCircularProgress, styled } from "@/lib/index";
 
 import { toast } from "react-toastify";
 
-import NotificationService from "@/services/notification-service";
 import ConfigService from "@/services/config-service";
 import { IServiceFeeReq } from "@/types/globalTypes";
-import { formatNumber, isValidNumberInput } from "@/utils/helper-funcs";
+import { isValidNumberInput } from "@/utils/helper-funcs";
 
 const SCHEMA = Yup.object().shape({
   buyerServiceFee: Yup.number().required("required"),
@@ -31,7 +30,9 @@ export const ServiceFeeEntryForm = ({
   const initialData: IServiceFeeReq = {
     id: initData?.id || "",
     buyerServiceFee: initData?.buyerServiceFee || "",
+    buyerServiceFeeCapAmount: initData?.buyerServiceFeeCapAmount || "",
     sellerServiceFee: initData?.sellerServiceFee || "",
+    sellerServiceFeeCapAmount: initData?.sellerServiceFeeCapAmount || "",
   };
 
   const [isSaving, setIsSaving] = React.useState(false);
@@ -40,7 +41,11 @@ export const ServiceFeeEntryForm = ({
     setIsSaving(true);
 
     if (initData?.id) {
-      ConfigService.setServiceFeeSettings(initData?.id || 0, formValues)
+      ConfigService.setServiceFeeSettings(initData?.id || 0, {
+        ...formValues,
+        buyerServiceFeeCapAmount: +formValues.buyerServiceFeeCapAmount || 0,
+        sellerServiceFeeCapAmount: +formValues.sellerServiceFeeCapAmount || 0,
+      })
         .then((res) => {
           refreshQuery?.();
           toast.success(res.data?.message || "");
@@ -100,7 +105,20 @@ export const ServiceFeeEntryForm = ({
             inputMode="numeric"
             InputProps={{}}
           />
-
+          <AppInput
+            id="buyerServiceFeeCapAmount"
+            name="buyerServiceFeeCapAmount"
+            label="Buyer service fee"
+            placeholder="₦0.00"
+            type="text"
+            value={values.buyerServiceFeeCapAmount}
+            onChange={handleInputChange}
+            helperText={errors.buyerServiceFeeCapAmount}
+            error={!!errors.buyerServiceFeeCapAmount}
+            required
+            inputMode="numeric"
+            InputProps={{}}
+          />
           <AppInput
             id="sellerServiceFee"
             name="sellerServiceFee"
@@ -114,7 +132,19 @@ export const ServiceFeeEntryForm = ({
             required
             inputMode="numeric"
           />
-
+          <AppInput
+            id="sellerServiceFeeCapAmount"
+            name="sellerServiceFeeCapAmount"
+            label="Seller service fee"
+            placeholder="₦0.00"
+            type="text"
+            value={values.sellerServiceFeeCapAmount}
+            onChange={handleInputChange}
+            helperText={errors.sellerServiceFeeCapAmount}
+            error={!!errors.sellerServiceFeeCapAmount}
+            required
+            inputMode="numeric"
+          />
           <div className="btn-group">
             <MuiButton
               type="submit"

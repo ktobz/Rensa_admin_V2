@@ -1,15 +1,36 @@
 import { FormikProvider, useFormik } from "formik";
+import debounceFunc from "lodash.throttle";
 import * as React from "react";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
 
+import { NoData } from "@/components/feedback/NoData";
+import AppCustomModal from "@/components/modal/Modal";
 import GoogleLocationInput from "@/components/select/GoogleLocationInput";
-import { MuiButton, MuiCircularProgress, styled } from "@/lib/index";
+import AppVirtualizedCountriesSelect from "@/components/select/test";
+import {
+  IconAdd,
+  IconDelete,
+  IconEdit,
+  IconLocation,
+  MuiBox,
+  MuiButton,
+  MuiCircularProgress,
+  MuiIconButton,
+  MuiTypography,
+  styled,
+} from "@/lib/index";
 import ConfigService from "@/services/config-service";
-import { IPayoutData, PlaceType } from "@/types/globalTypes";
+import CustomerService from "@/services/customer-service";
+import {
+  IApprovedLocationData,
+  IPayoutData,
+  PlaceType,
+} from "@/types/globalTypes";
+import { useQuery, useQueryClient } from "react-query";
 
 const SCHEMA = Yup.object().shape({
-  location: Yup.number().required("required"),
+  location: Yup.string().required("required"),
 });
 
 type IViewProps = {
@@ -18,16 +39,25 @@ type IViewProps = {
   handleClose: () => void;
 };
 
+type TShowMode = "list" | "add" | "update" | "delete";
+
 export const PickupLocation = ({
   initData,
   handleClose,
   refreshQuery,
 }: IViewProps) => {
+  const { invalidateQueries } = useQueryClient();
   const initialData: IPayoutData = {
     id: initData?.id || "",
     waitTimeInHours: initData?.waitTimeInHours || "",
   };
 
+  const [mode, setMode] = React.useState<TShowMode>("list");
+  const [selectedData, setSelectedData] =
+    React.useState<null | IApprovedLocationData>(null);
+
+  const [, setUserNameText] = React.useState("");
+  const [name, setName] = React.useState("");
   const [isSaving, setIsSaving] = React.useState(false);
   const [locationValue, setLocationValue] = React.useState<PlaceType | null>(
     () => {
@@ -35,13 +65,23 @@ export const PickupLocation = ({
     }
   );
 
+  const handleSeeList = () => {
+    setSelectedData(null);
+    setMode("list");
+  };
+
+  const handleInvalidateQuery = () => {
+    invalidateQueries(["approved-locations"]);
+    setMode("list");
+  };
+
   const handleSetLocation = (values: any) => {
     if ((window as any).google) {
       // Use the PlacesAPI component to fetch place details
       const placesAPI = new (window as any).google.maps.places.PlacesService(
         document.createElement("div")
       );
-  
+
       placesAPI.getDetails(
         {
           placeId: locationValue?.place_id ?? "",
@@ -65,29 +105,31 @@ export const PickupLocation = ({
             const formattedAddress = place.formatted_address;
             const latitude = place.geometry.location.lat();
             const longitude = place.geometry.location.lng();
-  
+
             setIsSaving(true);
-            const formData = new FormData();
-            formData.append("Name", values?.name);
-            formData.append("UserId", values?.userId);
-            formData.append("Description", values.description);
-            formData.append("LocationInfo.Location", formattedAddress);
-            formData.append("LocationInfo.Latitude", latitude);
-            formData.append("LocationInfo.Longitude", longitude);
-            formData.append("LocationInfo.City", city);
-            formData.append("LocationInfo.State", state);
-            
-  
+
+            const reqBody = {
+              location: formattedAddress,
+              latitude,
+              longitude,
+              city,
+              state,
+              userId: values?.userId,
+            };
+
             try {
-              const { data } = await ConfigService.setPickupLocation(formData);
-              toast.success(data?.result?.message);
+              const { data } = await ConfigService.createPickupLocation(
+                reqBody
+              );
+              toast.success(data?.message);
+              handleSeeList();
+              handleInvalidateQuery();
               setIsSaving(false);
             } catch (error: any) {
               toast.error(error?.response?.data?.message);
               setIsSaving(false);
             }
           } else {
-            console.error("Error fetching place details:", status);
             setIsSaving(false);
           }
         }
@@ -106,47 +148,258 @@ export const PickupLocation = ({
     },
   });
 
-  const { errors, handleSubmit, values, setFieldValue } = formik;
+  const {
+    errors,
+    handleSubmit,
+    values,
+    setFieldValue,
+    resetForm,
+    isSubmitting,
+  } = formik;
+
+  const usersQuery = useQuery(
+    ["all-users-in-db", name],
+    () =>
+      CustomerService.getAll(name ? `?searchText=${name}` : "").then((res) => {
+        return res.data.result?.data?.map((x) => ({
+          id: x?.id,
+          name: x?.userName,
+        }));
+      }),
+    {
+      refetchOnWindowFocus: false,
+      retry: 0,
+    }
+  );
+
+  const handleSearch = (value: string) => {
+    setName(value);
+  };
+
+  const throttledChangeHandler = React.useMemo(
+    () => debounceFunc(handleSearch, 600),
+    []
+  );
+
+  const handleChangeUserValue = (value: string) => {
+    setUserNameText(value);
+    throttledChangeHandler(value);
+  };
+
+  React.useEffect(() => {
+    return () => {
+      throttledChangeHandler.cancel();
+    };
+  }, [throttledChangeHandler]);
 
   const handelUpdateValue = (value: any) => {
     setLocationValue(value);
     setFieldValue("location", value?.description);
   };
 
-  return (
-    <FormikProvider value={formik}>
-      <StyledForm onSubmit={handleSubmit}>
-        <div className="wrapper">
-          <GoogleLocationInput  label='Pickup Address' 
-            updateInput={handelUpdateValue}
-            value={locationValue}
-            error={!!errors?.location}
-          />
+  const handleToggleShow = (name: TShowMode) => () => {
+    setSelectedData(null);
+    setLocationValue(null);
+    setUserNameText("");
+    setName("");
+    resetForm();
 
-          <div className="btn-group">
+    setFieldValue("location", "");
+    setFieldValue("userId", "");
+    setMode(name);
+  };
+
+  const handleSetEditData = (data: IApprovedLocationData) => () => {
+    resetForm();
+    setSelectedData(data);
+    setLocationValue(null);
+    setFieldValue("location", data?.location);
+    setFieldValue("userId", data?.userId);
+
+    setMode("update");
+  };
+
+  const handleSetDeleteData = (data: IApprovedLocationData) => () => {
+    setSelectedData(data);
+    setMode("delete");
+  };
+
+  const { data: approvedLocations, isLoading: approvedLocationsIsLoading } =
+    useQuery(
+      ["approved-locations"],
+      () =>
+        ConfigService.getAllPickupLocation().then((res) => {
+          const data = res.data?.result;
+          return data;
+        }),
+      {
+        retry: 0,
+        refetchOnWindowFocus: false,
+      }
+    );
+
+  return (
+    <SectionWrapper>
+      {!approvedLocationsIsLoading &&
+        approvedLocations &&
+        approvedLocations?.length === 0 &&
+        mode === "list" && (
+          <div className="no-data-group">
+            <NoData
+              title="No pickup location added"
+              message="Click button below to add approved locations for Pro-seller"
+            />
             <MuiButton
-              type="submit"
+              startIcon={<IconAdd />}
               variant="contained"
               color="primary"
-              disabled={isSaving}
-              startIcon={isSaving ? <MuiCircularProgress size={16} /> : null}
+              onClick={handleToggleShow("add")}
               className="btn">
-              Save Changes
+              Add New
             </MuiButton>
           </div>
-        </div>
-      </StyledForm>
-    </FormikProvider>
+        )}
+
+      {!approvedLocationsIsLoading &&
+        approvedLocations &&
+        approvedLocations?.length > 0 &&
+        mode === "list" && (
+          <section className="location-list">
+            <MuiButton
+              startIcon={<IconAdd />}
+              variant="contained"
+              color="primary"
+              onClick={handleToggleShow("add")}
+              className="btn add-new">
+              Add New
+            </MuiButton>
+
+            {approvedLocations?.map((location, index) => (
+              <div
+                className="location"
+                key={location?.id}
+                style={{
+                  borderTop: index !== 0 ? "1px solid #f8f8f8" : "",
+                }}>
+                <div className="left">
+                  <IconLocation />
+                  <MuiTypography variant="body1" className="address">
+                    {location?.location} {location?.state}
+                  </MuiTypography>
+                </div>
+                <MuiBox className="action-group">
+                  <MuiIconButton
+                    color="warning"
+                    onClick={handleSetEditData(location)}
+                    className={`action-btn edit-btn `}>
+                    <IconEdit />
+                  </MuiIconButton>
+                  <MuiIconButton
+                    color="error"
+                    onClick={handleSetDeleteData(location)}
+                    className="action-btn delete-btn">
+                    <IconDelete />
+                  </MuiIconButton>
+                </MuiBox>
+              </div>
+            ))}
+          </section>
+        )}
+
+      {!approvedLocationsIsLoading && approvedLocations && mode !== "list" && (
+        <FormikProvider value={formik}>
+          <StyledForm onSubmit={handleSubmit}>
+            <div className="wrapper">
+              <GoogleLocationInput
+                label="Pickup Address"
+                updateInput={handelUpdateValue}
+                value={locationValue}
+                error={!!errors?.location}
+              />
+
+              <AppVirtualizedCountriesSelect
+                label="Select Pro-seller (optional)"
+                updateFieldValue={(value: any) => {
+                  setFieldValue("userId", value?.id);
+                  setFieldValue("userId_name", value?.userName);
+                }}
+                selectedValue={values?.userId || ""}
+                options={usersQuery?.data || []}
+                placeholder="Search and select user"
+                loading={usersQuery.isLoading}
+                showPills={false}
+                multiple={false}
+                showCheck={false}
+                inputValue={values?.userId_name || ""}
+                optionTitle="name"
+                optionValue="id"
+                // getOptionLabel={(opt: any) => {
+                //   return `${opt?.userName} `;
+                // }}
+                error={!!errors.userId}
+                helperText={errors.userId}
+                onInputChange={(event, newInputValue, reason) => {
+                  if (event) {
+                    if (reason === "input") {
+                      setFieldValue("userId_name", newInputValue);
+                      handleChangeUserValue(newInputValue);
+                    }
+
+                    if (reason === "clear") {
+                      setFieldValue("userId_name", "");
+                      setFieldValue("userId", "");
+                      handleChangeUserValue("");
+                    }
+                    if (reason === "reset") {
+                      setFieldValue("userId_name", newInputValue);
+                    }
+                  }
+                }}
+                isOptionEqualToValue={(option: any, value: any) => {
+                  return option?.id === values?.userId;
+                }}
+              />
+
+              <div className="btn-group">
+                {approvedLocations.length > 0 && (
+                  <MuiButton
+                    type="button"
+                    variant="contained"
+                    onClick={handleSeeList}
+                    disabled={isSaving}
+                    className="secondary-btn btn">
+                    Back
+                  </MuiButton>
+                )}
+                <MuiButton
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  disabled={isSaving}
+                  startIcon={
+                    isSaving ? <MuiCircularProgress size={16} /> : null
+                  }
+                  className="btn">
+                  {mode} Address
+                </MuiButton>
+              </div>
+            </div>
+          </StyledForm>
+        </FormikProvider>
+      )}
+
+      <AppCustomModal
+        handleClose={handleToggleShow("list")}
+        open={mode === "delete"}
+        showClose>
+        <></>
+      </AppCustomModal>
+    </SectionWrapper>
   );
 };
 
 const StyledForm = styled.form`
   width: 100%;
-  background-color: #fff;
-  padding: 10px 0px 0px 0px;
-  border-radius: 20px;
-  max-width: 450px;
-  width: calc(100vw - 80px);
 
   & .wrapper {
     max-width: 450px;
@@ -172,6 +425,11 @@ const StyledForm = styled.form`
     gap: 20px;
     align-items: center;
     justify-content: space-between;
+
+    & .secondary-btn {
+      background: #fbfbfb;
+      color: #363636;
+    }
   }
 
   & .MuiOutlinedInput-root {
@@ -187,5 +445,79 @@ const StyledForm = styled.form`
 
   & textarea {
     padding: 0 !important;
+  }
+`;
+
+const SectionWrapper = styled.section`
+  background-color: #fff;
+  padding: 10px 0px 0px 0px;
+  border-radius: 20px;
+  max-width: 450px;
+  width: calc(100vw - 80px);
+
+  & .location-list {
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+    width: 100%;
+    & .add-new {
+      margin-bottom: 30px;
+      align-self: end;
+    }
+  }
+
+  & .location {
+    display: flex;
+    gap: 30px;
+    justify-items: space-between;
+    align-items: center;
+    width: 100%;
+
+    & .left {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex: 1;
+    }
+  }
+
+  & .no-data-group {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    justify-items: center;
+    align-items: center;
+  }
+
+  & .btn {
+    height: 36px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+  }
+
+  & .action-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  & .edit-btn {
+    background: #ffc5021a;
+    color: #d78950;
+
+    svg {
+      color: #d78950;
+    }
+  }
+
+  & .delete-btn {
+    background: #ef50501a;
+    color: #d78950;
+
+    svg {
+      color: #d78950;
+    }
   }
 `;

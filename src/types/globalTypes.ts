@@ -256,13 +256,28 @@ export type IDeliverySettingsData = IDeliverySettingsReq & {
 
 export type IServiceFeeReq = {
   buyerServiceFee: number;
+  buyerServiceFeeCapAmount: number;
   sellerServiceFee: number;
+  sellerServiceFeeCapAmount: number;
   id?: number;
 };
 export type IPayoutData = {
   waitTimeInHours: number;
   id?: number;
 };
+
+export type IApprovedLocationData = {
+  id: number;
+  creationTime: string;
+  location: string;
+  latitude: number;
+  longitude: number;
+  city: string;
+  state: string;
+  userId: string;
+  isActive: boolean;
+};
+
 export type IServiceFeeData = IServiceFeeReq & {
   id: number;
   status: boolean;
@@ -461,7 +476,7 @@ export type IUserData = {
   isVerified: boolean;
   isActive: boolean;
   profilePictureUrl: string;
-  isProSeller:boolean;
+  isProSeller: boolean;
 };
 
 export type IUsersResponse = {
@@ -483,10 +498,9 @@ export type IUserStatusUpdateResponse = {
   result: {
     message: string;
   };
-  responseCode:string;
-  successful:boolean;
+  responseCode: string;
+  successful: boolean;
   message: string;
-
 };
 
 // APP RELEASE
@@ -706,6 +720,10 @@ export type IPayoutDataResponse = {
   result: IPayoutData[];
 };
 
+export type IApprovedLocationDataResponse = {
+  result: IApprovedLocationData[];
+  message:string
+};
 // ConditionE CATEGORY
 export type ICondition = {
   name: string;
@@ -1054,4 +1072,13 @@ export interface PlaceType {
   description: string;
   structured_formatting: StructuredFormatting;
   place_id: string;
+}
+
+export interface IApprovedLocation {
+  location: string;
+  latitude: number;
+  longitude: number;
+  city: string;
+  state: string;
+  userId: string;
 }

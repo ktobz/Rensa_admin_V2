@@ -10,7 +10,8 @@ import {
   IconEdit,
   IconFee,
   IconOrder,
-  IconWallet,
+  IconVisibility,
+  IconWallet
 } from "@/lib/mui.lib.icons";
 
 import ConfigService from "@/services/config-service";
@@ -45,8 +46,8 @@ export function OperationSettingsView() {
     (state) => state?.cache?.lookup
   );
 
-  // console.log(deliveryFeePickupMethod);
 
+  
   const [show, setShow] = React.useState({
     service: false,
     delivery: false,
@@ -193,21 +194,38 @@ export function OperationSettingsView() {
               <MuiTypography variant="body1" className="label">
                 Buyer service fee
               </MuiTypography>
-              <MuiTypography variant="body1" className="value">
-                {serviceSetting?.buyerServiceFee || 0}%
-              </MuiTypography>
+              <div className="price-group">
+                <MuiTypography variant="body1" className="value">
+                  {serviceSetting?.buyerServiceFee ?? 0}%
+                </MuiTypography>
+                <MuiTypography variant="body1" className="value">
+                  {serviceSetting?.buyerServiceFeeCapAmount
+                    ? `₦${formatCurrency({
+                        amount: serviceSetting?.buyerServiceFeeCapAmount || 0,
+                        style: "decimal",
+                      })}`
+                    : "-"}
+                </MuiTypography>
+              </div>
             </div>
             <div className="data-row">
               <MuiTypography variant="body1" className="label">
                 Seller service fee
               </MuiTypography>
-              <MuiTypography variant="body1" className="value">
-                {formatCurrency({
-                  amount: serviceSetting?.sellerServiceFee || 0,
-                  style: "decimal",
-                })}
-                %
-              </MuiTypography>
+
+              <div className="price-group">
+                <MuiTypography variant="body1" className="value">
+                  {serviceSetting?.sellerServiceFee ?? 0}%
+                </MuiTypography>
+                <MuiTypography variant="body1" className="value">
+                  {serviceSetting?.sellerServiceFeeCapAmount
+                    ? `₦${formatCurrency({
+                        amount: serviceSetting?.sellerServiceFeeCapAmount || 0,
+                        style: "decimal",
+                      })}`
+                    : "-"}
+                </MuiTypography>
+              </div>
             </div>
           </div>
         </div>
@@ -394,20 +412,20 @@ export function OperationSettingsView() {
           <div className="rows">
             <div className="heading">
               <MuiTypography variant="h3" className="group-heading">
-                Pickup Location
+                Approved Pickup Location
               </MuiTypography>
               <MuiBox className="action-group">
                 <MuiIconButton
-                  color="warning"
+                  color="info"
                   onClick={handleToggleShow("pickup")}
-                  className={`action-btn edit-btn btn `}>
-                  <IconEdit />
+                  className={`action-btn visible-btn btn `}>
+                   <IconVisibility />
                 </MuiIconButton>
               </MuiBox>
             </div>
             <div className="data-row">
               <MuiTypography variant="body1" className="label">
-                Creative Bloc Carnival - Muri Okunola Park, VI Lagos
+              Manage approved pickup locations for Pro-sellers
               </MuiTypography>
             </div>
           </div>
@@ -465,7 +483,7 @@ export function OperationSettingsView() {
         open={show.pickup}
         alignTitle="left"
         closeOnOutsideClick={false}
-        title="Pickup Location"
+        title="Approved Pickup Location"
         showClose>
         <PickupLocation
           initData={payoutSetting}
@@ -632,6 +650,25 @@ const StyledPage = styled.section`
       padding: 5px 10px;
       border-radius: 30px;
       font-weight: 600;
+    }
+
+    & .price-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      justify-items: flex-end;
+    }
+  }
+
+  & .visible-btn {
+    background-color: #e8f1f8;
+    border-radius: 10px;
+    color: #1e75bb;
+    padding: 12px;
+
+    svg {
+      width: 15px;
+      height: 15px;
     }
   }
 

@@ -1,4 +1,6 @@
 import {
+  IApprovedLocation,
+  IApprovedLocationDataResponse,
   IDeliverySettingsReq,
   IDeliverySettingsResponse,
   IPayoutData,
@@ -16,7 +18,7 @@ const PATHS = {
   delivery: "/admin/configuration/delivery-fee",
   payout: "/admin/configuration/payout",
   balance: "/admin/termii/balance",
-  pickupLocation: "/admin/configuration/pickup",
+  pickupLocation: "/admin/approvedpickuplocation",
 };
 
 const ConfigService = {
@@ -93,12 +95,39 @@ const ConfigService = {
       },
     });
   },
-  setPickupLocation(data: any) {
-    return HTTP.put(`${PATHS.pickupLocation}`, data, {
+  createPickupLocation(
+    data: IApprovedLocation
+  ): AxiosPromise<IApprovedLocationDataResponse> {
+    return HTTP.post(`${PATHS.pickupLocation}`, data, {
       headers: {
         Authorization: getToken(),
       },
     });
+  },
+  getAllPickupLocation(): AxiosPromise<IApprovedLocationDataResponse> {
+    return HTTP.get(`${PATHS.pickupLocation}`, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+  updatePickupLocation(id: number, data: IApprovedLocation) {
+    return HTTP.put(`${PATHS.pickupLocation}/${id}`, data, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+  togglePickupLocation(id: number) {
+    return HTTP.put(
+      `${PATHS.pickupLocation}/toggle/${id}`,
+      {},
+      {
+        headers: {
+          Authorization: getToken(),
+        },
+      }
+    );
   },
 
   createServiceFeeSettings(data: IServiceFeeReq) {
