@@ -62,7 +62,7 @@ export function AddListing() {
   // const { reportId } = useIds();
 
   const [name, setName] = React.useState("");
-  const [compText, setCompText] = React.useState("");
+  const [compText, setUserNameText] = React.useState("");
   const [resetImages, setResetImages] = React.useState(false);
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -205,8 +205,8 @@ export function AddListing() {
     []
   );
 
-  const handleChangeCompetitionValue = (value: string) => {
-    setCompText(value);
+  const handleChangeUserValue = (value: string) => {
+    setUserNameText(value);
     throttledChangeHandler(value);
   };
 
@@ -305,13 +305,13 @@ export function AddListing() {
                 if (event) {
                   if (reason === "input") {
                     setFieldValue("userId_name", newInputValue);
-                    handleChangeCompetitionValue(newInputValue);
+                    handleChangeUserValue(newInputValue);
                   }
 
                   if (reason === "clear") {
                     setFieldValue("userId_name", "");
                     setFieldValue("userId", "");
-                    handleChangeCompetitionValue("");
+                    handleChangeUserValue("");
                   }
                   if (reason === "reset") {
                     setFieldValue("userId_name", newInputValue);
