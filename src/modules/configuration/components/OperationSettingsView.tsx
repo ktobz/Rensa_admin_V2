@@ -11,7 +11,7 @@ import {
   IconFee,
   IconOrder,
   IconVisibility,
-  IconWallet
+  IconWallet,
 } from "@/lib/mui.lib.icons";
 
 import ConfigService from "@/services/config-service";
@@ -46,8 +46,6 @@ export function OperationSettingsView() {
     (state) => state?.cache?.lookup
   );
 
-
-  
   const [show, setShow] = React.useState({
     service: false,
     delivery: false,
@@ -419,13 +417,13 @@ export function OperationSettingsView() {
                   color="info"
                   onClick={handleToggleShow("pickup")}
                   className={`action-btn visible-btn btn `}>
-                   <IconVisibility />
+                  <IconVisibility />
                 </MuiIconButton>
               </MuiBox>
             </div>
             <div className="data-row">
               <MuiTypography variant="body1" className="label">
-              Manage approved pickup locations for Pro-sellers
+                Manage approved pickup locations for Pro-sellers
               </MuiTypography>
             </div>
           </div>
@@ -485,11 +483,7 @@ export function OperationSettingsView() {
         closeOnOutsideClick={false}
         title="Approved Pickup Location"
         showClose>
-        <PickupLocation
-          initData={payoutSetting}
-          refreshQuery={handleRefreshPayout}
-          handleClose={handleCloseModal}
-        />
+        <PickupLocation />
       </AppCustomModal>
 
       <AppCustomModal

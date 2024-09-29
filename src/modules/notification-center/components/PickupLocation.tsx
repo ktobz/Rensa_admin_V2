@@ -31,6 +31,8 @@ const SCHEMA = Yup.object().shape({
 
 type TShowMode = "list" | "add" | "update" | "delete";
 
+
+
 export const PickupLocation = () => {
   const queryClient = useQueryClient();
 
@@ -215,7 +217,6 @@ export const PickupLocation = () => {
   const handleToggleActiveStatus = (id: number) => async () => {
     setShowLoader(true);
     try {
-      console.log("1:1");
       const res = await ConfigService.togglePickupLocation(id);
       setShowLoader(false);
 
@@ -229,7 +230,6 @@ export const PickupLocation = () => {
       handleRefresh();
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "");
-      console.log("Error");
       setShowLoader(false);
     }
   };
