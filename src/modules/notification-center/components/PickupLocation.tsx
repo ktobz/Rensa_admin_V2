@@ -5,52 +5,36 @@ import { toast } from "react-toastify";
 import * as Yup from "yup";
 
 import { NoData } from "@/components/feedback/NoData";
-import AppCustomModal from "@/components/modal/Modal";
+import { CustomSwitch } from "@/components/input/CustomSwitch";
 import GoogleLocationInput from "@/components/select/GoogleLocationInput";
 import AppVirtualizedCountriesSelect from "@/components/select/test";
 import {
   IconAdd,
-  IconDelete,
   IconEdit,
-  IconLocation,
+  IconLocationBrand,
   MuiBox,
   MuiButton,
   MuiCircularProgress,
   MuiIconButton,
+  MuiInputLabel,
   MuiTypography,
   styled,
 } from "@/lib/index";
 import ConfigService from "@/services/config-service";
 import CustomerService from "@/services/customer-service";
-import {
-  IApprovedLocationData,
-  IPayoutData,
-  PlaceType,
-} from "@/types/globalTypes";
+import { IApprovedLocationData, PlaceType } from "@/types/globalTypes";
 import { useQuery, useQueryClient } from "react-query";
 
 const SCHEMA = Yup.object().shape({
   location: Yup.string().required("required"),
 });
 
-type IViewProps = {
-  initData?: any;
-  refreshQuery?: () => void;
-  handleClose: () => void;
-};
-
 type TShowMode = "list" | "add" | "update" | "delete";
 
-export const PickupLocation = ({
-  initData,
-  handleClose,
-  refreshQuery,
-}: IViewProps) => {
-  const { invalidateQueries } = useQueryClient();
-  const initialData: IPayoutData = {
-    id: initData?.id || "",
-    waitTimeInHours: initData?.waitTimeInHours || "",
-  };
+
+
+export const PickupLocation = () => {
+  const queryClient = useQueryClient();
 
   const [mode, setMode] = React.useState<TShowMode>("list");
   const [selectedData, setSelectedData] =
@@ -59,6 +43,7 @@ export const PickupLocation = ({
   const [, setUserNameText] = React.useState("");
   const [name, setName] = React.useState("");
   const [isSaving, setIsSaving] = React.useState(false);
+  const [showLoader, setShowLoader] = React.useState(false);
   const [locationValue, setLocationValue] = React.useState<PlaceType | null>(
     () => {
       return null;
@@ -67,11 +52,6 @@ export const PickupLocation = ({
 
   const handleSeeList = () => {
     setSelectedData(null);
-    setMode("list");
-  };
-
-  const handleInvalidateQuery = () => {
-    invalidateQueries(["approved-locations"]);
     setMode("list");
   };
 
@@ -138,7 +118,7 @@ export const PickupLocation = ({
   };
 
   const formik = useFormik({
-    initialValues: initialData,
+    initialValues: {},
     validationSchema: SCHEMA,
     validateOnBlur: false,
     validateOnChange: false,
@@ -148,14 +128,7 @@ export const PickupLocation = ({
     },
   });
 
-  const {
-    errors,
-    handleSubmit,
-    values,
-    setFieldValue,
-    resetForm,
-    isSubmitting,
-  } = formik;
+  const { errors, handleSubmit, values, setFieldValue, resetForm } = formik;
 
   const usersQuery = useQuery(
     ["all-users-in-db", name],
@@ -171,6 +144,28 @@ export const PickupLocation = ({
       retry: 0,
     }
   );
+
+  const { data: approvedLocations, isLoading: approvedLocationsIsLoading } =
+    useQuery(
+      ["locations"],
+      () =>
+        ConfigService.getAllPickupLocation().then((res) => {
+          const data = res.data?.result;
+          return data;
+        }),
+      {
+        retry: 0,
+      }
+    );
+
+  const handleRefresh = () => {
+    queryClient.refetchQueries(["locations"]);
+  };
+
+  const handleInvalidateQuery = () => {
+    handleRefresh();
+    setMode("list");
+  };
 
   const handleSearch = (value: string) => {
     setName(value);
@@ -219,24 +214,25 @@ export const PickupLocation = ({
     setMode("update");
   };
 
-  const handleSetDeleteData = (data: IApprovedLocationData) => () => {
-    setSelectedData(data);
-    setMode("delete");
-  };
+  const handleToggleActiveStatus = (id: number) => async () => {
+    setShowLoader(true);
+    try {
+      const res = await ConfigService.togglePickupLocation(id);
+      setShowLoader(false);
 
-  const { data: approvedLocations, isLoading: approvedLocationsIsLoading } =
-    useQuery(
-      ["approved-locations"],
-      () =>
-        ConfigService.getAllPickupLocation().then((res) => {
-          const data = res.data?.result;
-          return data;
-        }),
-      {
-        retry: 0,
-        refetchOnWindowFocus: false,
+      const data = res?.data;
+      if (data.result) {
+        toast.success(data?.result?.message || "");
+        return;
       }
-    );
+
+      toast.error(data?.message || "");
+      handleRefresh();
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "");
+      setShowLoader(false);
+    }
+  };
 
   return (
     <SectionWrapper>
@@ -282,10 +278,15 @@ export const PickupLocation = ({
                   borderTop: index !== 0 ? "1px solid #f8f8f8" : "",
                 }}>
                 <div className="left">
-                  <IconLocation />
-                  <MuiTypography variant="body1" className="address">
-                    {location?.location} {location?.state}
-                  </MuiTypography>
+                  <IconLocationBrand />
+                  <div className="content">
+                    <MuiTypography variant="body1" className="address">
+                      {location?.location} {location?.state}
+                    </MuiTypography>
+                    <MuiTypography variant="body1" className="username">
+                      {location?.user?.firstName} {location?.user?.lastName}
+                    </MuiTypography>
+                  </div>
                 </div>
                 <MuiBox className="action-group">
                   <MuiIconButton
@@ -294,12 +295,16 @@ export const PickupLocation = ({
                     className={`action-btn edit-btn `}>
                     <IconEdit />
                   </MuiIconButton>
-                  <MuiIconButton
-                    color="error"
-                    onClick={handleSetDeleteData(location)}
-                    className="action-btn delete-btn">
-                    <IconDelete />
-                  </MuiIconButton>
+
+                  <MuiInputLabel
+                    style={{ cursor: "pointer" }}
+                    onClick={handleToggleActiveStatus(location.id)}>
+                    <CustomSwitch
+                      disabled
+                      checked={!location?.isActive}
+                      defaultChecked={!location?.isActive}
+                    />
+                  </MuiInputLabel>
                 </MuiBox>
               </div>
             ))}
@@ -388,12 +393,18 @@ export const PickupLocation = ({
         </FormikProvider>
       )}
 
-      <AppCustomModal
+      {/* <AppCustomModal
         handleClose={handleToggleShow("list")}
         open={mode === "delete"}
         showClose>
         <></>
-      </AppCustomModal>
+      </AppCustomModal> */}
+
+      {showLoader && (
+        <div className="loader">
+          <MuiCircularProgress size={40} />
+        </div>
+      )}
     </SectionWrapper>
   );
 };
@@ -454,10 +465,25 @@ const SectionWrapper = styled.section`
   border-radius: 20px;
   max-width: 450px;
   width: calc(100vw - 80px);
+  position: relative;
+  min-height: 300px;
+
+  & .loader {
+    width: 100%;
+    height: 100%;
+    background: #00000014;
+    z-index: 100;
+    position: absolute;
+    top: 0;
+    min-height: 300px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
   & .location-list {
     display: flex;
-    gap: 10px;
     flex-direction: column;
     width: 100%;
     & .add-new {
@@ -469,15 +495,32 @@ const SectionWrapper = styled.section`
   & .location {
     display: flex;
     gap: 30px;
-    justify-items: space-between;
+    justify-content: space-between;
     align-items: center;
     width: 100%;
+    padding: 14px 0;
 
     & .left {
       display: flex;
       gap: 10px;
       align-items: center;
       flex: 1;
+
+      & .content {
+        flex: 1;
+      }
+      & .address {
+        color: #282828;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 18px;
+      }
+
+      & .username {
+        color: #64748b;
+        font-size: 12px;
+        font-weight: 400;
+      }
     }
   }
 

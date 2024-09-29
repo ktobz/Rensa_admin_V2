@@ -31,6 +31,7 @@ import { DeleteUserConfirm } from "../components/DeleteProductConfirm";
 import { PayoutAccountView } from "../components/PayoutAccountView";
 import { ProSellerStatusConfirm } from "../components/ProSellerStatusConfirm";
 import { UpdateUserForm } from "../components/UpdateUserForm";
+import { VerifyUserConfirm } from "../components/VerifyUserConfirm";
 
 type TStatus = "block" | "unblock";
 type TProSellerStatus = "enable" | "disable";
@@ -47,6 +48,7 @@ export function CustomerDetailsView() {
     activityShow: false,
     update_profile: false,
     delete: false,
+    verify: false,
   });
   const [status, setStatus] = React.useState<TStatus>("unblock");
   const [proSellerStatus, setProSellerStatus] =
@@ -94,6 +96,7 @@ export function CustomerDetailsView() {
       activityShow: false,
       update_profile: false,
       delete: false,
+      verify: false,
     }));
   };
 
@@ -105,6 +108,10 @@ export function CustomerDetailsView() {
   const handleToggleUserProSellerStatus = (status: TProSellerStatus) => () => {
     setProSellerStatus(status);
     setShow((prev) => ({ ...prev, proSellerShow: true }));
+  };
+
+  const handleVerifyUser = () => {
+    setShow((prev) => ({ ...prev, verify: true }));
   };
 
   const handleRefresh = () => {
@@ -131,7 +138,23 @@ export function CustomerDetailsView() {
 
     callback();
   };
+  const verifyUser = (callback: () => void) => async () => {
+    try {
+      const res = await CustomerService.verifyUser(customerId || "");
+      if (res.data?.successful) {
+        handleRefresh();
+        toast.success(res.data?.result?.message || "");
+        handleClose();
+        return;
+      }
 
+      toast.success(res.data?.message || "");
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "");
+    }
+
+    callback();
+  };
   const handleUpdateProSellerStatus = (callback: () => void) => async () => {
     try {
       const res = await CustomerService.updateProSellerStatus(customerId || "");
@@ -236,6 +259,15 @@ export function CustomerDetailsView() {
                   }}
                   type={data?.isVerified ? "true" : "false"}
                 />
+                <MuiInputLabel
+                  style={{ cursor: "pointer" }}
+                  onClick={handleVerifyUser}>
+                  <CustomSwitch
+                    disabled
+                    checked={data?.isVerified}
+                    defaultChecked={data?.isVerified}
+                  />
+                </MuiInputLabel>
               </MuiTypography>
             </div>
             <div className="info-detail">
@@ -381,6 +413,17 @@ export function CustomerDetailsView() {
           handleAction={handleUpdateProSellerStatus}
           handleClose={handleClose}
           action={proSellerStatus}
+        />
+      </AppCustomModal>
+
+      <AppCustomModal
+        handleClose={handleClose}
+        open={show.verify}
+        showClose
+        closeOnOutsideClick={false}>
+        <VerifyUserConfirm
+          handleAction={verifyUser}
+          handleClose={handleClose}
         />
       </AppCustomModal>
 

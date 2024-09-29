@@ -276,6 +276,11 @@ export type IApprovedLocationData = {
   state: string;
   userId: string;
   isActive: boolean;
+  user: {
+    lastName: string;
+    firstName: string;
+    userName: string;
+  };
 };
 
 export type IServiceFeeData = IServiceFeeReq & {
@@ -722,8 +727,15 @@ export type IPayoutDataResponse = {
 
 export type IApprovedLocationDataResponse = {
   result: IApprovedLocationData[];
-  message:string
+  message: string;
 };
+
+export type IToggleLocationStatus = IResponse & {
+  result: {
+    message: string;
+  };
+};
+
 // ConditionE CATEGORY
 export type ICondition = {
   name: string;
