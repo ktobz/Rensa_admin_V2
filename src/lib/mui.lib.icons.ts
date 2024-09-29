@@ -112,13 +112,14 @@ import { ReactComponent as IconRetry } from "assets/icon/retry.svg";
 import { ReactComponent as IconVerify } from "assets/icon/verify.svg";
 
 import { ReactComponent as IconBankList } from "assets/icon/bank.svg";
+import { ReactComponent as IconLocationBrand } from "assets/icon/location_brand.svg";
 import { ReactComponent as IconProSellerDisable } from "assets/icon/proseller_disable.svg";
 import { ReactComponent as IconProSellerEnable } from "assets/icon/proseller_enable.svg";
 
 export {
   IconAdd, IconAppRelease, IconArrowDownIcon, IconArrowRight, IconAttachment, IconBankList, IconBars, IconBell, IconBellBlue, IconBike, IconBlock, IconBox, IconBranches, IconCalendar, IconCancel, IconChecked, IconChevronLeft,
   IconChevronRight, IconClock, IconClose, IconComment, IconConfig, IconConfirm, IconCopy, IconCopy2, IconCopyFilled, IconCreditCard, IconCupReward, IconCustomers, IconDefaultUserImage, IconDelete, IconDeleteForever, IconDeleteLarge, IconDialPad, IconDiesel, IconDot, IconEarning, IconEdit, IconEmail, IconEye, IconFee, IconFounder, IconFreeze, IconFunnel, IconGridActive,
-  IconGridInactive, IconGroup, IconHistory, IconHome, IconHomeDark, IconIncome, IconInfo, IconIntermediateCheck, IconListActive, IconListIcon, IconListInactive, IconLocation, IconLocationBig, IconLock, IconLocManager, IconLogout, IconLPG, IconMenu, IconMore, IconNotFound, IconNotification, IconNotificationInfo, IconOil, IconOrder, IconPayout, IconPerson,
+  IconGridInactive, IconGroup, IconHistory, IconHome, IconHomeDark, IconIncome, IconInfo, IconIntermediateCheck, IconListActive, IconListIcon, IconListInactive, IconLocation, IconLocationBig, IconLocationBrand, IconLock, IconLocManager, IconLogout, IconLPG, IconMenu, IconMore, IconNotFound, IconNotification, IconNotificationInfo, IconOil, IconOrder, IconPayout, IconPerson,
   IconPersonOutlined, IconPetrol, IconPhone, IconPlay, IconPlus, IconProduct, IconProSellerDisable,
   IconProSellerEnable, IconQuestionMark, IconRefreshOutlined, IconReport, IconRetry, IconSales, IconSearch, IconSendNotification, IconSettings,
   IconSettingsOutlined, IconShipping, IconShop, IconSuccess, IconTag, IconTicket, IconUnblock, IconUnchecked, IconUnlock, IconUser, IconUserBox, IconUserRounded, IconVan, IconVerification, IconVerify, IconVisibility,

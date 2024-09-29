@@ -70,7 +70,19 @@ const CustomerService = {
       }
     );
   },
-
+  verifyUser(
+    id: number | string,
+  ): AxiosPromise<IUserStatusUpdateResponse> {
+    return HTTP.post(
+      `/admin/verification/${id}`,
+      {},
+      {
+        headers: {
+          Authorization: getToken(),
+        },
+      }
+    );
+  },
   updateProSellerStatus(
     id: number | string
   ): AxiosPromise<IUserStatusUpdateResponse> {

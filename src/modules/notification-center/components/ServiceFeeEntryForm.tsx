@@ -94,7 +94,7 @@ export const ServiceFeeEntryForm = ({
           <AppInput
             id="buyerServiceFee"
             name="buyerServiceFee"
-            label="Buyer service fee"
+            label="Buyer service fee (%)"
             placeholder="₦0.00"
             type="text"
             value={values.buyerServiceFee}
@@ -108,7 +108,7 @@ export const ServiceFeeEntryForm = ({
           <AppInput
             id="buyerServiceFeeCapAmount"
             name="buyerServiceFeeCapAmount"
-            label="Buyer service fee"
+            label="Buyer service fee Cap"
             placeholder="₦0.00"
             type="text"
             value={values.buyerServiceFeeCapAmount}
@@ -122,8 +122,8 @@ export const ServiceFeeEntryForm = ({
           <AppInput
             id="sellerServiceFee"
             name="sellerServiceFee"
-            label="Seller service fee"
-            placeholder="₦0.00"
+            label="Seller service fee (%)"
+            placeholder="0%"
             type="text"
             value={values.sellerServiceFee}
             onChange={handleInputChange}
@@ -135,7 +135,7 @@ export const ServiceFeeEntryForm = ({
           <AppInput
             id="sellerServiceFeeCapAmount"
             name="sellerServiceFeeCapAmount"
-            label="Seller service fee"
+            label="Seller service fee Cap"
             placeholder="₦0.00"
             type="text"
             value={values.sellerServiceFeeCapAmount}

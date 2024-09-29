@@ -7,7 +7,7 @@ import {
   IPayoutDataResponse,
   IServiceFeeReq,
   IServiceFeeResponse,
-  ITermiiResponse,
+  ITermiiResponse, IToggleLocationStatus
 } from "@/types/globalTypes";
 import { AxiosPromise } from "axios";
 import { getToken } from "utils/helper-funcs";
@@ -118,7 +118,7 @@ const ConfigService = {
       },
     });
   },
-  togglePickupLocation(id: number) {
+  togglePickupLocation(id: number): AxiosPromise<IToggleLocationStatus> {
     return HTTP.put(
       `${PATHS.pickupLocation}/toggle/${id}`,
       {},

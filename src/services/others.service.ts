@@ -1,11 +1,11 @@
+import { ILookups } from "@/types/globalTypes";
+import { AxiosPromise } from "axios";
 import { getToken } from "utils/helper-funcs";
 import HTTP from "./unAuthHttp";
-import { AxiosPromise } from "axios";
-import { ILookups } from "@/types/globalTypes";
 const PATHS = {
   period: "/admin/periods",
   status: "/admin/statuses",
-  lookup: "/admin/lookups/enums",
+  lookup: "/lookups/enums",
 };
 
 const OtherService = {
