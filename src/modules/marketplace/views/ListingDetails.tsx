@@ -245,7 +245,7 @@ export function ListingDetails() {
               </MuiTypography>
               <MuiTypography variant="body2" className="body">
                 {getIdName(data?.pickupMethod ?? 1, deliveryFeePickupMethod) ||
-                  ""}
+                  ""} { data?.isPickupEnabled && '& Pickup'}
               </MuiTypography>
             </div>
           </div>
