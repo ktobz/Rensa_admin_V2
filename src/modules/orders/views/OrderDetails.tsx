@@ -10,6 +10,7 @@ import {
   IconBike,
   IconCopyFilled,
   IconEarning,
+  IconPickup,
   IconTicket,
   IconVan,
 } from "@/lib/mui.lib.icons";
@@ -400,8 +401,12 @@ export function OrderDetails() {
 
           <div className="delivery-data">
             <div className="timeline">
-              <div className="pos-x"></div>
-              <div className="line"></div>
+              {!data?.isPickupUsed && (
+                <>
+                  <div className="pos-x"></div>
+                  <div className="line"></div>
+                </>
+              )}
               <div className="pos-y"></div>
             </div>
 
@@ -438,39 +443,44 @@ export function OrderDetails() {
                   </MuiIconButton>
                 </MuiTooltip>
               </div>
-              <div className="delivery-data">
-                <div className="group">
-                  <MuiTypography variant="body1" className="header">
-                    Drop-off location
-                  </MuiTypography>
-                  <MuiTypography variant="body2" className="body">
-                    {data?.dropOffLocation?.location}
-                  </MuiTypography>
-                </div>
-                <MuiTooltip
-                  arrow
-                  PopperProps={{
-                    disablePortal: true,
-                    sx: {
-                      ".MuiTooltip-tooltip": {
-                        color: "#fff",
-                        background: "#030949",
+              {!data?.isPickupUsed && (
+                <div className="delivery-data">
+                  <div className="group">
+                    <MuiTypography variant="body1" className="header">
+                      Drop-off location
+                    </MuiTypography>
+                    <MuiTypography variant="body2" className="body">
+                      {data?.dropOffLocation?.location}
+                    </MuiTypography>
+                  </div>
+                  <MuiTooltip
+                    arrow
+                    PopperProps={{
+                      disablePortal: true,
+                      sx: {
+                        ".MuiTooltip-tooltip": {
+                          color: "#fff",
+                          background: "#030949",
+                        },
                       },
-                    },
-                  }}
-                  onClose={handleTooltipClose}
-                  open={show.tooltip_2}
-                  disableFocusListener
-                  disableHoverListener
-                  disableTouchListener
-                  title="Copied">
-                  <MuiIconButton onClick={handleCopyLink("tooltip_2")}>
-                    <IconCopyFilled />
-                  </MuiIconButton>
-                </MuiTooltip>
-              </div>
+                    }}
+                    onClose={handleTooltipClose}
+                    open={show.tooltip_2}
+                    disableFocusListener
+                    disableHoverListener
+                    disableTouchListener
+                    title="Copied">
+                    <MuiIconButton onClick={handleCopyLink("tooltip_2")}>
+                      <IconCopyFilled />
+                    </MuiIconButton>
+                  </MuiTooltip>
+                </div>
+              )}
             </div>
-            {mapPickupMethod?.[data?.pickupMethod || 1]}
+            <div className="icon-group">
+              
+              {data?.isPickupUsed ?  <IconPickup className="pickup-icon" /> : mapPickupMethod?.[data?.pickupMethod || 1]}
+            </div>
           </div>
         </div>
       </div>
@@ -557,7 +567,8 @@ export function OrderDetails() {
               </div>
               <div className="price-line">
                 <MuiTypography variant="body1" className="entry">
-                  Service fee ({data?.buyerPayment?.buyerServiceFeePercentage}%):
+                  Service fee ({data?.buyerPayment?.buyerServiceFeePercentage}
+                  %):
                 </MuiTypography>
                 <MuiTypography variant="body1" className="entry">
                   ₦
@@ -614,7 +625,8 @@ export function OrderDetails() {
               </div>
               <div className="price-line">
                 <MuiTypography variant="body1" className="entry">
-                  Service fee ({data?.sellerPayment?.sellerServiceFeePercentage}%):
+                  Service fee ({data?.sellerPayment?.sellerServiceFeePercentage}
+                  %):
                 </MuiTypography>
                 <MuiTypography variant="body1" className="entry">
                   ₦
@@ -803,6 +815,10 @@ const PageContent = styled.section`
 
     & .delivery-method {
       justify-self: center;
+    }
+    & .pickup-icon{
+      width: 35px;
+      height: 35px;
     }
 
     & .delivery-data,

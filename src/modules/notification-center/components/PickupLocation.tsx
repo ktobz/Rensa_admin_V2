@@ -145,7 +145,7 @@ export const PickupLocation = () => {
     }
   );
 
-  const { data: approvedLocations, isLoading: approvedLocationsIsLoading } =
+  const { data: approvedLocations, isLoading: approvedLocationsIsLoading, refetch } =
     useQuery(
       ["locations"],
       () =>
@@ -154,12 +154,14 @@ export const PickupLocation = () => {
           return data;
         }),
       {
-        retry: 0,
+        retry: 0,        
       }
     );
 
   const handleRefresh = () => {
-    queryClient.refetchQueries(["locations"]);
+    queryClient.invalidateQueries(["locations"]);
+    refetch();
+    console.log('handleRefresh')
   };
 
   const handleInvalidateQuery = () => {
@@ -223,6 +225,7 @@ export const PickupLocation = () => {
       const data = res?.data;
       if (data.result) {
         toast.success(data?.result?.message || "");
+        handleRefresh();
         return;
       }
 
@@ -544,6 +547,13 @@ const SectionWrapper = styled.section`
     display: flex;
     gap: 10px;
     align-items: center;
+  }
+
+  & .MuiSwitch-track {
+    opacity: 1 !important;
+  }
+  & .Mui-checked {
+    color: #fff !important;
   }
 
   & .edit-btn {

@@ -625,6 +625,8 @@ export type IOrderFullDetails = {
     comment: string;
     status: number;
   }[];
+  isPickupEnabled: boolean;
+  isPickupUsed: boolean;
 };
 
 export type IOrderResponse = {
@@ -902,6 +904,8 @@ export type IListingData = {
   state: string;
   city: string;
   listingType: number;
+  isPickupEnabled: boolean;
+  isPickupUsed: boolean;
 };
 
 export type IReportedListingData = {
