@@ -1,9 +1,3 @@
-import { FormikProvider, useFormik } from "formik";
-import debounceFunc from "lodash.throttle";
-import * as React from "react";
-import { toast } from "react-toastify";
-import * as Yup from "yup";
-
 import { NoData } from "@/components/feedback/NoData";
 import { CustomSwitch } from "@/components/input/CustomSwitch";
 import GoogleLocationInput from "@/components/select/GoogleLocationInput";
@@ -18,12 +12,18 @@ import {
   MuiIconButton,
   MuiInputLabel,
   MuiTypography,
-  styled,
+  styled
 } from "@/lib/index";
 import ConfigService from "@/services/config-service";
 import CustomerService from "@/services/customer-service";
 import { IApprovedLocationData, PlaceType } from "@/types/globalTypes";
+import { FormikProvider, useFormik } from "formik";
+import debounceFunc from "lodash.throttle";
+import * as React from "react";
 import { useQuery, useQueryClient } from "react-query";
+import { toast } from "react-toastify";
+import * as Yup from "yup";
+
 
 const SCHEMA = Yup.object().shape({
   location: Yup.string().required("required"),
@@ -304,8 +304,8 @@ export const PickupLocation = () => {
                     onClick={handleToggleActiveStatus(location.id)}>
                     <CustomSwitch
                       disabled
-                      checked={!location?.isActive}
-                      defaultChecked={!location?.isActive}
+                      checked={location?.isActive}
+                      defaultChecked={location?.isActive}
                     />
                   </MuiInputLabel>
                 </MuiBox>
@@ -403,7 +403,9 @@ export const PickupLocation = () => {
         <></>
       </AppCustomModal> */}
 
-      {showLoader && (
+      {((approvedLocationsIsLoading &&
+        !approvedLocations &&        
+        mode === "list" ) || showLoader) && (
         <div className="loader">
           <MuiCircularProgress size={40} />
         </div>
