@@ -1,6 +1,6 @@
-import { IconBox, IconOrder } from "@/lib/mui.lib.icons";
-import { IStatus } from "@/types/globalTypes";
 import { styled } from "@/lib/index";
+import { IconBox } from "@/lib/mui.lib.icons";
+import { IStatus } from "@/types/globalTypes";
 
 const statusData: {
   [key in IStatus]: {
@@ -144,6 +144,17 @@ const statusData: {
     bg: "#E6D7FB",
     color: "#9747FF",
     text: "Queued",
+  },
+
+    true: {
+    bg: "#05A3571A",
+    color: "#05A357",
+    text: "True",
+  },
+  false: {
+    bg: "#EF50501A",
+    color: "#EF5050",
+    text: "False",
   },
 };
 

@@ -1,13 +1,12 @@
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "react-query";
-import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 import { NoData } from "@/components/feedback/NoData";
+import TableWrapper from "@/components/table/TableWrapper";
 import {
   MuiBox,
   MuiIconButton,
-  MuiPagination,
   MuiTable,
   MuiTableBody,
   MuiTableCell,
@@ -15,21 +14,22 @@ import {
   MuiTableHead,
   MuiTableRow,
   MuiTypography,
-  styled,
+  styled
 } from "@/lib/index";
-import CustomTableSkeleton from "components/skeleton/CustomTableSkeleton";
-import TableWrapper from "@/components/table/TableWrapper";
 import { IconDelete, IconVisibility } from "@/lib/mui.lib.icons";
+import CustomTableSkeleton from "components/skeleton/CustomTableSkeleton";
 
-import CustomSearch from "@/components/input/CustomSearch";
-import { IUserData, IPagination } from "@/types/globalTypes";
-import CustomerService from "@/services/customer-service";
 import { VerificationStatus } from "@/components/feedback/VerfiedStatus";
-import { createPaginationData, formatDate } from "@/utils/helper-funcs";
-import { DeleteUserConfirm } from "./DeleteProductConfirm";
-import { toast } from "react-toastify";
+import CustomSearch from "@/components/input/CustomSearch";
 import AppCustomModal from "@/components/modal/Modal";
+import CustomTab from "@/components/other/CustomTab";
+import CustomTabs from "@/components/other/CustomTabs";
+import CustomerService from "@/services/customer-service";
+import { IPagination, IUserData } from "@/types/globalTypes";
+import { createPaginationData, formatDate } from "@/utils/helper-funcs";
 import throttle from "lodash.throttle";
+import { toast } from "react-toastify";
+import { DeleteUserConfirm } from "./DeleteProductConfirm";
 
 const defaultQuery: IPagination = {
   pageSize: 10,
@@ -45,6 +45,14 @@ export function CustomersTable() {
   const queryClient = useQueryClient();
 
   const [pagination, setPagination] = React.useState<IPagination>(defaultQuery);
+  const [current, setCurrent] = React.useState(() => {
+    return 0;
+  });
+
+  const handleChangeIndex = (index: number) => () => {
+    setCurrent(index);
+  };
+
 
   const [deleteData, setDeleteData] = React.useState<IUserData[]>([]);
   const [show, setShow] = React.useState({
@@ -54,10 +62,10 @@ export function CustomersTable() {
   const [text, setText] = React.useState("");
 
   const { data, isLoading, isError } = useQuery(
-    ["all-users", pagination.page, pagination.pageSize, text],
+    ["all-users", pagination.page, pagination.pageSize, text, current],
     ({ signal }) =>
       CustomerService.getAll(
-        `?PageNumber=${pagination.page}&PageSize=${pagination.pageSize}&searchText=${text}`,
+        `?PageNumber=${pagination.page}&PageSize=${pagination.pageSize}&searchText=${text}&isDeleted=${current !== 0}`,
         signal
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
@@ -148,10 +156,33 @@ export function CustomersTable() {
 
   return (
     <StyledPage>
+       <div className="top-section">
+          <CustomTabs
+            variant="scrollable"
+            value={current || 0}
+            className="tabs">
+            <CustomTab
+              onClick={handleChangeIndex(0)}
+              value={0}
+              label="Registered User"
+              current={current}
+            />
+            <CustomTab
+              onClick={handleChangeIndex(1)}
+              value={1}
+              label="Deleted User"
+              current={current}
+            />
+        
+          </CustomTabs>
+
+       
+        </div>
       <div className="tab-section">
+     
         <div className="top-section">
           <MuiTypography variant="body2" className="heading">
-            Total Users
+            {current === 0 ? 'Total':'Deleted'} Users
           </MuiTypography>
           <MuiTypography
             className="total"
@@ -207,10 +238,15 @@ export function CustomersTable() {
                 <MuiTableCell className="heading" align="left">
                   Date joined
                 </MuiTableCell>
-                <MuiTableCell className="heading" align="left">
-                  Verified
-                </MuiTableCell>
-
+                {
+                  current===0 && (
+                    <MuiTableCell className="heading" align="left">
+                    Verified
+                  </MuiTableCell>
+  
+                  )
+                }
+             
                 <MuiTableCell className="heading" align="left">
                   Actions
                 </MuiTableCell>
@@ -238,20 +274,30 @@ export function CustomersTable() {
                     <MuiTableCell align="left">
                       {formatDate(row?.creationTime || "")}
                     </MuiTableCell>
-                    <MuiTableCell align="left">
+                    {
+                      current === 0 && (
+                          <MuiTableCell align="left">
                       <VerificationStatus
                         type={row?.isVerified ? "true" : "false"}
                       />
                     </MuiTableCell>
+                      )
+                    }
+                  
 
                     <MuiTableCell align="left">
                       <MuiBox className="action-group">
-                        <MuiIconButton
+                        {
+                          current === 0 && (
+                             <MuiIconButton
                           color="error"
                           onClick={handleSetDeleteData(row)}
                           className="action-btn delete-btn">
                           <IconDelete />
                         </MuiIconButton>
+                          )
+                        }
+                       
                         <MuiIconButton
                           onClick={handleViewDetails(row)}
                           className="visible-btn">
@@ -395,6 +441,10 @@ const StyledPage = styled.section`
     }
   }
 
+
+  & td { 
+    font-family:'Inter'
+  }
   & .tabs {
     /* width: 50%; */
     flex: 1;

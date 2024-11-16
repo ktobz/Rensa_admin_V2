@@ -1,12 +1,10 @@
 import * as React from "react";
 import { useQuery, useQueryClient } from "react-query";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 
 import { NoData } from "@/components/feedback/NoData";
 import {
   MuiBox,
-  MuiButton,
   MuiIconButton,
   MuiTable,
   MuiTableBody,
@@ -14,6 +12,7 @@ import {
   MuiTableContainer,
   MuiTableHead,
   MuiTableRow,
+  MuiTooltip,
   MuiTypography,
   styled
 } from "@/lib/index";
@@ -22,21 +21,17 @@ import CustomTableSkeleton from "components/skeleton/CustomTableSkeleton";
 
 import TableWrapper from "@/components/table/TableWrapper";
 import {
-  IconAdd,
-  IconDelete,
-  IconEdit,
+  IconCopyFilled,
   IconNotificationInfo
 } from "@/lib/mui.lib.icons";
 
-import AppCustomModal from "@/components/modal/Modal";
-import { AppReleaseForm } from "./AppReleaseForm";
 
-import { DeleteAppReleaseConfirm } from "./DeleteAppReleaseConfirm";
 
-import useCachedDataStore from "@/config/store-config/lookup";
-import AppReleaseService from "@/services/app-release-service";
-import { IAppReleaseData, IPagination } from "@/types/globalTypes";
+import { OrderStatus } from "@/components/feedback/OrderStatus";
+import OtherService from "@/services/others.service";
+import { IPagination } from "@/types/globalTypes";
 import { createPaginationData, formatDate } from "@/utils/helper-funcs";
+import useCopyToClipboard from "@/utils/useCopyToClipboard";
 
 const defaultQuery: IPagination = {
   pageSize: 15,
@@ -47,29 +42,20 @@ const defaultQuery: IPagination = {
   totalPages: 1,
 };
 
-type TShowMode = "add" | "updateStatus" | "info" | "delete" | "send";
+type TShowMode = 'tooltip';
 
-export function AppReleaseTable() {
-  const {
-    lookup: { devicePlatform },
-  } = useCachedDataStore((state) => state.cache);
-  console.log(devicePlatform);
+export function OtpLogTable() {
+  
   const queryClient = useQueryClient();
+  const [, copy] = useCopyToClipboard();
+
 
   const navigate = useNavigate();
   const [show, setShow] = React.useState({
-    add: false,
-    info: false,
-    delete: false,
-    updateStatus: false,
-    send: false,
+    tooltip:false
   });
+  const [copiedId, setCopiedId] = React.useState<null|number>(null);
 
-  const [deleteData, setDeleteData] = React.useState<any[]>([]);
-  const [updateData, setUpdateData] = React.useState<any[]>([]);
-  const [notificationData, setNotificationData] = React.useState<any[]>([]);
-
-  const [editData, setEditData] = React.useState<null | any>(null);
   const [checked, setChecked] = React.useState(() => {
     const states: { [key: string]: boolean } = {};
 
@@ -128,34 +114,10 @@ export function AppReleaseTable() {
     setShow((prev) => ({ ...prev, [name]: !prev[name] }));
   };
 
-  const handleSetDeleteData = (data: any) => () => {
-    setDeleteData(() => [data]);
-    setShow((prev) => ({ ...prev, delete: true }));
-  };
-
-  const handleSetDeleteAllData = () => {
-    const allCheckedProducts = { ...checked };
-    // const dataToDelete = [];
-
-    // for (let i = 0; i < data.length; i += 1) {
-    //   if (checked[data[i]?.id]) {
-    //     dataToDelete.push(data[i]);
-    //   }
-    // }
-
-    // setDeleteData(dataToDelete);
-    setShow((prev) => ({ ...prev, delete: true }));
-  };
-
-  const handleSetEditData = (data: IAppReleaseData) => () => {
-    setEditData(data);
-    setShow((prev) => ({ ...prev, add: true }));
-  };
-
   const { data, isLoading, isError } = useQuery(
-    ["all-releases", pagination.page, pagination.pageSize],
+    ["all-otp-logs", pagination.page, pagination.pageSize],
     () =>
-      AppReleaseService.getAll(
+      OtherService.otpLog(
         `?PageNumber=${pagination.page}&PageSize=${pagination.pageSize}`
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
@@ -182,20 +144,13 @@ export function AppReleaseTable() {
     setPagination((prev: any) => ({ ...prev, page }));
   };
 
-  const handleViewDetails = (data: IAppReleaseData) => () => {
-    setUpdateData([data]);
-    setShow((prev) => ({ ...prev, info: true }));
-  };
 
   const handleCloseModal = () => {
     setShow((prev) => ({
-      add: false,
-      updateStatus: false,
-      info: false,
-      send: false,
-      delete: false,
+  
+      tooltip:false
     }));
-    setEditData(undefined);
+
   };
 
   const handleRefresh = () => {
@@ -207,44 +162,41 @@ export function AppReleaseTable() {
     handleCloseModal();
   };
 
-  const handleDelete = (callback: () => void) => () => {
-    const ids = deleteData.map((data) => data?.id);
-    AppReleaseService.delete(ids?.[0] || 0)
-      .then((res) => {
-        handleRefresh?.();
-        toast.success(res.data?.message || "");
-      })
-      .catch((err) => {
-        toast.error(err?.response?.data?.message || "");
-      })
-      .finally(() => {
-        callback();
-      });
-  };
+  
 
   const isAnyChecked = () => {
     const allChecks = Object.values({ ...checked });
     return allChecks.some((val) => val === true);
   };
 
+
+  const handleTooltipClose = () => {
+    setShow((prev) => ({ ...prev, tooltip_1: false, tooltip_2: false }));
+  };
+
+  const handleTooltipOpen = (code: string) => () => {
+    setShow((prev) => ({ ...prev, tooltip: true }));
+    copy(code);
+  };
+
+  const handleCopyLink = (id:number, name: string) => () => {
+    setCopiedId(id);
+    handleTooltipOpen(name)();
+    setTimeout(() => {
+      
+      handleTooltipClose()
+      setCopiedId(null);
+    }, 1000);
+  };
+
   return (
     <StyledPage>
-      <div className="tab-section">
-        <div className="action-section">
-          <MuiButton
-            startIcon={<IconAdd />}
-            variant="contained"
-            color="primary"
-            onClick={handleToggleShow("add")}
-            className="btn">
-            Add New
-          </MuiButton>
-        </div>
-      </div>
+    
 
       <TableWrapper      handleChangePagination={handleChange}
-        pagination={pagination}showPagination>
-        {numOfChecked > 1 && (
+        pagination={pagination} showPagination>
+     
+      {numOfChecked > 1 && (
           <div className="group-selection">
             <MuiTypography variant="body2" className="info">
               You selected <b>{numOfChecked}</b> notifications
@@ -294,24 +246,19 @@ export function AppReleaseTable() {
                   className="heading"
                   align="left"
                   style={{ minWidth: "150px" }}>
-                  Device
+                  Phone Number
                 </MuiTableCell>
 
                 <MuiTableCell className="heading" align="left">
-                  Version No
+                  Creation Time
                 </MuiTableCell>
                 <MuiTableCell className="heading" align="left">
-                  Update Type
+                  Sent
                 </MuiTableCell>
                 <MuiTableCell className="heading" align="left">
-                  Update description
+                  OTP Code
                 </MuiTableCell>
-                <MuiTableCell className="heading" align="left">
-                  Date
-                </MuiTableCell>
-                <MuiTableCell className="heading" align="left">
-                  Actions
-                </MuiTableCell>
+              
               </MuiTableRow>
             </MuiTableHead>
 
@@ -334,37 +281,47 @@ export function AppReleaseTable() {
                       />
                     </MuiTableCell> */}
 
-                    <MuiTableCell>
-                      {devicePlatform[(row?.devicePlatform || 1) - 1]?.name}
-                    </MuiTableCell>
                     <MuiTableCell align="left">
-                      {row?.versionNumber}
+                      {row?.phoneNumber}
                     </MuiTableCell>
-                    <MuiTableCell align="left">
-                      {row?.forceUpdate ? "Force" : "Optional"}
-                    </MuiTableCell>
-                    <MuiTableCell align="left">
-                      {row?.releaseNotes || "-"}
-                    </MuiTableCell>
+                 
+                  
 
                     <MuiTableCell align="left">
                       {formatDate(row?.creationTime || "")}
                     </MuiTableCell>
 
                     <MuiTableCell align="left">
+                    <OrderStatus type={row?.sent ? 'true':'false'} />
+
+                    </MuiTableCell>
+
+                    <MuiTableCell align="left">
                       <MuiBox className="action-group">
-                        <MuiIconButton
-                          color="warning"
-                          onClick={handleSetEditData(row)}
-                          className={`action-btn edit-btn `}>
-                          <IconEdit />
-                        </MuiIconButton>
-                        <MuiIconButton
-                          color="error"
-                          onClick={handleSetDeleteData(row)}
-                          className="action-btn delete-btn">
-                          <IconDelete />
-                        </MuiIconButton>
+                       <MuiTypography>
+                        {row?.message?.toLowerCase().replace(/[^0-9]/ig,'')||''}
+                       </MuiTypography>
+                       <MuiTooltip
+                  arrow
+                  PopperProps={{
+                    // disablePortal: true,
+                    sx: {
+                      ".MuiTooltip-tooltip": {
+                        color: "#fff",
+                        background: "#030949",
+                      },
+                    },
+                  }}
+                  onClose={handleTooltipClose}
+                  open={show.tooltip && row?.id===copiedId}
+                  disableFocusListener
+                  disableHoverListener
+                  disableTouchListener
+                  title="Copied">
+                  <MuiIconButton onClick={handleCopyLink(row?.id, row?.message?.toLowerCase().replace(/[^0-9]/ig,'')||'')}>
+                    <IconCopyFilled />
+                  </MuiIconButton>
+                </MuiTooltip>
                       </MuiBox>
                     </MuiTableCell>
                   </MuiTableRow>
@@ -379,9 +336,9 @@ export function AppReleaseTable() {
                     className="no-data-cell"
                     rowSpan={20}>
                     <NoData
-                      title="No app version created"
+                      title="No Otp Log"
                       icon={<IconNotificationInfo className="icon" />}
-                      message="Created app version will appear here"></NoData>
+                      message="OTP sms will be logged here"></NoData>
                   </MuiTableCell>
                 </MuiTableRow>
               )}
@@ -402,38 +359,14 @@ export function AppReleaseTable() {
               )}
 
               {!data && isLoading && (
-                <CustomTableSkeleton columns={7} rows={10} />
+                <CustomTableSkeleton columns={4} rows={pagination.pageSize} />
               )}
             </MuiTableBody>
           </MuiTable>
         </MuiTableContainer>
       </TableWrapper>
 
-      <AppCustomModal
-        handleClose={handleToggleShow("add")}
-        open={show.add}
-        alignTitle="left"
-        closeOnOutsideClick={false}
-        title={editData ? "Edit Release" : "Add New Release"}
-        showClose>
-        <AppReleaseForm
-          mode={editData ? "edit" : "new"}
-          initData={editData}
-          refreshQuery={handleRefresh}
-          handleClose={handleCloseModal}
-        />
-      </AppCustomModal>
-
-      <AppCustomModal
-        handleClose={handleToggleShow("delete")}
-        open={show.delete}
-        showClose>
-        <DeleteAppReleaseConfirm
-          data={deleteData}
-          handleDelete={handleDelete}
-          handleClose={handleToggleShow("delete")}
-        />
-      </AppCustomModal>
+     
     </StyledPage>
   );
 }

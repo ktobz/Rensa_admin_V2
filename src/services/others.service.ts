@@ -1,4 +1,4 @@
-import { ILookups } from "@/types/globalTypes";
+import { ILookups, IOTPLogResponse } from "@/types/globalTypes";
 import { AxiosPromise } from "axios";
 import { getToken } from "utils/helper-funcs";
 import HTTP from "./unAuthHttp";
@@ -6,6 +6,7 @@ const PATHS = {
   period: "/admin/periods",
   status: "/admin/statuses",
   lookup: "/lookups/enums",
+  otpLog: "/admin/smslogs",
 };
 
 const OtherService = {
@@ -31,6 +32,14 @@ const OtherService = {
       },
     });
   },
+  otpLog(query?: string): AxiosPromise<IOTPLogResponse> {
+    return HTTP.get(`${PATHS.otpLog}${query ? query : ""}`, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+
 };
 
 export default OtherService;

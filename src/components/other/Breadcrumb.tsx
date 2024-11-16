@@ -1,10 +1,10 @@
 import * as React from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 
-import Link, { LinkProps } from "@mui/material/Link";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
 import { MuiTypography, styled } from "@/lib/index";
 import { useURLQuery } from "@/utils/query";
+import Breadcrumbs from "@mui/material/Breadcrumbs";
+import Link, { LinkProps } from "@mui/material/Link";
 
 interface LinkRouterProps extends LinkProps {
   to: string;
@@ -148,9 +148,10 @@ const StyledBreadCrumb = styled.nav`
 
   & .label {
     color: #bababa;
-    font-family: "Inter";
     font-style: normal;
     font-weight: 500;
+    font-family:'Helvetica','Inter';
+
   }
 
   & li {
@@ -164,9 +165,13 @@ const StyledBreadCrumb = styled.nav`
 
   & .current-link {
     color: #1a1616;
+    font-family:'Helvetica','Inter';
+
   }
   & .link {
     color: #6b7280;
+    font-family:'Helvetica','Inter';
+
   }
 
   margin: 0px 0 20px 0;

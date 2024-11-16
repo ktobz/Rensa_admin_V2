@@ -18,10 +18,11 @@ import {
   IconCustomers,
   IconHome,
   IconNotification,
+  IconOTP,
   IconPayout,
   IconReport,
   IconSales,
-  IconShop,
+  IconShop
 } from "lib/mui.lib.icons";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -81,6 +82,11 @@ const menuLinks = [
     title: "App Release",
     path: "app-release",
     icon: <IconAppRelease />,
+  },
+  {
+    title: "OTP Log",
+    path: "otp-log",
+    icon: <IconOTP />,
   },
 ];
 

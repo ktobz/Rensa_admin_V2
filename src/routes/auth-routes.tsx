@@ -1,20 +1,21 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
-import { OrdersView } from "@/modules/orders/views/OrdersView";
-import { OrderDetails } from "@/modules/orders";
-import { SettlementsView } from "@/modules/settlements/views/SettlementsView";
-import { DashboardView } from "@/modules/dashboard/views/DashboardView";
-import { MarketPlaceListingsView } from "@/modules/settlements/views/MarketPlaceListingsView";
-import { ScheduledOrdersView } from "@/modules/orders/views/ScheduledOrdersView";
-import ReportedListingPageView from "@/modules/marketplace";
-import { ListingDetails } from "@/modules/marketplace/views/ListingDetails";
-import { AddListing } from "@/modules/marketplace/views/AddListing";
-import TransactionsView from "@/modules/transaction";
-import { PayoutView } from "@/modules/transaction/views/PayoutView";
-import IncomeView from "@/modules/income";
-import NotificationCenterView from "@/modules/notification-center";
 import AppReleaseView from "@/modules/app-release";
 import ConfigurationView from "@/modules/configuration";
+import { DashboardView } from "@/modules/dashboard/views/DashboardView";
+import IncomeView from "@/modules/income";
+import ReportedListingPageView from "@/modules/marketplace";
+import { AddListing } from "@/modules/marketplace/views/AddListing";
+import { ListingDetails } from "@/modules/marketplace/views/ListingDetails";
+import NotificationCenterView from "@/modules/notification-center";
+import { OrderDetails } from "@/modules/orders";
+import { OrdersView } from "@/modules/orders/views/OrdersView";
+import { ScheduledOrdersView } from "@/modules/orders/views/ScheduledOrdersView";
+import OtpLogView from "@/modules/otp-log";
+import { MarketPlaceListingsView } from "@/modules/settlements/views/MarketPlaceListingsView";
+import { SettlementsView } from "@/modules/settlements/views/SettlementsView";
+import TransactionsView from "@/modules/transaction";
+import { PayoutView } from "@/modules/transaction/views/PayoutView";
 import CustomersView, { CustomerDetailsView } from "@/modules/users";
 import { CustomerTransactionsView } from "@/modules/users/views/CustomerTransactionsView";
 
@@ -68,6 +69,8 @@ export default function MergedModuleRoutes() {
         element={<CustomerTransactionsView />}
       />
       <Route path="/users/:c_id/orders/:orderId" element={<OrderDetails />} />
+
+      <Route path="/otp-log" element={<OtpLogView />} />
 
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>

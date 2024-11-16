@@ -106,6 +106,7 @@ import { ReactComponent as IconWallet } from "assets/icon/wallet.svg";
 
 import { ReactComponent as IconAppRelease } from "assets/icon/app_release.svg";
 import { ReactComponent as IconAttachment } from "assets/icon/attachment.svg";
+import { ReactComponent as IconOTP } from "assets/icon/brush.svg";
 import { ReactComponent as IconConfirm } from "assets/icon/confirm.svg";
 import { ReactComponent as IconPayout } from "assets/icon/payout.svg";
 import { ReactComponent as IconRetry } from "assets/icon/retry.svg";
@@ -116,6 +117,8 @@ import { ReactComponent as IconLocationBrand } from "assets/icon/location_brand.
 import { ReactComponent as IconPickup } from "assets/icon/pickup.svg";
 import { ReactComponent as IconProSellerDisable } from "assets/icon/proseller_disable.svg";
 import { ReactComponent as IconProSellerEnable } from "assets/icon/proseller_enable.svg";
+
+
 
 export {
   IconAdd,
@@ -187,8 +190,7 @@ export {
   IconNotification,
   IconNotificationInfo,
   IconOil,
-  IconOrder,
-  IconPayout,
+  IconOrder, IconOTP, IconPayout,
   IconPerson,
   IconPersonOutlined,
   IconPetrol,

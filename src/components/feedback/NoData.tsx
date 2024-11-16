@@ -1,6 +1,6 @@
-import * as React from "react";
 import { MuiTypography, styled } from "@/lib/index";
 import { IconBox } from "@/lib/mui.lib.icons";
+import * as React from "react";
 
 type IProps = {
   message: string;
@@ -60,7 +60,7 @@ const NoDataWrapper = styled.div`
     color: #5d6c87;
     font-size: 16px;
     font-weight: 600;
-    font-family: "Inter";
+    font-family: "Helvetica","Inter";
   }
 
   & .body {
@@ -68,5 +68,6 @@ const NoDataWrapper = styled.div`
     font-size: 14px;
     text-align: center;
     max-width: 350px;
+        font-family: "Helvetica","Inter";
   }
 `;

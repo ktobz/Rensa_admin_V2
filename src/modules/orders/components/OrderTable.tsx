@@ -1,8 +1,8 @@
-import * as React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useQuery } from "react-query";
-import { AxiosPromise, AxiosResponse } from "axios";
+import { AxiosPromise } from "axios";
 import { format } from "date-fns";
+import * as React from "react";
+import { useQuery } from "react-query";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { NoData } from "@/components/feedback/NoData";
 import {
@@ -19,40 +19,38 @@ import {
 } from "@/lib/index";
 
 import CustomTableSkeleton from "@/components/skeleton/CustomTableSkeleton";
+import TableWrapper from "@/components/table/TableWrapper";
+import {
+  IconChevronLeft,
+  IconChevronRight,
+  IconGridActive,
+  IconGridInactive,
+  IconListActive,
+  IconListInactive,
+  IconVisibility,
+} from "@/lib/mui.lib.icons";
 import {
   createPaginationData,
   formatCurrency,
   formatDate,
   getIdName,
 } from "@/utils/helper-funcs";
-import TableWrapper from "@/components/table/TableWrapper";
-import {
-  IconVisibility,
-  IconGridActive,
-  IconGridInactive,
-  IconListActive,
-  IconListInactive,
-  IconChevronLeft,
-  IconChevronRight,
-} from "@/lib/mui.lib.icons";
 
 import CustomSearch from "@/components/input/CustomSearch";
 
+import { OrderStatus } from "@/components/feedback/OrderStatus";
 import { TotalCard } from "@/components/index";
+import StatusFilter from "@/components/select/StatusFillter";
+import useCachedDataStore from "@/config/store-config/lookup";
 import OrderService from "@/services/order-service";
 import {
   IOrderData,
   IOrderResponse,
-  IOrderTotalStats,
   IPagination,
-  IStatus,
+  IStatus
 } from "@/types/globalTypes";
-import { OrderIcon, OrderStatus } from "@/components/feedback/OrderStatus";
-import StatusFilter from "@/components/select/StatusFillter";
-import Calendar from "react-calendar";
-import useCachedDataStore from "@/config/store-config/lookup";
-import debounce from "lodash.debounce";
 import throttle from "lodash.throttle";
+import Calendar from "react-calendar";
 
 const DATE_LIST = [
   "Jan",
@@ -470,7 +468,7 @@ export function OrderTable({
           />
         </>
       ) : (
-        <TableWrapper showPagination={showPagination} pagination={pagination}>
+        <TableWrapper showPagination={showPagination} pagination={pagination} handleChangePagination={handleChange}  >
           <MuiTableContainer
             sx={{
               maxWidth: "100%",

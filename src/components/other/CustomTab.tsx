@@ -83,6 +83,8 @@ const StyledTab = styled.div<{
     width: 100%;
     text-transform: capitalize;
     white-space:nowrap;
+    font-family:'Helvetica','Inter';
+
 
 
     & svg > path {

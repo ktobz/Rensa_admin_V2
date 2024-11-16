@@ -324,7 +324,7 @@ export type IStatus =
   | "queued"
   | "on_hold"
   | "closed"
-  | "invalid_account";
+  | "invalid_account"|"true"|"false";
 
 export type IVerifyStatus = "true" | "false";
 
@@ -523,6 +523,33 @@ export type IAppReleaseResponse = {
     data: IAppReleaseData[];
   };
 };
+
+
+// OTP LOG DATA
+export type IOTPLogData =   {
+  "id": number,
+  "creatorUserId": string,
+  "lastModifierUserId": string,
+  "deleterUserId": string,
+  "creationTime": Date |string,
+  "lastModificationTime": Date |string,
+  "deletionTime": Date |string,
+  "isDeleted": true,
+  "phoneNumber": string,
+  "message": string,
+  "sent": true,
+  "messageId": string,
+  "finalStatus": string,
+  "response": string,
+  "deliveryReport": string
+}
+
+export type IOTPLogResponse = {
+  result: IPaginationResponse & {
+    data: IOTPLogData[];
+  };
+};
+
 
 // ORDERS
 

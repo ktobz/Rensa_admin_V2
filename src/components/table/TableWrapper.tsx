@@ -1,6 +1,5 @@
 import * as React from "react";
 
-import { NoData } from "@/components/feedback/NoData";
 import { MuiPagination, MuiTypography, styled } from "@/lib/index";
 
 import { IPagination } from "@/types/globalTypes";
@@ -152,6 +151,7 @@ const StyledWrapper = styled.div`
         /* padding-top: 15px; */
         /* padding-bottom: 15px; */
         border-bottom: none;
+        font-family:'Helvetica','Inter';
       }
     }
   }
@@ -191,6 +191,8 @@ const StyledWrapper = styled.div`
     min-height: unset;
     font-family: "Inter";
     /* font-weight: 500; */
+    font-family:'Helvetica','Inter';
+
   }
 
   & .no-data-cell {
