@@ -1,15 +1,13 @@
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "react-query";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { NoData } from "@/components/feedback/NoData";
 import {
   MuiBox,
   MuiButton,
-  MuiCheckbox,
   MuiIconButton,
-  MuiPagination,
   MuiTable,
   MuiTableBody,
   MuiTableCell,
@@ -17,7 +15,7 @@ import {
   MuiTableHead,
   MuiTableRow,
   MuiTypography,
-  styled,
+  styled
 } from "@/lib/index";
 
 import CustomTableSkeleton from "components/skeleton/CustomTableSkeleton";
@@ -25,14 +23,10 @@ import CustomTableSkeleton from "components/skeleton/CustomTableSkeleton";
 import TableWrapper from "@/components/table/TableWrapper";
 import {
   IconAdd,
-  IconChecked,
-  IconDelete,
   IconEdit,
-  IconIntermediateCheck,
   IconNotificationInfo,
   IconSendNotification,
-  IconUnchecked,
-  IconVisibility,
+  IconVisibility
 } from "@/lib/mui.lib.icons";
 
 import AppCustomModal from "@/components/modal/Modal";
@@ -40,14 +34,13 @@ import { NotificationEntryForm } from "./NotificationEntryForm";
 
 import { DeleteNotificationConfirm } from "./DeleteNotificationConfirm";
 
+import NotificationService from "@/services/notification-service";
 import {
   INotification,
-  INotificationData,
-  IPagination,
+  IPagination
 } from "@/types/globalTypes";
-import NotificationService from "@/services/notification-service";
+import { createPaginationData } from "@/utils/helper-funcs";
 import { SendNotificationConfirm } from "./SendNotificationConfirm";
-import { createPaginationData, formatDate } from "@/utils/helper-funcs";
 
 const defaultQuery: IPagination = {
   pageSize: 15,
@@ -273,7 +266,9 @@ export function NotificationCenterTable() {
         </div>
       </div>
 
-      <TableWrapper>
+      <TableWrapper  handleChangePagination={handleChange}
+        pagination={pagination}
+        showPagination>
         {numOfChecked > 1 && (
           <div className="group-selection">
             <MuiTypography variant="body2" className="info">
