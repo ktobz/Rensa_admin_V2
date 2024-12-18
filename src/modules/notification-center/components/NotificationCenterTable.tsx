@@ -156,7 +156,7 @@ export function NotificationCenterTable() {
     ["all-notifications", pagination.page, pagination.pageSize],
     () =>
       NotificationService.getAll(
-        `?PageNumber=${pagination.page}&PageSize=${pagination.pageSize}`
+        `?pageNumber=${pagination.page}&pageSize=${pagination.pageSize}`
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
         const { hasNextPage, hasPrevPage, total, totalPages } =
