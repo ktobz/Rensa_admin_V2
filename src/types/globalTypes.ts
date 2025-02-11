@@ -516,7 +516,7 @@ export type IAppReleaseData = {
   devicePlatform: number;
   id?: string;
   creationTime?: string;
-  isActive:boolean;
+  isActive?:boolean;
 };
 
 export type IAppReleaseResponse = {
