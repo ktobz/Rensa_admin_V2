@@ -1,17 +1,16 @@
+import { FormikProvider, useFormik } from "formik";
 import * as React from "react";
 import * as Yup from "yup";
-import { useFormik, FormikProvider } from "formik";
 
-import { styled, MuiButton, MuiCircularProgress } from "@/lib/index";
 import AppInput from "@/components/input";
+import { MuiButton, MuiCircularProgress, styled } from "@/lib/index";
 
 import { toast } from "react-toastify";
 
-import NotificationService from "@/services/notification-service";
 import AppSelect from "@/components/select/autoComplete";
+import useCachedDataStore from "@/config/store-config/lookup";
 import AppReleaseService from "@/services/app-release-service";
 import { IAppReleaseData } from "@/types/globalTypes";
-import useCachedDataStore from "@/config/store-config/lookup";
 
 const SCHEMA = Yup.object().shape({
   devicePlatform: Yup.number().required("required").min(1, "Required"),
