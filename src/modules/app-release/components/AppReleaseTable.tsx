@@ -7,7 +7,9 @@ import { NoData } from "@/components/feedback/NoData";
 import {
   MuiBox,
   MuiButton,
+  MuiCircularProgress,
   MuiIconButton,
+  MuiInputLabel,
   MuiTable,
   MuiTableBody,
   MuiTableCell,
@@ -33,6 +35,7 @@ import { AppReleaseForm } from "./AppReleaseForm";
 
 import { DeleteAppReleaseConfirm } from "./DeleteAppReleaseConfirm";
 
+import { CustomSwitch } from "@/components/input/CustomSwitch";
 import useCachedDataStore from "@/config/store-config/lookup";
 import AppReleaseService from "@/services/app-release-service";
 import { IAppReleaseData, IPagination } from "@/types/globalTypes";
@@ -53,7 +56,6 @@ export function AppReleaseTable() {
   const {
     lookup: { devicePlatform },
   } = useCachedDataStore((state) => state.cache);
-  console.log(devicePlatform);
   const queryClient = useQueryClient();
 
   const navigate = useNavigate();
@@ -227,6 +229,26 @@ export function AppReleaseTable() {
     return allChecks.some((val) => val === true);
   };
 
+  const handleToggleActiveStatus=(data:IAppReleaseData)=>()=>{
+    setUpdateData([data]);
+    setShow((prev)=>({...prev,updateStatus:true}));
+     AppReleaseService.updateActiveStatus(data?.id??'', {...data, isActive: !data?.isActive})
+      .then((res) => {
+        handleRefresh?.();
+        toast.success(res.data?.message || "");
+      })
+      .catch((err) => {
+        toast.error(err?.response?.data?.message || "");
+      }).finally(()=>{
+        setUpdateData([]);
+        setShow((prev)=>({...prev,updateStatus:false}));
+      });
+
+
+
+
+  }
+
   return (
     <StyledPage>
       <div className="tab-section">
@@ -310,6 +332,9 @@ export function AppReleaseTable() {
                   Date
                 </MuiTableCell>
                 <MuiTableCell className="heading" align="left">
+                  Active
+                </MuiTableCell>
+                <MuiTableCell className="heading" align="left">
                   Actions
                 </MuiTableCell>
               </MuiTableRow>
@@ -349,6 +374,28 @@ export function AppReleaseTable() {
 
                     <MuiTableCell align="left">
                       {formatDate(row?.creationTime || "")}
+                    </MuiTableCell>
+
+                    <MuiTableCell align="left">
+                      <div className="flex">
+                        {
+                          show.updateStatus && updateData?.[0]?.id ===row?.id  && (
+
+                            <MuiCircularProgress size={12} color="error" />
+                          )
+                        }
+
+                    <MuiInputLabel
+                  style={{ cursor: "pointer" }}
+                  onClick={handleToggleActiveStatus(row)}
+                  >
+                  <CustomSwitch
+                    disabled
+                    checked={row?.isActive}
+                    defaultChecked={row?.isActive}
+                  />
+                </MuiInputLabel>
+                      </div>
                     </MuiTableCell>
 
                     <MuiTableCell align="left">
@@ -596,6 +643,13 @@ const StyledPage = styled.section`
       width: 15px;
       height: 15px;
     }
+  }
+
+  .flex{
+    display: flex;
+    gap:5px;
+    align-items:center;
+
   }
 
   & .edit-btn {
