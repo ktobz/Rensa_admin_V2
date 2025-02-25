@@ -3,6 +3,7 @@ import {
   IApprovedLocationDataResponse,
   IDeliverySettingsReq,
   IDeliverySettingsResponse,
+  IOfferDataResponse,
   IPayoutData,
   IPayoutDataResponse,
   IServiceFeeReq,
@@ -17,6 +18,7 @@ const PATHS = {
   service: "/admin/configuration/service-fee",
   delivery: "/admin/configuration/delivery-fee",
   payout: "/admin/configuration/payout",
+  offer: "/admin/configuration/offer",
   balance: "/admin/termii/balance",
   pickupLocation: "/admin/approvedpickuplocation",
 };
@@ -76,6 +78,27 @@ const ConfigService = {
   },
   setPayoutSettings(id: number, data: IPayoutData) {
     return HTTP.put(`${PATHS.payout}/${id}`, data, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+  getOfferSettings(): AxiosPromise<IOfferDataResponse> {
+    return HTTP.get(`${PATHS.offer}`, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+  setOfferSettings(id: number, data: IPayoutData) {
+    return HTTP.put(`${PATHS.offer}/${id}`, data, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+  createOfferSettings(data: IPayoutData) {
+    return HTTP.post(`${PATHS.offer}`, data, {
       headers: {
         Authorization: getToken(),
       },

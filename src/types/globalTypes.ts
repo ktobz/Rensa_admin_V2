@@ -264,6 +264,10 @@ export type IServiceFeeReq = {
 export type IPayoutData = {
   waitTimeInHours: number;
   id?: number;
+  "offerExpirationInHours": number;
+  "offerReminderIntervalInMinutes": number;
+  "pendingCheckoutReminderInMinutes": number;
+  "maxCheckoutReminders": number;
 };
 
 export type IApprovedLocationData = {
@@ -753,6 +757,10 @@ export type ITermiiResponse = {
 
 export type IPayoutDataResponse = {
   result: IPayoutData[];
+};
+
+export type IOfferDataResponse = {
+  result: IPayoutData;
 };
 
 export type IApprovedLocationDataResponse = {

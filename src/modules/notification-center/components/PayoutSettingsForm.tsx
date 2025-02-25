@@ -1,15 +1,19 @@
+import { FormikProvider, useFormik } from "formik";
 import * as React from "react";
-import * as Yup from "yup";
-import { useFormik, FormikProvider } from "formik";
 import { toast } from "react-toastify";
+import * as Yup from "yup";
 
-import { styled, MuiButton, MuiCircularProgress } from "@/lib/index";
 import AppInput from "@/components/input";
+import { MuiButton, MuiCircularProgress, styled } from "@/lib/index";
 import ConfigService from "@/services/config-service";
 import { IPayoutData } from "@/types/globalTypes";
 
 const SCHEMA = Yup.object().shape({
   waitTimeInHours: Yup.number().required("required"),
+  offerExpirationInHours: Yup.number().required("required"),
+  offerReminderIntervalInMinutes: Yup.number().required("required"),
+  pendingCheckoutReminderInMinutes: Yup.number().required("required"),
+  maxCheckoutReminders: Yup.number().required("required"),
 });
 
 type IViewProps = {
@@ -26,6 +30,10 @@ export const PayoutSettingsForm = ({
   const initialData: IPayoutData = {
     id: initData?.id || "",
     waitTimeInHours: initData?.waitTimeInHours || "",
+    offerExpirationInHours: initData?.offerExpirationInHours || "",
+    offerReminderIntervalInMinutes: initData?.offerReminderIntervalInMinutes || "",
+    pendingCheckoutReminderInMinutes: initData?.pendingCheckoutReminderInMinutes || "",
+    maxCheckoutReminders: initData?.maxCheckoutReminders || "",
   };
 
   const [isSaving, setIsSaving] = React.useState(false);
@@ -37,7 +45,7 @@ export const PayoutSettingsForm = ({
       ConfigService.setPayoutSettings(initData?.id || 0, formValues)
         .then((res) => {
           refreshQuery?.();
-          toast.success(res.data?.message || "");
+          toast.success( "Payout config updated successfully");
         })
         .catch((err) => {
           toast.error(err?.response?.data?.message || "");
@@ -48,6 +56,28 @@ export const PayoutSettingsForm = ({
         .then((res) => {
           refreshQuery?.();
           toast.success(res.data?.message || "");
+        })
+        .catch((err) => {
+          toast.error(err?.response?.data?.message || "");
+        })
+        .finally(() => setIsSaving(false));
+    }
+
+    if (initData.id) {
+      ConfigService.setOfferSettings(initData?.id || 0, formValues)
+        .then((res) => {
+          refreshQuery?.();
+          toast.success( "Offer config updated successfully");
+        })
+        .catch((err) => {
+          toast.error(err?.response?.data?.message || "");
+        })
+        .finally(() => setIsSaving(false));
+    } else {
+      ConfigService.createOfferSettings(formValues)
+        .then((res) => {
+          refreshQuery?.();
+          toast.success("Offer config set successfully");
         })
         .catch((err) => {
           toast.error(err?.response?.data?.message || "");
@@ -76,13 +106,61 @@ export const PayoutSettingsForm = ({
           <AppInput
             id="waitTimeInHours"
             name="waitTimeInHours"
-            label="Wait Time In Hours"
+            label="Payout: Pay Seller After (hours)"
             placeholder=""
             type="number"
             value={values.waitTimeInHours}
             onChange={handleChange}
             helperText={errors.waitTimeInHours}
             error={!!errors.waitTimeInHours}
+            required
+          />
+               <AppInput
+            id="offerExpirationInHours"
+            name="offerExpirationInHours"
+            label="Pending Offer Expiration (hours)"
+            placeholder=""
+            type="number"
+            value={values.offerExpirationInHours}
+            onChange={handleChange}
+            helperText={errors.offerExpirationInHours}
+            error={!!errors.offerExpirationInHours}
+            required
+          />
+               <AppInput
+            id="offerReminderIntervalInMinutes"
+            name="offerReminderIntervalInMinutes"
+            label="Pending Offer Reminder Interval (minutes)"
+            placeholder=""
+            type="number"
+            value={values.offerReminderIntervalInMinutes}
+            onChange={handleChange}
+            helperText={errors.offerReminderIntervalInMinutes}
+            error={!!errors.offerReminderIntervalInMinutes}
+            required
+          />
+               <AppInput
+            id="pendingCheckoutReminderInMinutes"
+            name="pendingCheckoutReminderInMinutes"
+            label="Pending Checkout Reminder (minutes)"
+            placeholder=""
+            type="number"
+            value={values.pendingCheckoutReminderInMinutes}
+            onChange={handleChange}
+            helperText={errors.pendingCheckoutReminderInMinutes}
+            error={!!errors.pendingCheckoutReminderInMinutes}
+            required
+          />
+               <AppInput
+            id="maxCheckoutReminders"
+            name="maxCheckoutReminders"
+            label="Max. Checkout Reminder (times)"
+            placeholder=""
+            type="number"
+            value={values.maxCheckoutReminders}
+            onChange={handleChange}
+            helperText={errors.maxCheckoutReminders}
+            error={!!errors.maxCheckoutReminders}
             required
           />
 

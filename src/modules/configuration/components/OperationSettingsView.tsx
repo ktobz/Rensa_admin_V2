@@ -10,8 +10,7 @@ import {
   IconEdit,
   IconFee,
   IconOrder,
-  IconVisibility,
-  IconWallet,
+  IconWallet
 } from "@/lib/mui.lib.icons";
 
 import ConfigService from "@/services/config-service";
@@ -122,6 +121,19 @@ export function OperationSettingsView() {
     }
   );
 
+  const { data: offerSetting, isLoading: offerIsLoading } = useQuery(
+    ["offer-setting"],
+    () =>
+      ConfigService.getOfferSettings().then((res) => {
+        const data = res.data?.result;
+        return data || {};
+      }),
+    {
+      retry: 0,
+      refetchOnWindowFocus: false,
+    }
+  );
+
   const { data: termiiBalance, isLoading: termiiBalanceIsLoading } = useQuery(
     ["termii-balance"],
     () =>
@@ -158,6 +170,7 @@ export function OperationSettingsView() {
   };
   const handleRefreshPayout = () => {
     queryClient.invalidateQueries(["payout-setting"]);
+    queryClient.invalidateQueries(["offer-setting"]);
     handleCloseModal();
   };
 
@@ -167,7 +180,7 @@ export function OperationSettingsView() {
         <div className="tab-section">
           <div className="top-section">
             <MuiTypography variant="body2" className="heading">
-              Operations Settings
+              Pricing
             </MuiTypography>
           </div>
         </div>
@@ -307,7 +320,7 @@ export function OperationSettingsView() {
               </MuiTypography>
             </div>
 
-            <div className="data-row border">
+            <div className="data-row ">
               <MuiTypography variant="body1" className="label">
                 Bike fee per km
               </MuiTypography>
@@ -322,29 +335,7 @@ export function OperationSettingsView() {
           </div>
         </div>
 
-        <div className="settings-group">
-          <IconBankList className="icon" />
-          <div className="rows">
-            <div className="heading">
-              <MuiTypography variant="h3" className="group-heading">
-                Bank list
-              </MuiTypography>
-              <MuiBox className="action-group">
-                <MuiIconButton
-                  color="warning"
-                  onClick={handleToggleShow("bank")}
-                  className={`action-btn edit-btn btn `}>
-                  <IconEdit />
-                </MuiIconButton>
-              </MuiBox>
-            </div>
-            <div className="data-row border">
-              <MuiTypography variant="body1" className="label">
-                Update bank list
-              </MuiTypography>
-            </div>
-          </div>
-        </div>
+        
       </div>
 
       <div className="section">
@@ -358,7 +349,7 @@ export function OperationSettingsView() {
 
         <div className="settings-group">
           <IconClock className="icon" />
-          <div className="rows">
+          <div className="rows ">
             <div className="heading">
               <MuiTypography variant="h3" className="group-heading">
                 Payout
@@ -374,10 +365,42 @@ export function OperationSettingsView() {
             </div>
             <div className="data-row border">
               <MuiTypography variant="body1" className="label">
-                Pay seller after
+              Payout: Pay Seller After
               </MuiTypography>
               <MuiTypography variant="body1" className="value">
                 {payoutSetting?.waitTimeInHours || 0} hours
+              </MuiTypography>
+            </div>
+            <div className="data-row border">
+              <MuiTypography variant="body1" className="label">
+              Pending Offer Expiration
+              </MuiTypography>
+              <MuiTypography variant="body1" className="value">
+                {offerSetting?.offerExpirationInHours || 0} hours
+              </MuiTypography>
+            </div>
+            <div className="data-row border">
+              <MuiTypography variant="body1" className="label">
+              Pending Offer Reminder Interval
+              </MuiTypography>
+              <MuiTypography variant="body1" className="value">
+                {offerSetting?.offerReminderIntervalInMinutes || 0} mins
+              </MuiTypography>
+            </div>
+            <div className="data-row border">
+              <MuiTypography variant="body1" className="label">
+              Pending Checkout Reminder
+              </MuiTypography>
+              <MuiTypography variant="body1" className="value">
+                {offerSetting?.pendingCheckoutReminderInMinutes || 0} mins
+              </MuiTypography>
+            </div>
+            <div className="data-row border">
+              <MuiTypography variant="body1" className="label">
+              Max. Checkout Reminder
+              </MuiTypography>
+              <MuiTypography variant="body1" className="value">
+                {offerSetting?.maxCheckoutReminders || 0} times
               </MuiTypography>
             </div>
           </div>
@@ -385,15 +408,15 @@ export function OperationSettingsView() {
 
         <div className="settings-group">
           <IconWallet className="icon" />
-          <div className="rows">
+          <div className="rows border">
             <div className="heading">
               <MuiTypography variant="h3" className="group-heading">
-                Termii
+                Third-party balance
               </MuiTypography>
             </div>
             <div className="data-row">
               <MuiTypography variant="body1" className="label">
-                Current balance
+                Termii balance
               </MuiTypography>
               <MuiTypography variant="body1" className="value">
                 ₦
@@ -405,9 +428,9 @@ export function OperationSettingsView() {
             </div>
           </div>
         </div>
-        <div className="settings-group">
+        {/* <div className="settings-group">
           <IconWallet className="icon" />
-          <div className="rows">
+          <div className="rows border">
             <div className="heading">
               <MuiTypography variant="h3" className="group-heading">
                 Approved Pickup Location
@@ -424,6 +447,29 @@ export function OperationSettingsView() {
             <div className="data-row">
               <MuiTypography variant="body1" className="label">
                 Manage approved pickup locations for Pro-sellers
+              </MuiTypography>
+            </div>
+          </div>
+        </div> */}
+        <div className="settings-group">
+          <IconBankList className="icon" />
+          <div className="rows">
+            <div className="heading">
+              <MuiTypography variant="h3" className="group-heading">
+                Bank list
+              </MuiTypography>
+              <MuiBox className="action-group">
+                <MuiIconButton
+                  color="warning"
+                  onClick={handleToggleShow("bank")}
+                  className={`action-btn edit-btn btn `}>
+                  <IconEdit />
+                </MuiIconButton>
+              </MuiBox>
+            </div>
+            <div className="data-row">
+              <MuiTypography variant="body1" className="label">
+                Update bank list
               </MuiTypography>
             </div>
           </div>
@@ -467,10 +513,10 @@ export function OperationSettingsView() {
         open={show.payout}
         alignTitle="left"
         closeOnOutsideClick={false}
-        title={"Payout Settings"}
+        title={"Timer Config"}
         showClose>
         <PayoutSettingsForm
-          initData={payoutSetting}
+          initData={{...payoutSetting, ...offerSetting}}
           refreshQuery={handleRefreshPayout}
           handleClose={handleCloseModal}
         />
