@@ -352,7 +352,7 @@ export function OperationSettingsView() {
           <div className="rows ">
             <div className="heading">
               <MuiTypography variant="h3" className="group-heading">
-                Payout
+                Timer Config
               </MuiTypography>
               <MuiBox className="action-group">
                 <MuiIconButton
