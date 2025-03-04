@@ -14,7 +14,7 @@ const settleStatusData: {
   },
   accepted: {
     bg: "",
-    color: "#fff",
+    color: "#45B26B",
     text: "Accepted",
   },
   rejected: {
