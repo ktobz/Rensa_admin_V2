@@ -1,4 +1,4 @@
-export type ISettlementStatus = "accepted" | "pending" | "rejected" | "expired";
+export type ISettlementStatus = "accepted" | "pending" | "rejected" | "expired"|'declinedbybidder';
 
 export interface ILoginReq {
   username: string;

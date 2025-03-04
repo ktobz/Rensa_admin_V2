@@ -1,6 +1,4 @@
-import { IconOrder } from "@/lib/mui.lib.icons";
 import { ISettlementStatus } from "@/types/globalTypes";
-import { useTimer } from "react-timer-hook";
 
 const settleStatusData: {
   [key in ISettlementStatus]: {
@@ -28,6 +26,11 @@ const settleStatusData: {
     bg: "#F0F0F0",
     color: "#777E90",
     text: "Expired",
+  },
+  declinedbybidder: {
+    bg: "#F0F0F0",
+    color: "#777E90",
+    text: "Declined by bidder",
   },
 };
 
