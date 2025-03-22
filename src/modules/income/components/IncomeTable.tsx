@@ -1,12 +1,10 @@
 import * as React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { NoData } from "@/components/feedback/NoData";
 import {
-  MuiButton,
   MuiIconButton,
-  MuiPagination,
   MuiTable,
   MuiTableBody,
   MuiTableCell,
@@ -14,28 +12,24 @@ import {
   MuiTableHead,
   MuiTableRow,
   MuiTypography,
-  styled,
+  styled
 } from "@/lib/index";
 
-import { IPagination, ISalesData, IStatus } from "@/types/globalTypes";
+import { IPagination, ISalesData } from "@/types/globalTypes";
 
+import { TotalCard } from "@/components/index";
+import CustomSearch from "@/components/input/CustomSearch";
+import TableWrapper from "@/components/table/TableWrapper";
+import useCachedDataStore from "@/config/store-config/lookup";
+import { IconVisibility } from "@/lib/mui.lib.icons";
+import TransactionService from "@/services/transaction-service";
 import CustomTableSkeleton from "components/skeleton/CustomTableSkeleton";
+import throttle from "lodash.throttle";
 import {
   createPaginationData,
   formatCurrency,
   formatDate,
 } from "utils/helper-funcs";
-import { format } from "date-fns";
-import TableWrapper from "@/components/table/TableWrapper";
-import { IconOrder, IconVisibility } from "@/lib/mui.lib.icons";
-import CustomTabs from "@/components/other/CustomTabs";
-import CustomTab from "@/components/other/CustomTab";
-import CustomSearch from "@/components/input/CustomSearch";
-import { TotalCard } from "@/components/index";
-import { OrderIcon } from "@/components/feedback/OrderStatus";
-import TransactionService from "@/services/transaction-service";
-import useCachedDataStore from "@/config/store-config/lookup";
-import throttle from "lodash.throttle";
 
 type IProps = {
   variant?: "page" | "section" | "home" | "cards";
@@ -184,7 +178,7 @@ export function IncomeTable() {
         </div>
       </div>
 
-      <TableWrapper showPagination pagination={pagination}>
+      <TableWrapper handleChangePagination={handleChange} showPagination pagination={pagination}>
         <MuiTableContainer
           sx={{
             maxWidth: "100%",
