@@ -23,7 +23,7 @@ import { useLocation } from "react-router-dom";
 
 import useCachedDataStore from "@/config/store-config/lookup";
 import ListingService from "@/services/listing-service";
-import { getIdName, getListingTimeRemaining } from "@/utils/helper-funcs";
+import { formatCurrency, getIdName, getListingTimeRemaining } from "@/utils/helper-funcs";
 import { toast } from "react-toastify";
 import SimpleBar from "simplebar-react";
 import { ActionConfirm } from "../components/ActionConfirm";
@@ -246,6 +246,14 @@ export function ListingDetails() {
               <MuiTypography variant="body2" className="body">
                 {getIdName(data?.pickupMethod ?? 1, deliveryFeePickupMethod) ||
                   ""} { data?.isPickupEnabled && '& Pickup'}
+              </MuiTypography>
+            </div>
+            <div className="group">
+              <MuiTypography variant="body1" className="header">
+                Listing Price
+              </MuiTypography>
+              <MuiTypography variant="body2" className="body">
+               {formatCurrency({amount:data?.price,})}
               </MuiTypography>
             </div>
           </div>

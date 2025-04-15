@@ -1,13 +1,11 @@
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
+import { useNavigate } from "react-router-dom";
 
 import { NoData } from "@/components/feedback/NoData";
 import {
-  MuiButton,
   MuiCardMedia,
   MuiIconButton,
-  MuiPagination,
   MuiTable,
   MuiTableBody,
   MuiTableCell,
@@ -15,24 +13,22 @@ import {
   MuiTableHead,
   MuiTableRow,
   MuiTypography,
-  styled,
+  styled
 } from "@/lib/index";
 
-import { IPagination, IReportedListingData } from "@/types/globalTypes";
 import CustomTableSkeleton from "@/components/skeleton/CustomTableSkeleton";
-import {
-  createPaginationData,
-  formatCurrency,
-  getIdName,
-} from "utils/helper-funcs";
 import TableWrapper from "@/components/table/TableWrapper";
 import { IconVisibility } from "@/lib/mui.lib.icons";
+import { IPagination, IReportedListingData } from "@/types/globalTypes";
+import {
+  createPaginationData,
+  getIdName
+} from "utils/helper-funcs";
 
 import CustomSearch from "@/components/input/CustomSearch";
 import StatusFilter from "@/components/select/StatusFillter";
-import ListingService from "@/services/listing-service";
 import useCachedDataStore from "@/config/store-config/lookup";
-import { OrderStatus } from "@/components/feedback/OrderStatus";
+import ListingService from "@/services/listing-service";
 import throttle from "lodash.throttle";
 
 const defaultQuery: IPagination = {
@@ -130,6 +126,7 @@ export function ReportTable({
   const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setText(value);
+    setPagination((prev) => ({ ...prev, page:1, }));
     throttledChangeHandler();
   };
 

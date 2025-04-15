@@ -1,24 +1,21 @@
 import * as React from "react";
-import * as Yup from "yup";
-import { useFormik, FormikProvider } from "formik";
 
 import {
-  styled,
   MuiButton,
   MuiCircularProgress,
   MuiTypography,
+  styled,
 } from "@/lib/index";
 import { toast } from "react-toastify";
 
-import { CustomSwitch } from "@/components/input/CustomSwitch";
-import { useQuery, useQueryClient } from "react-query";
-import { IBank } from "@/types/globalTypes";
-import AuthService from "@/services/auth.service";
 import { NoData } from "@/components/feedback/NoData";
-import LineListSkeleton from "@/components/skeleton/LineListSkeleton";
-import AppVirtualizedCountriesSelect from "@/components/select/test";
-import throttle from "lodash.throttle";
 import CustomSearch from "@/components/input/CustomSearch";
+import { CustomSwitch } from "@/components/input/CustomSwitch";
+import LineListSkeleton from "@/components/skeleton/LineListSkeleton";
+import AuthService from "@/services/auth.service";
+import { IBank } from "@/types/globalTypes";
+import throttle from "lodash.throttle";
+import { useQuery, useQueryClient } from "react-query";
 
 type IViewProps = {
   handleClose: () => void;

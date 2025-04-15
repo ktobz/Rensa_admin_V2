@@ -37,14 +37,14 @@ export const randomizer = () => {
 export const formatCurrency = (value: {
   currency?: string;
   style?: string;
-  amount: number;
+  amount: number|undefined;
 }) => {
   const formatter = new Intl.NumberFormat(undefined, {
     style: value.style || "currency",
     currency: value.currency || "NGN",
   });
 
-  return formatter.format(value.amount);
+  return formatter.format(value?.amount||0);
 };
 
 export async function copyTextToClipboard(text: string) {

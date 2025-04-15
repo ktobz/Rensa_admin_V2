@@ -302,6 +302,7 @@ export function OrderTable({
 
   const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
+    setPagination((prev) => ({ ...prev, page:1, }));
     throttleChangeHandler();
     setText(value);
   };

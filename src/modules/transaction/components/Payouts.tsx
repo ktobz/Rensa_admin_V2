@@ -1,8 +1,8 @@
 import * as React from "react";
 import { useQuery, useQueryClient } from "react-query";
-import { format } from "date-fns";
 
 import { NoData } from "@/components/feedback/NoData";
+import TableWrapper from "@/components/table/TableWrapper";
 import {
   MuiBox,
   MuiCircularProgress,
@@ -16,6 +16,7 @@ import {
   MuiTypography,
   styled,
 } from "@/lib/index";
+import { IconRetry, IconVerify, IconVisibility } from "@/lib/mui.lib.icons";
 import CustomTableSkeleton from "components/skeleton/CustomTableSkeleton";
 import {
   createPaginationData,
@@ -23,30 +24,25 @@ import {
   formatDate,
   getIdName,
 } from "utils/helper-funcs";
-import TableWrapper from "@/components/table/TableWrapper";
-import { IconRetry, IconVerify, IconVisibility } from "@/lib/mui.lib.icons";
 
 import CustomSearch from "@/components/input/CustomSearch";
 
+import { OrderStatus } from "@/components/feedback/OrderStatus";
 import AppCustomModal from "@/components/modal/Modal";
+import StatusFilter from "@/components/select/StatusFillter";
+import useCachedDataStore from "@/config/store-config/lookup";
+import TransactionService from "@/services/transaction-service";
 import {
   IPagination,
   IPayoutResponse,
   IStatus,
-  ITransactionData,
-  ITransactions,
-  ITransactionsResponse,
-  IUserPayout,
+  IUserPayout
 } from "@/types/globalTypes";
-import { TransactionDetails } from "./TransactionDetails";
-import TransactionService from "@/services/transaction-service";
-import { OrderStatus } from "@/components/feedback/OrderStatus";
-import StatusFilter from "@/components/select/StatusFillter";
-import useCachedDataStore from "@/config/store-config/lookup";
 import { AxiosPromise } from "axios";
-import { Link, useNavigate } from "react-router-dom";
 import throttle from "lodash.throttle";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { TransactionDetails } from "./TransactionDetails";
 
 const defaultQuery: IPagination = {
   pageSize: 15,
@@ -164,6 +160,7 @@ export function PayoutTableView({
   const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setText(value);
+    setPagination((prev) => ({ ...prev, page:1, }));
     debouncedChangeHandler();
   };
 

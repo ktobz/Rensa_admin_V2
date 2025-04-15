@@ -123,6 +123,7 @@ export function IncomeTable() {
   const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setText(value);
+    setPagination((prev) => ({ ...prev, page:1, }));
     throttledChangeHandler();
   };
 

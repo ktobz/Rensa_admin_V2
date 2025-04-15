@@ -6,13 +6,13 @@ import { NoData } from "@/components/feedback/NoData";
 import { MuiBox, MuiTypography, styled } from "@/lib/index";
 import { IconNotificationInfo } from "@/lib/mui.lib.icons";
 
-import { IListingData, ISettlementStatus } from "@/types/globalTypes";
-import CustomTabs from "@/components/other/CustomTabs";
-import CustomTab from "@/components/other/CustomTab";
 import { UserDetailCard } from "@/components/card/UserCard";
-import { BidStatus } from "./BidStatus";
+import CustomTab from "@/components/other/CustomTab";
+import CustomTabs from "@/components/other/CustomTabs";
 import useCachedDataStore from "@/config/store-config/lookup";
+import { IListingData, ISettlementStatus } from "@/types/globalTypes";
 import { formatCurrency, formatDate } from "@/utils/helper-funcs";
+import { BidStatus } from "./BidStatus";
 
 type IProps = {
   listingData: IListingData | null;
@@ -67,19 +67,20 @@ export function BidsView({ isLoading, listingData, isError }: IProps) {
           variant="fullWidth"
           style={{ width: "100%" }}
           value={current || 0}>
+       
           <CustomTab
             onClick={handleChangeIndex(0)}
             value={0}
-            label="Bid"
+            label="Offers"
             current={current}
             hideIcon
             variant="primary"
             className="custom-tab"
           />
-          <CustomTab
+             <CustomTab
             onClick={handleChangeIndex(1)}
             value={1}
-            label="Offers"
+            label="Bid"
             current={current}
             hideIcon
             variant="primary"
@@ -88,7 +89,7 @@ export function BidsView({ isLoading, listingData, isError }: IProps) {
         </CustomTabs>
       </div>
       <div className="rows-wrapper">
-        {current === 0 ? (
+        {current === 1 ? (
           <div className="heading">
             <MuiTypography variant="body1" className="section-heading">
               Recent bids
@@ -114,7 +115,7 @@ export function BidsView({ isLoading, listingData, isError }: IProps) {
             </MuiTypography>
           </div>
         )}
-        {current === 0 && (
+        {current === 1 && (
           <SimpleBar className="list-wrapper">
             {!isLoading &&
               bids &&
@@ -154,7 +155,7 @@ export function BidsView({ isLoading, listingData, isError }: IProps) {
             )}
           </SimpleBar>
         )}
-        {current === 1 && (
+        {current === 0 && (
           <SimpleBar className="list-wrapper">
             {!isLoading &&
               offers &&
@@ -180,7 +181,7 @@ export function BidsView({ isLoading, listingData, isError }: IProps) {
                         style: "decimal",
                       })}
                     </MuiTypography>
-                    {current == 1 && (
+                    {current == 0 && (
                       <BidStatus
                         status={row?.bidStatusDescription as ISettlementStatus}
                       />
