@@ -88,6 +88,7 @@ export function SettlementTable({
   const [text, setText] = React.useState("");
 
   const handleSetFilter = (values: number[]) => {
+    setPagination((prev) => ({ ...prev, page:1, }));
     setFilter(values);
   };
 
@@ -158,17 +159,18 @@ export function SettlementTable({
 
   const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    setText(value);
     setPagination((prev) => ({ ...prev, page:1, }));
+    setText(value);
     debouncedChangeHandler();
   };
+
 
   return (
     <StyledPage>
       <div className="tab-section">
         <div className="top-section">
           <MuiTypography variant="body2" className="heading">
-            Listings
+            Listings 
           </MuiTypography>
           <MuiTypography
             className="total"

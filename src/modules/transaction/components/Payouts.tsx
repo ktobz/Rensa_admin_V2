@@ -143,6 +143,7 @@ export function PayoutTableView({
   };
 
   const handleSetFilter = (values: number[]) => {
+    setPagination((prev) => ({ ...prev, page:1, }));
     setFilter(values);
   };
 
@@ -159,8 +160,8 @@ export function PayoutTableView({
 
   const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    setText(value);
     setPagination((prev) => ({ ...prev, page:1, }));
+    setText(value);
     debouncedChangeHandler();
   };
 

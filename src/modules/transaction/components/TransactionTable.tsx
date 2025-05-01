@@ -108,7 +108,6 @@ export function TransactionTable({
         const { data, ...paginationData } = res.data?.result;
         const { hasNextPage, hasPrevPage, total, totalPages } =
           createPaginationData(data, paginationData);
-
         setPagination((prev) => ({
           ...prev,
           total,
@@ -133,6 +132,7 @@ export function TransactionTable({
   };
 
   const handleSetFilter = (values: number[]) => {
+    setPagination((prev) => ({ ...prev, page:1, }));
     setFilter(values);
   };
 
@@ -149,8 +149,8 @@ export function TransactionTable({
 
   const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    setText(value);
     setPagination((prev) => ({ ...prev, page:1, }));
+    setText(value);
     debouncedChangeHandler();
   };
 

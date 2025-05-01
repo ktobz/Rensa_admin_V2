@@ -65,6 +65,7 @@ export function ReportTable({
   const [text, setText] = React.useState("");
 
   const handleSetFilter = (values: number[]) => {
+    setPagination((prev) => ({ ...prev, page:1, }));
     setFilter(values);
   };
 
@@ -125,8 +126,8 @@ export function ReportTable({
 
   const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    setText(value);
     setPagination((prev) => ({ ...prev, page:1, }));
+    setText(value);
     throttledChangeHandler();
   };
 

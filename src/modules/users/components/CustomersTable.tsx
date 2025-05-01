@@ -50,6 +50,7 @@ export function CustomersTable() {
   });
 
   const handleChangeIndex = (index: number) => () => {
+    setPagination((prev) => ({ ...prev, page:1, }));
     setCurrent(index);
   };
 
@@ -150,8 +151,8 @@ export function CustomersTable() {
 
   const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    setText(value);
     setPagination((prev) => ({ ...prev, page:1, }));
+    setText(value);
     debouncedChangeHandler();
   };
 

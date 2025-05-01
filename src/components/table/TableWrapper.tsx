@@ -34,6 +34,7 @@ export default function TableWrapper({
     }
   };
 
+
   return (
     <StyledWrapper className={className}>
       {children}
@@ -52,6 +53,8 @@ export default function TableWrapper({
               count={pagination.totalPages}
               onChange={handleChange}
               color="primary"
+              page={pagination.page}
+            defaultPage={pagination?.page}
               // variant=""
               shape="rounded"
               sx={{
