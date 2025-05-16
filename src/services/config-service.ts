@@ -1,6 +1,7 @@
 import {
   IApprovedLocation,
   IApprovedLocationDataResponse,
+  IBankProviderResponse,
   IDeliverySettingsReq,
   IDeliverySettingsResponse,
   IOfferDataResponse,
@@ -21,6 +22,8 @@ const PATHS = {
   offer: "/admin/configuration/offer",
   balance: "/admin/termii/balance",
   pickupLocation: "/admin/approvedpickuplocation",
+  getPaymentProvider: "/admin/bank/get-bank-provider-settings",
+  setPaymentProvider: "/admin/bank/set-bank-provider-settings",
 };
 
 const ConfigService = {
@@ -152,6 +155,26 @@ const ConfigService = {
       }
     );
   },
+
+  getBankProviderSettings(): AxiosPromise<IBankProviderResponse> {
+    return HTTP.get(`${PATHS.getPaymentProvider}`, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+
+  setBankProviderSettings(data: {
+    "bankProviderTransactionType": number,
+    "bankProvider": number
+  }): AxiosPromise<IBankProviderResponse> {
+    return HTTP.post(`${PATHS.setPaymentProvider}`, data, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+
 
   createServiceFeeSettings(data: IServiceFeeReq) {
     return HTTP.post(`${PATHS.service}`, data, {

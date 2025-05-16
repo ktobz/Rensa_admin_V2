@@ -17,12 +17,12 @@ import {
 } from "@/lib/mui.lib.icons";
 
 import AppCustomModal from "@/components/modal/Modal";
-import { IAutomatedMessage, IPagination } from "@/types/globalTypes";
-import NotificationService from "@/services/notification-service";
-import CustomTabs from "@/components/other/CustomTabs";
 import CustomTab from "@/components/other/CustomTab";
-import { AutomatedMessageEntryForm } from "./AutomatedMessageEntryForm";
+import CustomTabs from "@/components/other/CustomTabs";
 import useCachedDataStore from "@/config/store-config/lookup";
+import NotificationService from "@/services/notification-service";
+import { IAutomatedMessage, IPagination } from "@/types/globalTypes";
+import { AutomatedMessageEntryForm } from "./AutomatedMessageEntryForm";
 
 const defaultQuery: IPagination = {
   pageSize: 1000,
@@ -215,7 +215,7 @@ export function AutomatedMessagesView() {
 
 const StyledPage = styled.section`
   width: 100%;
-  height: 450px;
+  // height: 450px;
 
   & .top-section {
     display: flex;

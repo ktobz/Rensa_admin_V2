@@ -254,6 +254,14 @@ export type IDeliverySettingsData = IDeliverySettingsReq & {
   id: number;
 };
 
+export type IBankProviderData =  {
+  id: number;
+  bankProvider:number;
+  isActive:boolean;
+  transactionType:number;
+};
+
+
 export type IServiceFeeReq = {
   buyerServiceFee: number;
   buyerServiceFeeCapAmount: number;
@@ -695,6 +703,12 @@ export type IOrderStatsResponse = {
 
 export type IDeliverySettingsResponse = {
   result: IDeliverySettingsData[];
+};
+
+// BANK PROVIDER SETTINGS
+
+export type IBankProviderResponse = {
+  result: IBankProviderData[];
 };
 
 export type IBank = {

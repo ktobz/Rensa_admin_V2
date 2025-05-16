@@ -1,8 +1,9 @@
 import { styled } from "@/lib/index";
 import { AutomatedMessagesView } from "../components/AutomatedMessagesView";
-import { OperationSettingsView } from "../components/OperationSettingsView";
 import { CategoryTable } from "../components/CategoryTable";
 import { ConditionTable } from "../components/ConditionTable";
+import { OperationSettingsView } from "../components/OperationSettingsView";
+import { PaymentProviderView } from "../components/PaymentProviderView";
 
 export function ConfigurationView() {
   return (
@@ -13,8 +14,15 @@ export function ConfigurationView() {
         </div>
 
         <div className="grid-column right-column">
+          <section className="auto-message">
           <AutomatedMessagesView />
+
+          </section>
+          <PaymentProviderView />
         </div>
+        {/* <div className="payment">
+          <PaymentProviderView />
+        </div> */}
         <div className="third">
           <CategoryTable />
         </div>
@@ -37,8 +45,8 @@ const PageContent = styled.section`
     gap: 15px;
     margin-bottom: 20px;
 
-    & .right-column,
-    .section {
+  
+    .auto-message {
       padding: 10px 15px;
       border-radius: 10px;
       border: 1px solid #f4f4f4;
@@ -60,8 +68,8 @@ const PageContent = styled.section`
     }
 
     & .right-column {
-      height: auto;
-      min-height: 850px;
+      // height: auto;
+      // min-height: 850px;
     }
   }
 `;
