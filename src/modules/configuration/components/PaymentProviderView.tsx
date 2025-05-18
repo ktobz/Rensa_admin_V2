@@ -2,8 +2,7 @@ import { useQuery, useQueryClient } from "react-query";
 
 import { MuiCircularProgress, MuiRadio, MuiTypography, styled } from "@/lib/index";
 import {
-  IconClock,
-  IconWallet
+  IconDownload
 } from "@/lib/mui.lib.icons";
 
 import useCachedDataStore from "@/config/store-config/lookup";
@@ -100,11 +99,11 @@ export function PaymentProviderView() {
         </div>
 
         <div className="settings-group">
-          <IconClock className="icon" />
+          <IconDownload className="icon" style={{transform:'rotateZ(180deg)'}} />
           <div className="rows ">
             <div className="heading">
               <MuiTypography variant="h3" className="group-heading">
-                Collection
+                Payout
               </MuiTypography>
              
             </div>
@@ -138,11 +137,11 @@ export function PaymentProviderView() {
         </div>
 
         <div className="settings-group">
-          <IconWallet className="icon" />
+          <IconDownload className="icon" />
           <div className="rows ">
             <div className="heading">
               <MuiTypography variant="h3" className="group-heading">
-                Payments
+                Collection
               </MuiTypography>
             </div>
             {

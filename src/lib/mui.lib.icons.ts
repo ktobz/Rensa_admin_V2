@@ -119,6 +119,9 @@ import { ReactComponent as IconProSellerDisable } from "assets/icon/proseller_di
 import { ReactComponent as IconProSellerEnable } from "assets/icon/proseller_enable.svg";
 
 
+import { ReactComponent as IconDownload } from "assets/icon/download.svg";
+
+
 
 export {
   IconAdd,
@@ -156,8 +159,7 @@ export {
   IconDeleteLarge,
   IconDialPad,
   IconDiesel,
-  IconDot,
-  IconEarning,
+  IconDot, IconDownload, IconEarning,
   IconEdit,
   IconEmail,
   IconEye,
