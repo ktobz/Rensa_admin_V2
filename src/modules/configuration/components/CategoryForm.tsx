@@ -1,17 +1,16 @@
+import { FormikProvider, useFormik } from "formik";
 import * as React from "react";
-import * as Yup from "yup";
-import { useFormik, FormikProvider } from "formik";
 import { toast } from "react-toastify";
+import * as Yup from "yup";
 
+import AppInput from "@/components/input";
 import {
-  styled,
+  IconAttachment,
   MuiButton,
   MuiCircularProgress,
   MuiInputAdornment,
-  IconAttachment,
+  styled,
 } from "@/lib/index";
-import AppInput from "@/components/input";
-import ConfigService from "@/services/config-service";
 import NotificationService from "@/services/notification-service";
 
 const SCHEMA = Yup.object().shape({
@@ -83,10 +82,10 @@ export const CategoryForm = ({
       // setFile(e.target.files[0]);
       const fileName = file?.name;
       const fileType = file?.type;
-
-      if (fileType !== "image/svg+xml") {
+// "image/svg+xml"
+      if (fileType !== "image/png") {
         setFieldValue("fileUrl", "");
-        return toast.error("Please upload an SVG file");
+        return toast.error("Please upload an PNG file");
       }
 
       setFieldValue("fileUrl", fileName);
@@ -129,7 +128,7 @@ export const CategoryForm = ({
           <AppInput
             id="fileUrl"
             name="fileUrl"
-            label="Upload icon (SVG only)"
+            label="Upload icon (PNG only)"
             placeholder="Choose file"
             type="text"
             value={values.fileUrl}
