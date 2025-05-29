@@ -1,4 +1,3 @@
-import React from "react";
 import { styled } from "lib/index";
 
 interface Props {
@@ -16,10 +15,10 @@ export function Loader(props: Props) {
 const StyledLoader = styled.div<PropsStyle>`
   width: ${({ size }) => `${size}px`};
   height: ${({ size }) => `${size}px`};
-  border: ${({ size }) => `${size / 10}px solid #838383`};
-  border-bottom-color: #000000;
-  border-right-color: #000000;
-  border-left-color: #000000;
+  border: ${({ size }) => `${size / 10.687}px solid #ffffff`};
+  border-bottom-color: #EF5050;
+  border-right-color: #EF5050;
+  border-left-color: #EF5050;
   border-radius: 50%;
   display: inline-block;
   box-sizing: border-box;

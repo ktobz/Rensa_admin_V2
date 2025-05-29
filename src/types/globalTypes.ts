@@ -956,6 +956,7 @@ export type IListingData = {
   listingType: number;
   isPickupEnabled: boolean;
   isPickupUsed: boolean;
+  placeId:string;
 };
 
 export type IReportedListingData = {

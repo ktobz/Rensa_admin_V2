@@ -1,5 +1,4 @@
 import { FormikProvider, useFormik } from "formik";
-import debounceFunc from "lodash.throttle";
 import * as React from "react";
 import * as Yup from "yup";
 
@@ -10,22 +9,22 @@ import {
   MuiTypography,
   styled,
 } from "@/lib/index";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
-import { PlaceType } from "@/types/globalTypes";
+import { IListingData, PlaceType, StructuredFormatting } from "@/types/globalTypes";
 import { useQuery } from "react-query";
 
-// import { useIds } from "@/utils/hooks";
 import AppInput from "@/components/input";
 import GoogleLocationInput from "@/components/select/GoogleLocationInput";
 import AppSelect from "@/components/select/autoComplete";
-import AppVirtualizedCountriesSelect from "@/components/select/test";
 import useCachedDataStore from "@/config/store-config/lookup";
 import NotificationService from "@/services/notification-service";
 
-import CustomerService from "@/services/customer-service";
+import { UserDetailCard } from "@/components/card/UserCard";
+import { Loader } from "@/components/loader/Loader";
 import ListingService from "@/services/listing-service";
-import { formatToPrice } from "@/utils/helper-funcs";
+import { formatToPrice, onImageEdit } from "@/utils/helper-funcs";
+import { useIds } from "@/utils/hooks";
 import { SelectChangeEvent } from "@mui/material";
 import { toast } from "react-toastify";
 import CustomImageUploader from "../components/CustomImageUploader";
@@ -43,7 +42,10 @@ const SCHEMA = Yup.object().shape({
   listingType: Yup.number().required("required").min(1, "required"),
 });
 
-export function AddListing() {
+export function EditListingDetails() {
+  const { state } = useLocation();
+  const { reportId } = useIds();
+
   const {
     lookup: { deliveryFeePickupMethod, durationHours, listingType },
   } = useCachedDataStore((state) => state.cache);
@@ -57,40 +59,65 @@ export function AddListing() {
 
   const navigate = useNavigate();
 
-  // const queryClient = useQueryClient();
-  // const { state } = useLocation();
-  // const { reportId } = useIds();
-
-  const [name, setName] = React.useState("");
-  const [compText, setUserNameText] = React.useState("");
   const [resetImages, setResetImages] = React.useState(false);
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+
+  const { data, isLoading } = useQuery(
+    ["listing-details", reportId],
+    () =>
+      ListingService.getDetails(reportId || "").then((res) => {
+        const data = res.data?.result;
+        return data;
+      }),
+    {
+      retry: 0,
+      refetchOnWindowFocus: false,
+      enabled: !!reportId,
+      initialData: state as IListingData,
+    }
+  );
+
   const [locationValue, setLocationValue] = React.useState<PlaceType | null>(
     () => {
+      if(data){
+        return {
+          description: data?.location,
+          place_id: data?.placeId||'',
+          structured_formatting: data?.location as unknown as StructuredFormatting
+        } 
+      }
       return null;
     }
   );
 
+
   const initialData = {
-    location: "",
-    catalogueCategoryId: 0,
-    catalogueConditionId: 0,
-    description: "",
-    durationInHours: 0,
-    files: [],
-    name: "",
-    pickupMethod: 0,
-    price: "",
-    userId: "",
+    location:data?.location || "",
+    catalogueCategoryId:data?.catalogueCategory?.id || 0,
+    catalogueConditionId:data?.catalogueCondition?.id || 0,
+    description: data?.description || "",
+    durationInHours:data?.durationInHours || 0,
+    files: data?.catalogueAttachments?.map((x)=>x?.url) || [],
+    name:data?.name || "",
+    pickupMethod:data?.pickupMethod || 0,
+    price:formatToPrice(data?.price.toString()||'0') || "",
+    userId:data?.creatorUserId || "",
     userId_name: "",
-    files_preview: [],
-    listingType: 0,
+    files_preview: data?.catalogueAttachments?.map((x)=>x?.url) || [],
+    listingType:data?.listingType || 0,
   };
+
 
   const createListing = (values: any) => {
     if (values?.files?.length === 0) {
       toast.warn("Listing Image is missing");
+      return false;
+    }
+
+    if (!locationValue?.place_id?.trim()) {
+      toast.warn("Place ID is missing. Kindly re-enter the item location");
       return false;
     }
 
@@ -123,9 +150,7 @@ export function AddListing() {
             const formattedAddress = place.formatted_address;
             const latitude = place.geometry.location.lat();
             const longitude = place.geometry.location.lng();
-            const price = values?.price?.replaceAll(",", "");
-
-            // return console.log(price);
+            const price = (values?.price)?.replaceAll(",", "");
 
             setIsSubmitting(true);
             const formData = new FormData();
@@ -133,12 +158,12 @@ export function AddListing() {
             formData.append("UserId", values?.userId);
             formData.append("Description", values.description);
             formData.append("Price", price);
+            formData.append("LocationInfo.PlaceId", locationValue?.place_id||'');
             formData.append("LocationInfo.Location", formattedAddress);
             formData.append("LocationInfo.Latitude", latitude);
             formData.append("LocationInfo.Longitude", longitude);
             formData.append("LocationInfo.City", city);
             formData.append("LocationInfo.State", state);
-            formData.append("LocationInfo.PlaceId", locationValue?.place_id||'');
             formData.append(
               "CatalogueConditionId",
               values?.catalogueConditionId
@@ -148,14 +173,22 @@ export function AddListing() {
             formData.append("PickupMethod", values?.pickupMethod);
             formData.append("PickupMethod", values?.listingType);
             for (let i = 0; i < values.files.length; i += 1) {
-              formData.append("Files", values.files[i] as any);
+              const image = values.files[i];
+
+              if(typeof image !=='string'){
+                formData.append("Files", values.files[i] as any);
+              }else{
+               const v = await onImageEdit(image);
+               formData.append("Files", v as any);
+
+              }
             }
 
             try {
-              const { data } = await ListingService.create(formData);
+              const { data } = await ListingService.update(reportId, formData);
               toast.success(data?.result?.message);
               setIsSubmitting(false);
-              navigate("/app/marketplace/listings");
+              navigate(`/app/marketplace/listings/${reportId}`);
             } catch (error: any) {
               toast.error(error?.response?.data?.message);
               setIsSubmitting(false);
@@ -169,53 +202,22 @@ export function AddListing() {
     }
   };
 
-  const formik = useFormik({
-    initialValues: initialData,
+  const formik =  useFormik({
+    initialValues: data ? initialData :{},
     validationSchema: SCHEMA,
     validateOnBlur: false,
     validateOnChange: false,
     validateOnMount: false,
     onSubmit: async (values: any) => {
       createListing(values);
-    },
+    },enableReinitialize:true
   });
 
   const { errors, handleSubmit, handleChange, values, setFieldValue } = formik;
 
-  const usersQuery = useQuery(
-    ["all-users-in-db", name],
-    () =>
-      CustomerService.getAll(name ? `?searchText=${name}` : "").then((res) => {
-        return res.data.result?.data?.map((x) => ({
-          id: x?.id,
-          name: x?.userName,
-        }));
-      }),
-    {
-      refetchOnWindowFocus: false,
-      retry: 0,
-    }
-  );
 
-  const handleSearch = (value: string) => {
-    setName(value);
-  };
 
-  const throttledChangeHandler = React.useMemo(
-    () => debounceFunc(handleSearch, 600),
-    []
-  );
-
-  const handleChangeUserValue = (value: string) => {
-    setUserNameText(value);
-    throttledChangeHandler(value);
-  };
-
-  React.useEffect(() => {
-    return () => {
-      throttledChangeHandler.cancel();
-    };
-  }, [throttledChangeHandler]);
+  // console.log({values, data, locationValue});
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
@@ -229,7 +231,7 @@ export function AddListing() {
     ["all-category"],
     () =>
       NotificationService.getCategories(`?pageSize=1000`).then((res) => {
-        return res.data.result?.data;
+        return res.data.result?.data?.map((x)=> ({name:x?.name, id: x?.id}));
       }),
     {
       refetchOnWindowFocus: false,
@@ -241,7 +243,7 @@ export function AddListing() {
     ["all-conditions"],
     () =>
       NotificationService.getConditions().then((res) => {
-        return res.data.result?.data;
+        return res.data.result?.data.map((x)=> ({name:x?.name, id: x?.id}));
       }),
     {
       refetchOnWindowFocus: false,
@@ -262,67 +264,35 @@ export function AddListing() {
     setFieldValue("durationInHours", 0);
   };
 
-  // const getId = (user: string, options: any) => {
-  //   const data = options;
-  //   return data.find(
-  //     (value: any) =>
-  //       `${value?.userName?.toLowerCase()}` === user?.toLowerCase()
-  //   )?.id;
-  // };
 
-  return (
+  return ( (isLoading || allCategory?.isLoading || allConditions?.isLoading) ? (
+    <CustomSection>
+        <Loader size={80} />
+    </CustomSection>
+  ):(
     <FormikProvider value={formik}>
       <PageContent onSubmit={handleSubmit}>
         <div className="listing">
           <div className="group-heading">
             <MuiTypography variant="h4" className="heading">
-              Add Listing
+              Edit Listing
             </MuiTypography>
           </div>
 
           <div className="input-wrapper">
-            <AppVirtualizedCountriesSelect
-              label="Select user"
-              updateFieldValue={(value: any) => {
-                setFieldValue("userId", value?.id);
-                setFieldValue("userId_name", value?.userName);
-              }}
-              selectedValue={values?.userId || ""}
-              options={usersQuery?.data || []}
-              placeholder="Search and select user"
-              loading={usersQuery.isLoading}
-              showPills={false}
-              multiple={false}
-              showCheck={false}
-              inputValue={values?.userId_name || ""}
-              optionTitle="name"
-              optionValue="id"
-              // getOptionLabel={(opt: any) => {
-              //   return `${opt?.userName} `;
-              // }}
-              error={!!errors.userId}
-              helperText={errors.userId}
-              onInputChange={(event, newInputValue, reason) => {
-                if (event) {
-                  if (reason === "input") {
-                    setFieldValue("userId_name", newInputValue);
-                    handleChangeUserValue(newInputValue);
-                  }
-
-                  if (reason === "clear") {
-                    setFieldValue("userId_name", "");
-                    setFieldValue("userId", "");
-                    handleChangeUserValue("");
-                  }
-                  if (reason === "reset") {
-                    setFieldValue("userId_name", newInputValue);
-                  }
-                }
-              }}
-              isOptionEqualToValue={(option: any, value: any) => {
-                return option?.id === values?.userId;
-              }}
-            />
+          <UserDetailCard
+        variant="user"
+        data={{
+          title: `${data?.sellerInfo?.firstName ?? "-"} ${
+            data?.sellerInfo?.lastName ?? "-"
+          }`,
+          body: `${data?.sellerInfo?.email ?? "-"}`,
+          image: data?.sellerInfo?.profilePictureUrl,
+          verStatus: data?.sellerInfo?.isVerified || false,
+        }}
+        viewDetailsLink={`/app/users/${data?.sellerInfo?.userId}`}
+        className="user-card"
+      />
           </div>
           <MuiDivider className="divider" />
 
@@ -405,7 +375,7 @@ export function AddListing() {
               value={locationValue}
               error={!!errors?.location}
             />
-            <AppSelect
+            {/* <AppSelect
               id="listingType"
               name="listingType"
               label="Listing Type"
@@ -416,7 +386,7 @@ export function AddListing() {
               options={listingType}
               error={!!errors.listingType}
               required
-            />
+            /> */}
 
             <AppSelect
               id="durationInHours"
@@ -425,6 +395,7 @@ export function AddListing() {
               placeholder="Enter duration"
               value={values?.durationInHours}
               onChange={handleChange}
+              disabled
               helperText={errors.durationInHours}
               options={
                 values?.listingType === 0
@@ -478,14 +449,25 @@ export function AddListing() {
             {isSubmitting ? (
               <MuiCircularProgress size={20} />
             ) : (
-              "Publish listing"
+              "Save listing"
             )}
           </MuiButton>
         </div>
       </PageContent>
     </FormikProvider>
+
+  )
   );
 }
+
+const CustomSection = styled.section`
+  width: 100%;
+  display: flex;
+  justify-content:center;
+  align-items:center;
+  height: 100%;
+  min-height: 500px;
+  `
 
 const PageContent = styled.form`
   width: 100%;
@@ -543,6 +525,7 @@ const PageContent = styled.form`
       display: flex;
       align-items: center;
       justify-content: space-between;
+      margin-bottom: 10px;
 
       & .heading {
         font-weight: 600;

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 import { NoData } from "@/components/feedback/NoData";
 import {
+  MuiBox,
   MuiButton,
   MuiCardMedia,
   MuiIconButton,
@@ -20,7 +21,7 @@ import {
 
 import CustomTableSkeleton from "@/components/skeleton/CustomTableSkeleton";
 import TableWrapper from "@/components/table/TableWrapper";
-import { IconAdd, IconVisibility } from "@/lib/mui.lib.icons";
+import { IconAdd, IconEdit, IconVisibility } from "@/lib/mui.lib.icons";
 import {
   IListingData,
   IListingResponse,
@@ -146,6 +147,12 @@ export function SettlementTable({
     });
   };
 
+  const handleEdit = (data: IListingData) => () => {
+    navigate(`edit/${data?.id}`, {
+      state: data,
+    });
+  };
+
   const handleSetSearchText = (value: string) => () => {
     if (value) {
       setSearchText(value);
@@ -237,12 +244,12 @@ export function SettlementTable({
                 <MuiTableCell className="heading" align="left">
                   Category
                 </MuiTableCell>
-                <MuiTableCell className="heading" align="left">
+                {/* <MuiTableCell className="heading" align="left">
                   Bids
                 </MuiTableCell>
                 <MuiTableCell className="heading" align="left">
                   Bidders
-                </MuiTableCell>
+                </MuiTableCell> */}
                 <MuiTableCell className="heading" align="left">
                   Offers
                 </MuiTableCell>
@@ -262,7 +269,7 @@ export function SettlementTable({
                   className="heading"
                   align="left"
                   style={{ minWidth: "120px" }}>
-                 Starting Price
+                 Price
                 </MuiTableCell>
                 <MuiTableCell className="heading" align="left">
                   Status
@@ -310,10 +317,10 @@ export function SettlementTable({
                       <MuiTableCell align="left">
                         {row?.catalogueCategoryName}
                       </MuiTableCell>
-                      <MuiTableCell align="left">{row?.totalBids}</MuiTableCell>
+                      {/* <MuiTableCell align="left">{row?.totalBids}</MuiTableCell>
                       <MuiTableCell align="left">
                         {row?.totalBidders}
-                      </MuiTableCell>
+                      </MuiTableCell> */}
                       <MuiTableCell align="left">
                         {row?.totalOffers}
                       </MuiTableCell>
@@ -359,11 +366,19 @@ export function SettlementTable({
                         />
                       </MuiTableCell>
                       <MuiTableCell align="left">
+                      <MuiBox className="action-group">
+                        <MuiIconButton
+                          onClick={handleEdit(row)}
+                          className="edit-btn">
+                          <IconEdit />
+                        </MuiIconButton>
                         <MuiIconButton
                           onClick={handleViewDetails(row)}
                           className="visible-btn">
                           <IconVisibility />
                         </MuiIconButton>
+                        </MuiBox>
+                       
                       </MuiTableCell>
                     </MuiTableRow>
                   );
@@ -447,6 +462,12 @@ const StyledPage = styled.section`
     flex-wrap: wrap;
   }
 
+    & .action-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
   & .top-section {
     display: flex;
     gap: 10px;
@@ -482,6 +503,20 @@ const StyledPage = styled.section`
 
     svg {
       width: 15px;
+      height: 15px;
+    }
+  }
+
+   & .edit-btn {
+    border-radius: 10px;
+    background: #ffc5021a;
+    color: #d78950;
+    padding: 12px;
+
+
+    svg {
+      color: #d78950;
+        width: 15px;
       height: 15px;
     }
   }

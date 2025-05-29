@@ -7,11 +7,12 @@ import CustomStyledSelect from "@/components/select/CustomStyledSelect";
 import {
   MuiButton,
   MuiCardMedia,
+  MuiIconButton,
   MuiSelectChangeEvent,
   MuiTypography,
   styled,
 } from "@/lib/index";
-import { IconEye, IconPlay } from "@/lib/mui.lib.icons";
+import { IconEdit, IconEye, IconPlay } from "@/lib/mui.lib.icons";
 import {
   ActionTimeStatus,
   IActiveStatus,
@@ -19,7 +20,7 @@ import {
 import { IListingData, IStatus } from "@/types/globalTypes";
 import { useIds } from "@/utils/hooks";
 import { useQuery, useQueryClient } from "react-query";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import useCachedDataStore from "@/config/store-config/lookup";
 import ListingService from "@/services/listing-service";
@@ -45,6 +46,7 @@ const trimText = (text: string) => {
 };
 
 export function ListingDetails() {
+  const navigate = useNavigate();
   const { catalogueStatus, deliveryFeePickupMethod, listingType } =
     useCachedDataStore((state) => state.cache?.lookup);
   const queryClient = useQueryClient();
@@ -141,6 +143,13 @@ export function ListingDetails() {
   const imageFiles = data?.catalogueAttachments?.filter(
     (x) => !x?.cleansedName?.includes("mp4")
   );
+
+  const handleEdit =  () => {
+    navigate(`/app/marketplace/edit/${data?.id}`, {
+      state: data,
+    });
+  };
+
   const hideActions = data?.catalogueStatus === 1 && data;
 
   return (
@@ -181,9 +190,16 @@ export function ListingDetails() {
       </div>
       <div className="listing">
         <div className="group-heading">
+          <section className='info-section'>
           <MuiTypography variant="h4" className="heading">
             Listing Info
           </MuiTypography>
+          <MuiIconButton
+                          onClick={handleEdit}
+                          className="edit-btn">
+                          <IconEdit />
+                        </MuiIconButton>
+          </section>
           <MuiTypography variant="body2" className="timer">
             Auction
             <ActionTimeStatus
@@ -449,6 +465,28 @@ const PageContent = styled.section`
         background-color: #ffffffbb;
       }
     }
+  }
+
+     & .edit-btn {
+    border-radius: 10px;
+    background: #ffc5021a;
+    color: #d78950;
+    padding: 12px;
+
+
+    svg {
+      color: #d78950;
+        width: 15px;
+      height: 15px;
+    }
+  }
+
+
+  & .info-section {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    
   }
 
   & .listing-info {

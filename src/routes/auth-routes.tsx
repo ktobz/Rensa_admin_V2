@@ -6,6 +6,7 @@ import { DashboardView } from "@/modules/dashboard/views/DashboardView";
 import IncomeView from "@/modules/income";
 import ReportedListingPageView from "@/modules/marketplace";
 import { AddListing } from "@/modules/marketplace/views/AddListing";
+import { EditListingDetails } from "@/modules/marketplace/views/EditListingDetails";
 import { ListingDetails } from "@/modules/marketplace/views/ListingDetails";
 import NotificationCenterView from "@/modules/notification-center";
 import { OrderDetails } from "@/modules/orders";
@@ -50,6 +51,7 @@ export default function MergedModuleRoutes() {
       <Route path="/marketplace/listings/:rp_id" element={<ListingDetails />} />
 
       <Route path="/marketplace/:rp_id" element={<ListingDetails />} />
+      <Route path="/marketplace/edit/:rp_id" element={<EditListingDetails />} />
 
       <Route path="/transactions" element={<TransactionsView />} />
       <Route path="/payouts" element={<PayoutView />} />

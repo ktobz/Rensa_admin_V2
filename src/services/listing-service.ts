@@ -1,15 +1,14 @@
-import { getToken } from "utils/helper-funcs";
-import HTTP from "./Http";
 import {
-  IOrderQuery,
-  IListingResponse,
+  IAddListingResponse,
   IListingDetailsResponse,
-  IReportedListingResponse,
+  IListingResponse,
   IListingStatsResponse,
   IReportedListingCommentsResponse,
-  IAddListingResponse,
+  IReportedListingResponse
 } from "@/types/globalTypes";
 import { AxiosPromise } from "axios";
+import { getToken } from "utils/helper-funcs";
+import HTTP from "./Http";
 
 const PATHS = {
   orders: "/admin/catalogue",
@@ -35,6 +34,15 @@ const ListingService = {
 
   create(data: FormData): AxiosPromise<IAddListingResponse> {
     return HTTP.post(`${PATHS.orders}`, data, {
+      headers: {
+        Authorization: getToken(),
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  },
+
+  update(id:string,data: FormData): AxiosPromise<IAddListingResponse> {
+    return HTTP.put(`${PATHS.orders}/${id}`, data, {
       headers: {
         Authorization: getToken(),
         "Content-Type": "multipart/form-data",

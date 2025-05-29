@@ -151,3 +151,40 @@ export const getListingTimeRemaining = (
 
   return timeRemaining;
 };
+
+
+
+export const getUrlExtension = (url:string) => {
+    return (url?.split(/[#?]/)?.[0]?.split('.'))?.pop()?.trim();
+}
+
+export const onImageEdit = async (imgUrl:string) => {
+  let imgExt = getUrlExtension(imgUrl);
+
+  try {
+    
+    const response = await fetch(imgUrl);
+    const blob = await response.blob();
+    const file = new File([blob], "profileImage." + imgExt, {
+      type: blob.type,
+    });
+
+    return file
+  } catch (error) {
+    return ''
+  }
+
+  // let file = await fetch(imgUrl)
+  // .then((r) => r.blob())
+  // .then(
+  //   (blobFile) =>
+  //     new File(
+  //       [blobFile],
+  //       `${Math.floor(Math.random() * 40) + 1}`,
+  //       {
+  //         type: "image/jpeg",
+  //       }
+  //     )
+  // );
+  
+}
