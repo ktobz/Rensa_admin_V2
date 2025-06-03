@@ -4,8 +4,10 @@ import * as Yup from "yup";
 
 import {
   MuiButton,
+  MuiCheckbox,
   MuiCircularProgress,
   MuiDivider,
+  MuiInputLabel,
   MuiTypography,
   styled,
 } from "@/lib/index";
@@ -40,6 +42,7 @@ const SCHEMA = Yup.object().shape({
   catalogueConditionId: Yup.number().required("required").min(1, "required"),
   catalogueCategoryId: Yup.number().required("required").min(1, "required"),
   listingType: Yup.number().required("required").min(1, "required"),
+  isPickupEnabled:Yup.boolean().required("required"),
 });
 
 export function EditListingDetails() {
@@ -102,6 +105,7 @@ export function EditListingDetails() {
     files:  data?.catalogueAttachments?.map((x)=>x?.url) || [],
     name:data?.name || "",
     pickupMethod:data?.pickupMethod || 0,
+    isPickupEnabled:data?.isPickupEnabled || false,
     price:formatToPrice(data?.price.toString()||'0') || "",
     userId:data?.creatorUserId || "",
     userId_name: "",
@@ -143,6 +147,8 @@ export function EditListingDetails() {
     formData.append("DurationInHours", values?.durationInHours);
     formData.append("PickupMethod", values?.pickupMethod);
     formData.append("ListingType", values?.listingType);
+    formData.append("IsPickupEnabled", values?.isPickupEnabled);
+    
     
     if(values?.files?.length > 0){
       let catalogueIndex = 0;
@@ -224,7 +230,7 @@ export function EditListingDetails() {
   };
 
   const formik =  useFormik({
-    initialValues: data ? initialData :{},
+    initialValues: data ? initialData : null,
     validationSchema: SCHEMA,
     validateOnBlur: false,
     validateOnChange: false,
@@ -238,7 +244,7 @@ export function EditListingDetails() {
 
 
 
-  // console.log({values, data, locationValue});
+  // console.log({values});
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
@@ -286,7 +292,7 @@ export function EditListingDetails() {
   };
 
 
-  return ( (isLoading || allCategory?.isLoading || allConditions?.isLoading) ? (
+  return ( (isLoading || allCategory?.isLoading || allConditions?.isLoading || !data?.catalogueAttachments) ? (
     <CustomSection>
         <Loader size={80} />
     </CustomSection>
@@ -429,19 +435,6 @@ export function EditListingDetails() {
               required
             />
 
-            <AppSelect
-              id="pickupMethod"
-              name="pickupMethod"
-              label="Pickup method"
-              placeholder="Select"
-              value={values.pickupMethod}
-              onChange={handleChange}
-              helperText={errors.pickupMethod}
-              options={deliveryFeePickupMethod}
-              error={!!errors.pickupMethod}
-              required
-            />
-
             <AppInput
               id="description"
               name="description"
@@ -459,6 +452,28 @@ export function EditListingDetails() {
               rows={2}
               multiline
             />
+
+            <section>
+            <AppSelect
+              id="pickupMethod"
+              name="pickupMethod"
+              label="Pickup method"
+              placeholder="Select"
+              value={values.pickupMethod}
+              onChange={handleChange}
+              helperText={errors.pickupMethod}
+              options={deliveryFeePickupMethod}
+              error={!!errors.pickupMethod}
+              required
+            />
+            <MuiInputLabel htmlFor="isPickupEnabled" style={{display:'flex', alignItems:'center', gap: 4, marginTop:10}}>
+               <MuiCheckbox  id='isPickupEnabled' value={true}    onChange={handleChange}/>
+
+                <MuiTypography>Enable pickup</MuiTypography>
+            </MuiInputLabel>
+            </section>
+
+       
           </div>
 
           <MuiButton

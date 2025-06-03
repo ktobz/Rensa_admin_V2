@@ -1,22 +1,20 @@
+import "cropperjs/dist/cropper.css";
 import React, { useState } from "react";
 import Cropper from "react-cropper";
-import "cropperjs/dist/cropper.css";
-import { toast } from "react-toastify";
 import { Lightbox } from "react-modal-image";
+import { toast } from "react-toastify";
 
+import AppCustomModal from "@/components/modal/Modal";
 import {
+  IconClose,
+  IconEdit,
+  IconEye,
+  IconPlus,
   MuiButton,
   MuiIconButton,
   MuiTypography,
-  IconAdd,
-  IconDelete,
-  IconEdit,
-  styled,
-  IconEye,
-  IconClose,
-  IconPlus,
+  styled
 } from "@/lib/index";
-import AppCustomModal from "@/components/modal/Modal";
 
 interface IUploaderProps {
   getFleList: (fileList: File[] | File, photosPreview: any[]) => any;
@@ -68,6 +66,7 @@ export default function CustomImageUploader(props: IUploaderProps) {
   const [croppedImages, setCroppedImages] =
     React.useState<string[]>(initialPreviewData);
   const [croppedImage, setCroppedImage] = React.useState(initialPreviewData);
+
 
   const [currentPhotoName, setCurrentPhotoName] = React.useState("");
   const [showCropper, setShowCropper] = React.useState(false);
@@ -134,9 +133,10 @@ export default function CustomImageUploader(props: IUploaderProps) {
   };
 
   const handleHideCropper = async () => {
-    // Update the cropped Images List
+    if (typeof cropper !== "undefined") {
+      const dataURL = cropper.getCroppedCanvas().toDataURL();
 
-    let file = await fetch(newPhoto)
+      let file = await fetch(dataURL)
       .then((r) => r.blob())
       .then(
         (blobFile) =>
@@ -148,11 +148,6 @@ export default function CustomImageUploader(props: IUploaderProps) {
             }
           )
       );
-
-    if (typeof cropper !== "undefined") {
-      const dataURL = cropper.getCroppedCanvas().toDataURL();
-      // setCropData(cropper.getCroppedCanvas().toDataURL());
-      // alert(cropper.getCroppedCanvas().toDataURL());
 
       if (multiple) {
         const newList = [...croppedImages];
@@ -201,12 +196,13 @@ export default function CustomImageUploader(props: IUploaderProps) {
   };
 
   React.useEffect(() => {
-    if (handleReset && initialPreviewData.length < 1) {
+    if (handleReset ) {
+      // if (handleReset && initialPreviewData.length < 1) {
       // handleReset(lists:)
       setCroppedImages([]);
       setFileList([]);
     }
-  }, [handleReset, initialPreviewData]);
+  }, [handleReset]);
 
   return (
     <StyledWrapper
@@ -362,6 +358,7 @@ export default function CustomImageUploader(props: IUploaderProps) {
               onInitialized={(instance) => {
                 setCropper(instance);
               }}
+              
               // guides={true}
             />
 
