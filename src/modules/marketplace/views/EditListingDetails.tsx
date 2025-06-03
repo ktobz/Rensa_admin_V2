@@ -23,7 +23,7 @@ import NotificationService from "@/services/notification-service";
 import { UserDetailCard } from "@/components/card/UserCard";
 import { Loader } from "@/components/loader/Loader";
 import ListingService from "@/services/listing-service";
-import { formatToPrice, onImageEdit } from "@/utils/helper-funcs";
+import { formatToPrice } from "@/utils/helper-funcs";
 import { useIds } from "@/utils/hooks";
 import { SelectChangeEvent } from "@mui/material";
 import { toast } from "react-toastify";
@@ -84,7 +84,7 @@ export function EditListingDetails() {
       if(data){
         return {
           description: data?.location,
-          place_id: data?.placeId||'',
+          place_id: '',
           structured_formatting: data?.location as unknown as StructuredFormatting
         } 
       }
@@ -99,7 +99,7 @@ export function EditListingDetails() {
     catalogueConditionId:data?.catalogueCondition?.id || 0,
     description: data?.description || "",
     durationInHours:data?.durationInHours || 0,
-    files: data?.catalogueAttachments?.map((x)=>x?.url) || [],
+    files:  data?.catalogueAttachments?.map((x)=>x?.url) || [],
     name:data?.name || "",
     pickupMethod:data?.pickupMethod || 0,
     price:formatToPrice(data?.price.toString()||'0') || "",
@@ -110,18 +110,61 @@ export function EditListingDetails() {
   };
 
 
-  const createListing = (values: any) => {
-    if (values?.files?.length === 0) {
+  const createListing = async (values: any) => {
+    // return console.log({values});
+    if (values?.files?.length === 0 && values.catalogueAttachments.length ===0) {
       toast.warn("Listing Image is missing");
       return false;
     }
 
-    if (!locationValue?.place_id?.trim()) {
+    const formData = new FormData();
+
+    if (!locationValue?.place_id?.trim() && !data?.locationInfo?.latitude) {
       toast.warn("Place ID is missing. Kindly re-enter the item location");
       return false;
     }
 
-    if ((window as any).google) {
+    const price = (values?.price)?.replaceAll(",", "");
+    
+    formData.append("Name", values?.name);
+    formData.append("UserId", values?.userId);
+    formData.append("Description", values.description);
+    formData.append("Price", price);
+    formData.append("LocationInfo.Location", data?.locationInfo?.location||'');
+    formData.append("LocationInfo.Latitude", data?.locationInfo?.latitude?.toString()||'');
+    formData.append("LocationInfo.Longitude", data?.locationInfo?.longitude?.toString()||'');
+    formData.append("LocationInfo.City", data?.locationInfo?.city||'');
+    formData.append("LocationInfo.State", data?.locationInfo?.state||'');
+    formData.append(
+      "CatalogueConditionId",
+      values?.catalogueConditionId
+    );
+    formData.append("CatalogueCategoryId", values?.catalogueCategoryId);
+    formData.append("DurationInHours", values?.durationInHours);
+    formData.append("PickupMethod", values?.pickupMethod);
+    formData.append("ListingType", values?.listingType);
+    
+    if(values?.files?.length > 0){
+      let catalogueIndex = 0;
+      for (let i = 0; i < values.files.length; i += 1) {
+        const image = values.files[i];
+
+        if(typeof image ==='string'){
+
+          formData.append(`CatalogueAttachments[${catalogueIndex}].Url`, image);
+          formData.append(`CatalogueAttachments[${catalogueIndex}].CleansedName`, data?.catalogueAttachments?.find((x)=> x?.url === image)?.cleansedName as any);
+
+          catalogueIndex+=1;
+
+        }else{
+           formData.append("Files", image as any);
+        }
+       
+      }
+    }
+
+
+    if ((window as any).google && locationValue?.place_id) {
       // Use the PlacesAPI component to fetch place details
       const placesAPI = new (window as any).google.maps.places.PlacesService(
         document.createElement("div")
@@ -150,55 +193,33 @@ export function EditListingDetails() {
             const formattedAddress = place.formatted_address;
             const latitude = place.geometry.location.lat();
             const longitude = place.geometry.location.lng();
-            const price = (values?.price)?.replaceAll(",", "");
-
             setIsSubmitting(true);
-            const formData = new FormData();
-            formData.append("Name", values?.name);
-            formData.append("UserId", values?.userId);
-            formData.append("Description", values.description);
-            formData.append("Price", price);
-            formData.append("LocationInfo.PlaceId", locationValue?.place_id||'');
+           
             formData.append("LocationInfo.Location", formattedAddress);
             formData.append("LocationInfo.Latitude", latitude);
             formData.append("LocationInfo.Longitude", longitude);
             formData.append("LocationInfo.City", city);
             formData.append("LocationInfo.State", state);
-            formData.append(
-              "CatalogueConditionId",
-              values?.catalogueConditionId
-            );
-            formData.append("CatalogueCategoryId", values?.catalogueCategoryId);
-            formData.append("DurationInHours", values?.durationInHours);
-            formData.append("PickupMethod", values?.pickupMethod);
-            formData.append("PickupMethod", values?.listingType);
-            for (let i = 0; i < values.files.length; i += 1) {
-              const image = values.files[i];
 
-              if(typeof image !=='string'){
-                formData.append("Files", values.files[i] as any);
-              }else{
-               const v = await onImageEdit(image);
-               formData.append("Files", v as any);
-
-              }
-            }
-
-            try {
-              const { data } = await ListingService.update(reportId, formData);
-              toast.success(data?.result?.message);
-              setIsSubmitting(false);
-              navigate(`/app/marketplace/listings/${reportId}`);
-            } catch (error: any) {
-              toast.error(error?.response?.data?.message);
-              setIsSubmitting(false);
-            }
+            
           } else {
             console.error("Error fetching place details:", status);
             setIsSubmitting(false);
+            return false
           }
         }
       );
+    }
+
+    setIsSubmitting(true);
+    try {
+      const { data } = await ListingService.update(reportId, formData);
+      toast.success(data?.result?.message);
+      setIsSubmitting(false);
+      navigate(`/app/marketplace/listings/${reportId}`);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message);
+      setIsSubmitting(false);
     }
   };
 

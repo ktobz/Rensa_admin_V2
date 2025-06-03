@@ -957,6 +957,13 @@ export type IListingData = {
   isPickupEnabled: boolean;
   isPickupUsed: boolean;
   placeId:string;
+  locationInfo: {
+    location: string;
+    latitude:number;
+    longitude: number;
+    city:string;
+    state: string;
+  };
 };
 
 export type IReportedListingData = {

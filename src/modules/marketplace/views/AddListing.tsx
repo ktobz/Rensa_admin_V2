@@ -146,7 +146,7 @@ export function AddListing() {
             formData.append("CatalogueCategoryId", values?.catalogueCategoryId);
             formData.append("DurationInHours", values?.durationInHours);
             formData.append("PickupMethod", values?.pickupMethod);
-            formData.append("PickupMethod", values?.listingType);
+            formData.append("ListingType", values?.listingType);
             for (let i = 0; i < values.files.length; i += 1) {
               formData.append("Files", values.files[i] as any);
             }
