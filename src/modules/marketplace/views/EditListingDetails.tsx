@@ -466,8 +466,8 @@ export function EditListingDetails() {
               error={!!errors.pickupMethod}
               required
             />
-            <MuiInputLabel htmlFor="isPickupEnabled" style={{display:'flex', alignItems:'center', gap: 4, marginTop:10}}>
-               <MuiCheckbox  id='isPickupEnabled' value={true}    onChange={handleChange}/>
+            <MuiInputLabel  htmlFor="isPickupEnabled" style={{display:'flex', alignItems:'center', gap: 4, marginTop:10}}>
+               <MuiCheckbox  id='isPickupEnabled' checked={values?.isPickupEnabled}  defaultChecked={values?.isPickupEnabled}  onChange={handleChange}/>
 
                 <MuiTypography>Enable pickup</MuiTypography>
             </MuiInputLabel>

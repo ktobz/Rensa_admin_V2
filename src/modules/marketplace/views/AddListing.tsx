@@ -5,8 +5,10 @@ import * as Yup from "yup";
 
 import {
   MuiButton,
+  MuiCheckbox,
   MuiCircularProgress,
   MuiDivider,
+  MuiInputLabel,
   MuiTypography,
   styled,
 } from "@/lib/index";
@@ -437,6 +439,8 @@ export function AddListing() {
               required
             />
 
+          
+              <section>
             <AppSelect
               id="pickupMethod"
               name="pickupMethod"
@@ -449,6 +453,12 @@ export function AddListing() {
               error={!!errors.pickupMethod}
               required
             />
+            <MuiInputLabel  htmlFor="isPickupEnabled" style={{display:'flex', alignItems:'center', gap: 4, marginTop:10}}>
+               <MuiCheckbox  id='isPickupEnabled' checked={values?.isPickupEnabled}  defaultChecked={values?.isPickupEnabled}  onChange={handleChange}/>
+
+                <MuiTypography>Enable pickup</MuiTypography>
+            </MuiInputLabel>
+            </section>
 
             <AppInput
               id="description"
@@ -467,6 +477,8 @@ export function AddListing() {
               rows={2}
               multiline
             />
+
+        
           </div>
 
           <MuiButton
