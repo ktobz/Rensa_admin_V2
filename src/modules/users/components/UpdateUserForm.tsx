@@ -12,6 +12,7 @@ import CustomerService from "@/services/customer-service";
 const SCHEMA = Yup.object().shape({
   firstName: Yup.string().required("required"),
   lastName: Yup.string().required("required"),
+  phoneNumber: Yup.string().required("required"),
   id: Yup.string(),
 });
 
@@ -30,6 +31,7 @@ export const UpdateUserForm = ({
   const initialData = {
     firstName: initData?.firstName || "",
     lastName: initData?.lastName || "",
+    phoneNumber: initData?.phoneNumber || "",
     id: initData?.id || "",
   };
 
@@ -42,6 +44,7 @@ export const UpdateUserForm = ({
       const formData = new FormData();
       formData.append('FirstName',formValues.firstName );
       formData.append('LastName',formValues.lastName );
+      formData.append('PhoneNumber',formValues.phoneNumber );
       formData.append('UserId',formValues.id );
       
       const { data } = await CustomerService.updateProfile(formData);
@@ -101,6 +104,20 @@ export const UpdateUserForm = ({
             error={!!errors.lastName}
             required
           />
+
+          <AppInput
+            id="phoneNumber"
+            name="phoneNumber"
+            label="Phone Number"
+            placeholder="Enter Phone Number "
+            type="text"
+            value={values.phoneNumber}
+            onChange={handleChange}
+            helperText={errors.phoneNumber}
+            error={!!errors.phoneNumber}
+            required
+          />
+
 
           <div className="btn-group">
             <MuiButton

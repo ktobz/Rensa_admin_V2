@@ -66,7 +66,7 @@ export function CustomerDetailsView() {
     navigate("/app/users");
   };
 
-  const { data } = useQuery(
+  const { data , refetch} = useQuery(
     ["user-details", customerId],
     () =>
       CustomerService.getCustomerDetails(customerId || "").then((res) => {
@@ -80,6 +80,7 @@ export function CustomerDetailsView() {
       initialData: state as IUserData,
     }
   );
+
 
   const handleToggleShow = () => {
     setShow((prev) => ({ ...prev, activityShow: !prev.activityShow }));
@@ -116,6 +117,7 @@ export function CustomerDetailsView() {
 
   const handleRefresh = () => {
     queryClient.invalidateQueries(["user-details", customerId]);
+    refetch();
   };
 
   const handleUpdateStatus = (callback: () => void) => async () => {
