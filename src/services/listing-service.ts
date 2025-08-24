@@ -12,6 +12,7 @@ import HTTP from "./Http";
 
 const PATHS = {
   orders: "/admin/catalogue",
+  isFeatured: "/admin/catalogue/toggle-isfeatured",
   dashboardMetrics: "/orders/dashboard",
   period: "/admin/periods",
   listing: "/admin/reportedlisting/reported-listing",
@@ -52,6 +53,13 @@ const ListingService = {
 
   getDetails(id: number | string): AxiosPromise<IListingDetailsResponse> {
     return HTTP.get(`${PATHS.orders}/${id}`, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+  toggleIsFeatured(id: number | string): AxiosPromise<IListingDetailsResponse> {
+    return HTTP.put(`${PATHS.isFeatured}/${id}`, {
       headers: {
         Authorization: getToken(),
       },

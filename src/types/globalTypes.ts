@@ -964,6 +964,7 @@ export type IListingData = {
     city:string;
     state: string;
   };
+  isFeatured:boolean;
 };
 
 export type IReportedListingData = {

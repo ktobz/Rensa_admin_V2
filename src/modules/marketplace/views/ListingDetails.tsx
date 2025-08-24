@@ -7,7 +7,9 @@ import CustomStyledSelect from "@/components/select/CustomStyledSelect";
 import {
   MuiButton,
   MuiCardMedia,
+  MuiCircularProgress,
   MuiIconButton,
+  MuiInputLabel,
   MuiSelectChangeEvent,
   MuiTypography,
   styled,
@@ -22,6 +24,7 @@ import { useIds } from "@/utils/hooks";
 import { useQuery, useQueryClient } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import { CustomSwitch } from "@/components/input/CustomSwitch";
 import useCachedDataStore from "@/config/store-config/lookup";
 import ListingService from "@/services/listing-service";
 import { formatCurrency, getIdName, getListingTimeRemaining } from "@/utils/helper-funcs";
@@ -53,6 +56,7 @@ export function ListingDetails() {
   const { state } = useLocation();
   const { reportId } = useIds();
   const [action, setAction] = React.useState("");
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [selectedVideo, setSelectedVideo] = React.useState("");
   const [selectedImage, setSelectedImage] = React.useState("");
   const [show, setShow] = React.useState({
@@ -150,6 +154,21 @@ export function ListingDetails() {
     });
   };
 
+  const handleToggleUserActiveStatus = async () => {
+    setIsSubmitting(true);
+   await  ListingService.toggleIsFeatured(reportId || 0)
+      .then((res) => {
+        handleRefresh?.();
+        toast.success(res.data?.message || "");
+      })
+      .catch((err) => {
+        toast.error(err?.response?.data?.message || "");
+      });
+    setIsSubmitting(false);
+  };
+
+
+
   const hideActions = data?.catalogueStatus === 1 && data;
 
   return (
@@ -200,6 +219,34 @@ export function ListingDetails() {
                           <IconEdit />
                         </MuiIconButton>
           </section>
+          <section style={{display:'flex', alignItems:'center', gap:'20px'}} className="flex gap-2 items-center">
+          <MuiInputLabel
+              style={{ cursor: "pointer", display:'flex',
+                alignItems:'center',
+                flexWrap:'nowrap' }}
+              onClick={handleToggleUserActiveStatus}>
+              <span
+                style={{
+                  fontWeight: "700",
+                  color: "#475367",
+                  paddingRight: "10px",
+                
+                }}>
+                Featured{" "}
+              </span>
+              {
+                isSubmitting ? (
+                  <MuiCircularProgress size={18} />
+                ):(
+
+                  <CustomSwitch
+                    
+                    checked={data?.isFeatured}
+                    defaultChecked={data?.isFeatured}
+                  />
+                )
+              }
+            </MuiInputLabel>
           <MuiTypography variant="body2" className="timer">
             Auction
             <ActionTimeStatus
@@ -217,6 +264,7 @@ export function ListingDetails() {
               time={timeRemaining}
             />
           </MuiTypography>
+          </section>
         </div>
 
         <div className="listing-info">
