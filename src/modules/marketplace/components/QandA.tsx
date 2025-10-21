@@ -6,12 +6,15 @@ import { MuiButton, MuiTypography, styled } from "@/lib/index";
 import { IconNotificationInfo } from "@/lib/mui.lib.icons";
 
 import { UserDetailCard } from "@/components/card/UserCard";
+import AppCustomModal from "@/components/modal/Modal";
 import { cn } from "@/lib/utils";
 import ListingService from "@/services/listing-service";
-import { IListingQuestionsAndAnswerResponse } from "@/types/globalTypes";
+import { IListingQuestionsAndAnswer, IListingQuestionsAndAnswerResponse } from "@/types/globalTypes";
 import { formatDate } from "@/utils/helper-funcs";
+import { useIds } from "@/utils/hooks";
 import { toast } from "react-toastify";
 import { ListingCommentAction } from "./ListingCommentAction";
+import { ReplyCommentForm } from "./ReplyCommentForm";
 
 type IProps = {
   listingComments: IListingQuestionsAndAnswerResponse['result'] | undefined;
@@ -19,13 +22,17 @@ type IProps = {
   isError: boolean;
   handleRefresh:()=>void;
 };
-const record =[
-  {username:'John doe', profilePictureUrl:'', creationTime:new Date(), comment:'Hello testing this',id: 1, isVerified: true}
-]
+
+
 export function QandASection({ isLoading, listingComments, isError, handleRefresh }: IProps) {
+  const { reportId } = useIds();
+
 
   const [isDeleting, setIsDeleting] = React.useState(false);
+  const [show, setShow] = React.useState(false);
   const [deleteId, setDeleteId] = React.useState<null|string|number>(null);
+
+  const [replyData, setReplyData] = React.useState<null|IListingQuestionsAndAnswer>(null);
 
   
 
@@ -49,8 +56,15 @@ export function QandASection({ isLoading, listingComments, isError, handleRefres
     setDeleteId(null);
 
   }
+  const handleReply=(data:IListingQuestionsAndAnswer)=>()=>{
+    setReplyData(data);
+    setShow(true);
+  }
 
-
+  const handleCloseModal=()=>{
+    setShow(false);
+    setReplyData(null);
+  }
 
   return (
     <StyledPage>
@@ -64,7 +78,8 @@ export function QandASection({ isLoading, listingComments, isError, handleRefres
                   <UserDetailCard
                     variant="bidder"
                     data={{
-                      fullName: `${row?.user?.firstName || "-"} ${row?.user?.lastName || "-"}`,
+                      fullName: `${row?.user?.userName || "-"} `,
+                      // fullName: `${row?.user?.firstName || "-"} ${row?.user?.lastName || "-"}`,
                       date: formatDate(
                         row?.createdAt || "",
                         "do LLL yyyy, HH:MM:ss"
@@ -91,7 +106,7 @@ export function QandASection({ isLoading, listingComments, isError, handleRefres
                     <ListingCommentAction handleAction={handleHideAndShow} isDeleting={isDeleting} data={row}   isCurrent={row?.id===deleteId}   />
                     </section>
                   </section>
-                  <MuiButton size="small" variant="text" className="!p-0 !h-fit !w-fit !min-w-fit !mt-2">Reply</MuiButton>
+                  <MuiButton onClick={handleReply(row)} size="small" variant="text" className="!p-0 !h-fit !w-fit !min-w-fit !mt-2">Reply</MuiButton>
 
                   <section className=" justify-between items-center pl-3 mt-2 ml-3 border-l border-l-[#E8E8E8] flex flex-col gap-4">
                  {
@@ -166,6 +181,22 @@ export function QandASection({ isLoading, listingComments, isError, handleRefres
       {/* {!data && isLoading && (
                 <CustomTableSkeleton columns={7} rows={10} />
               )} */}
+
+<AppCustomModal
+        handleClose={handleCloseModal}
+        open={show}
+        alignTitle="left"
+        closeOnOutsideClick={false}
+        title='Reply Message'
+        showClose>
+        <ReplyCommentForm
+
+data={replyData}
+          refreshQuery={handleRefresh}
+          handleClose={handleCloseModal}
+          catalogueId={reportId}
+        />
+      </AppCustomModal>
     </StyledPage>
   );
 }

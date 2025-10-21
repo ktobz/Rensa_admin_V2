@@ -94,6 +94,15 @@ const ListingService = {
     });
   }, 
 
+
+  replyListingComment(id: number | string, requestBody:{comment:string,parentCommentId:number|string}): AxiosPromise<IDeleteCommentResponse> {
+    return HTTP.post(`${PATHS.listingQuestion}/${id}/reply`, requestBody, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  }, 
+
   toggleIsFeatured(id: number | string): AxiosPromise<IListingDetailsResponse> {
     return HTTP.put(`${PATHS.isFeatured}/${id}`, {
       headers: {
