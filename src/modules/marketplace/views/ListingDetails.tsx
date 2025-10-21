@@ -81,6 +81,21 @@ export function ListingDetails() {
     }
   );
 
+  const { data:listingComments, isLoading:isListingCommentLoading, isError:isListingCommentError } = useQuery(
+    ["listing-comments", reportId],
+    () =>
+      ListingService.getListingComments(reportId || "").then((res) => {
+        const data = res.data?.result;
+        return data;
+      }),
+    {
+      retry: 0,
+      refetchOnWindowFocus: false,
+      enabled: !!reportId,
+    }
+  );
+
+
   const handleToggleShow = () => {
     setShow((prev) => ({ ...prev, action: !prev.action }));
   };
@@ -95,6 +110,7 @@ export function ListingDetails() {
 
   const handleRefresh = () => {
     queryClient.invalidateQueries(["listing-details", reportId]);
+    queryClient.invalidateQueries(["listing-comments", reportId]);
     setAction("");
     handleClose();
   };
@@ -381,6 +397,8 @@ export function ListingDetails() {
             listingData={data || null}
             isLoading={isLoading}
             isError={isError}
+            listingComment={listingComments}
+            handleRefresh={handleRefresh}
           />
         </div>
         <div className="seller-info">

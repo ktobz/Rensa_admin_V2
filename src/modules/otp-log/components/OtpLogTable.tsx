@@ -121,16 +121,19 @@ export function OtpLogTable() {
         `?PageNumber=${pagination.page}&PageSize=${pagination.pageSize}`
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
-        const { hasNextPage, hasPrevPage, total, totalPages } =
-          createPaginationData(data, paginationData);
+        const { hasNextPage, hasPrevPage, total, totalPages ,page,pageSize} =
+        createPaginationData(data, paginationData);
 
-        setPagination((prev) => ({
-          ...prev,
-          total,
-          totalPages,
-          hasNextPage,
-          hasPrevPage,
-        }));
+      setPagination((prev) => ({
+        ...prev,
+        page,
+        pageSize,
+        total,
+        totalPages,
+        hasNextPage,
+        hasPrevPage,
+      }));
+
 
         return data;
       }),

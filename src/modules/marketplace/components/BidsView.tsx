@@ -10,16 +10,19 @@ import { UserDetailCard } from "@/components/card/UserCard";
 import CustomTab from "@/components/other/CustomTab";
 import CustomTabs from "@/components/other/CustomTabs";
 import useCachedDataStore from "@/config/store-config/lookup";
-import { IListingData, ISettlementStatus } from "@/types/globalTypes";
+import { IListingData, IListingQuestionsAndAnswerResponse, ISettlementStatus } from "@/types/globalTypes";
 import { formatCurrency, formatDate } from "@/utils/helper-funcs";
 import { BidStatus } from "./BidStatus";
+import { QandASection } from "./QandA";
 
 type IProps = {
   listingData: IListingData | null;
   isLoading: boolean;
   isError: boolean;
+  listingComment:IListingQuestionsAndAnswerResponse['result']|undefined;
+  handleRefresh:()=>void;
 };
-export function BidsView({ isLoading, listingData, isError }: IProps) {
+export function BidsView({ isLoading, listingData, isError,listingComment }: IProps) {
   const queryClient = useQueryClient();
   const { bidType } = useCachedDataStore((state) => state.cache.lookup);
 
@@ -86,10 +89,19 @@ export function BidsView({ isLoading, listingData, isError }: IProps) {
             variant="primary"
             className="custom-tab"
           />
+                <CustomTab
+            onClick={handleChangeIndex(2)}
+            value={2}
+            label="Q&A"
+            current={current}
+            hideIcon
+            variant="primary"
+            className="custom-tab"
+          />
         </CustomTabs>
       </div>
       <div className="rows-wrapper">
-        {current === 1 ? (
+        {current === 1 && (
           <div className="heading">
             <MuiTypography variant="body1" className="section-heading">
               Recent bids
@@ -105,7 +117,8 @@ export function BidsView({ isLoading, listingData, isError }: IProps) {
               </MuiTypography>
             </div>
           </div>
-        ) : (
+        )}
+         {current===0 && (
           <div className="heading">
             <MuiTypography variant="body1" className="section-heading">
               Recent offers
@@ -199,6 +212,9 @@ export function BidsView({ isLoading, listingData, isError }: IProps) {
               </div>
             )}
           </SimpleBar>
+        )}
+        {current===2 && (
+          <QandASection isError={false} isLoading={false} listingComments={listingComment} handleRefresh={handleRefresh}  />
         )}
       </div>
 

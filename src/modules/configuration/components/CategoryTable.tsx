@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
 
@@ -8,9 +7,7 @@ import {
   MuiBox,
   MuiButton,
   MuiCardMedia,
-  MuiCheckbox,
   MuiIconButton,
-  MuiPagination,
   MuiTable,
   MuiTableBody,
   MuiTableCell,
@@ -18,31 +15,25 @@ import {
   MuiTableHead,
   MuiTableRow,
   MuiTypography,
-  styled,
+  styled
 } from "@/lib/index";
 
 import CustomTableSkeleton from "components/skeleton/CustomTableSkeleton";
 
 import TableWrapper from "@/components/table/TableWrapper";
 import {
-  IconAdd,
-  IconChecked,
   IconDelete,
   IconEdit,
-  IconIntermediateCheck,
-  IconNotificationInfo,
-  IconSendNotification,
-  IconUnchecked,
-  IconVisibility,
+  IconNotificationInfo
 } from "@/lib/mui.lib.icons";
 
 import AppCustomModal from "@/components/modal/Modal";
 
-import { ICategoryData, IPagination } from "@/types/globalTypes";
 import NotificationService from "@/services/notification-service";
+import { ICategoryData, IPagination } from "@/types/globalTypes";
+import { createPaginationData } from "@/utils/helper-funcs";
 import { CategoryForm } from "./CategoryForm";
 import { DeleteConfirm } from "./DeleteConfirm";
-import { createPaginationData } from "@/utils/helper-funcs";
 
 const defaultQuery: IPagination = {
   pageSize: 500,
@@ -88,16 +79,19 @@ export function CategoryTable() {
         `?PageNumber=${pagination.page}&PageSize=${pagination.pageSize}`
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
-        const { hasNextPage, hasPrevPage, total, totalPages } =
-          createPaginationData(data, paginationData);
+        const { hasNextPage, hasPrevPage, total, totalPages ,page,pageSize} =
+        createPaginationData(data, paginationData);
 
-        setPagination((prev) => ({
-          ...prev,
-          total,
-          totalPages,
-          hasNextPage,
-          hasPrevPage,
-        }));
+      setPagination((prev) => ({
+        ...prev,
+        page,
+        pageSize,
+        total,
+        totalPages,
+        hasNextPage,
+        hasPrevPage,
+      }));
+
 
         return data;
       }),

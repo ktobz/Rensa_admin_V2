@@ -109,7 +109,7 @@ export function PaymentProviderView() {
             </div>
             {
               data?.collection?.map((option)=>(
-                <div className="data-row border !h-[62px]" key={option?.id}>
+                <div className="data-row border-b border-b-[#eeeeee] !h-[62px]" key={option?.id}>
               <MuiTypography variant="body1" className="label">
               {getIdName(option?.bankProvider,bankProvider)}
               </MuiTypography>
@@ -146,7 +146,7 @@ export function PaymentProviderView() {
             </div>
             {
               data?.payment?.map((option)=>(
-                <div className="data-row border !h-[62px]" key={option?.id}>
+                <div className="data-row border-b border-b-[#eeeeee] !h-[62px]" key={option?.id}>
               <MuiTypography variant="body1" className="label">
               {getIdName(option?.bankProvider,bankProvider)}
               </MuiTypography>

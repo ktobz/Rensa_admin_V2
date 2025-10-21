@@ -1,4 +1,4 @@
-import { styled, MuiTypography, MuiCardMedia } from "@/lib/index";
+import { MuiCardMedia, MuiTypography, styled } from "@/lib/index";
 import { IconDefaultUserImage, IconVerification } from "lib/mui.lib.icons";
 import { Link } from "react-router-dom";
 
@@ -67,11 +67,11 @@ export const UserDetailCard = ({
         <>
           <div className="image-wrapper">
             {data?.image ? (
-              <MuiCardMedia component="img" className="img" src={data?.image} />
+              <MuiCardMedia component="img" className="img border border-[#b1b5c381]" src={data?.image} />
             ) : (
-              <IconDefaultUserImage className="img" />
+              <IconDefaultUserImage className="img border border-[#b1b5c381]" />
             )}
-            {data?.verStatus && <IconVerification className="ver-status" />}
+            {data?.verStatus && <IconVerification className="ver-status !-right-[4px]" />}
           </div>
 
           <div className="details bidder-details">

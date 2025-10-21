@@ -1,11 +1,11 @@
+import {
+  IPayoutResponse,
+  ISalesResponse,
+  ITransactionsResponse,
+} from "@/types/globalTypes";
+import { AxiosPromise } from "axios";
 import { getToken } from "utils/helper-funcs";
 import HTTP from "./Http";
-import { AxiosPromise } from "axios";
-import {
-  ITransactionsResponse,
-  ISalesResponse,
-  IPayoutResponse,
-} from "@/types/globalTypes";
 
 const PATHS = {
   transactions: "/admin/transaction",
@@ -92,6 +92,14 @@ const TransactionService = {
   },
   salesRevenue(data: { filter: number }) {
     return HTTP.get(`${PATHS.sales}/revenue`, {
+      headers: {
+        Authorization: getToken(),
+      },
+      params: data,
+    });
+  },
+  salesGMV(data: { filter: number }) {
+    return HTTP.get(`${PATHS.sales}/gmv`, {
       headers: {
         Authorization: getToken(),
       },

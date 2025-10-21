@@ -32,7 +32,8 @@ import {
   createPaginationData,
   formatCurrency,
   getIdName,
-  getListingTimeRemaining
+  getListingTimeRemaining,
+  usePageNavigationParam
 } from "utils/helper-funcs";
 
 import { ActionTimeStatus, IActiveStatus } from "./OrderStatus";
@@ -77,6 +78,8 @@ export function SettlementTable({
   const { catalogueStatus } = useCachedDataStore(
     (state) => state.cache?.lookup
   );
+  const {changePage,page,perPage} = usePageNavigationParam();
+
   const navigate = useNavigate();
   const [pagination, setPagination] = React.useState<IPagination>(defaultQuery);
 
@@ -89,16 +92,16 @@ export function SettlementTable({
   const [text, setText] = React.useState("");
 
   const handleSetFilter = (values: number[]) => {
-    setPagination((prev) => ({ ...prev, page:1, }));
+    changePage(1);
     setFilter(values);
   };
 
   const { data, isLoading, isError } = useQuery(
-    [queryKey, id, filter, pagination.page, pagination.pageSize, searchText],
+    [queryKey, id, filter, page, perPage, searchText],
     ({ signal }) =>
       apiFunc(
-        `?pageNumber=${pagination.page}&pageSize=${
-          pagination?.pageSize
+        `?pageNumber=${page}&pageSize=${
+          perPage
         }&searchText=${searchText}${
           filter?.length > 0
             ? `${filter.reduce((acc, val) => {
@@ -110,11 +113,14 @@ export function SettlementTable({
         signal
       ).then((res) => {
         const { data, ...paginationData } = res?.data?.result;
-        const { hasNextPage, hasPrevPage, total, totalPages } =
+        const { hasNextPage, hasPrevPage, total, totalPages ,page,pageSize} =
           createPaginationData(data, paginationData);
 
+          console.log()
         setPagination((prev) => ({
           ...prev,
+          page,
+          pageSize,
           total,
           totalPages,
           hasNextPage,
@@ -133,9 +139,9 @@ export function SettlementTable({
     navigate("/app/marketplace/listings/add-listing");
   };
 
-  const handleChange = (page: number) => {
-    setPagination((prev) => ({ ...prev, page }));
-  };
+  // const handleChange = (page: number) => {
+  //   setPagination((prev) => ({ ...prev, page }));
+  // };
 
   const handleViewMore = () => {
     navigate("listings");
@@ -171,7 +177,7 @@ export function SettlementTable({
     debouncedChangeHandler();
   };
 
-
+  
   return (
     <StyledPage>
       <div className="tab-section">
@@ -219,7 +225,7 @@ export function SettlementTable({
 
       <TableWrapper
         showPagination
-        handleChangePagination={handleChange}
+        handleChangePagination={changePage}
         pagination={pagination}>
         <MuiTableContainer
           sx={{

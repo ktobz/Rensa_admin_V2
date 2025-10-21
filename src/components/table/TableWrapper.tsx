@@ -3,6 +3,7 @@ import * as React from "react";
 import { MuiPagination, MuiTypography, styled } from "@/lib/index";
 
 import { IPagination } from "@/types/globalTypes";
+import { usePageNavigationParam } from "@/utils/helper-funcs";
 
 type IProps = {
   showPagination?: boolean;
@@ -28,11 +29,15 @@ export default function TableWrapper({
   children,
   className,
 }: IProps) {
+const {changePage,page} = usePageNavigationParam();
+
+
   const handleChange = (event: React.ChangeEvent<unknown>, page: number) => {
-    if (handleChangePagination) {
-      handleChangePagination(page);
-    }
+      changePage(page);
+    
   };
+
+  // console.log(pagination);
 
 
   return (
@@ -43,9 +48,9 @@ export default function TableWrapper({
         <StyledPagination>
           <MuiTypography variant="subtitle2" className="total">
             Showing{" "}
-            {pagination.pageSize * pagination.page > pagination.total
+            {pagination.pageSize * page > pagination.total
               ? pagination.total
-              : pagination.pageSize * pagination.page}{" "}
+              : pagination.pageSize * page}{" "}
             of {pagination.total} entries
           </MuiTypography>
           <div className="pagination">
@@ -53,8 +58,8 @@ export default function TableWrapper({
               count={pagination.totalPages}
               onChange={handleChange}
               color="primary"
-              page={pagination.page}
-            defaultPage={pagination?.page}
+              page={page}
+            defaultPage={page || pagination?.page}
               // variant=""
               shape="rounded"
               sx={{

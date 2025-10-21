@@ -34,6 +34,7 @@ import {
   formatCurrency,
   formatDate,
   getIdName,
+  usePageNavigationParam,
 } from "@/utils/helper-funcs";
 
 import CustomSearch from "@/components/input/CustomSearch";
@@ -122,48 +123,40 @@ export function OrderTable({
     (state) => state.cache?.lookup
   );
 
+  const {page:pageNumber,perPage,setTxStatus,txStatus,resetAllNavigationQueries, setOrderView, orderView, setOrderDate, orderMonth, orderYear} = usePageNavigationParam();
   const navigate = useNavigate();
   const [pagination, setPagination] = React.useState<IPagination>(defaultQuery);
 
   const { pathname } = useLocation();
 
   const calendarRef = React.useRef<any>();
-  const [filter, setFilter] = React.useState<number[]>([]);
+
   const [searchText, setSearchText] = React.useState("");
   const [text, setText] = React.useState("");
 
-  const [date, setDate] = React.useState<{ year: number; month: number }>(
-    () => {
-      const today = new Date();
-      return {
-        month: today.getMonth(),
-        year: today.getFullYear(),
-      };
-    }
-  );
-  const [view, setView] = React.useState(viewMode);
   const [currentDate, setCurrentDate] = React.useState(() => {
-    const today = new Date();
+
+    const today = new Date(`${orderMonth + 1}-1-${orderYear}`);
     const defaultDate = `${
-      DATE_LIST[today.getMonth()]
-    } ${new Date()?.getFullYear()}`;
+      DATE_LIST[orderMonth]
+    } ${orderYear}`;
 
     return { date: today, dateString: defaultDate };
   });
 
   const handleSetFilter = (values: number[]) => {
-    setFilter(values);
+    setTxStatus(values);
   };
 
   const { data, isLoading, isError } = useQuery(
-    [queryKey, id, filter, pagination.page, pagination.pageSize, text],
+    [queryKey, id, txStatus, page||pageNumber, perPage, text],
     ({ signal }) =>
       apiFunc(
-        `?pageNumber=${pagination.page}&pageSize=${
-          pagination?.pageSize
+        `?pageNumber=${page||pageNumber}&pageSize=${
+          perPage
         }&searchText=${text}${
-          filter?.length > 0
-            ? `${filter.reduce((acc, val) => {
+          txStatus?.length > 0
+            ? `${txStatus.reduce((acc, val) => {
                 acc += `&status=${val}`;
                 return acc;
               }, "")}`
@@ -172,16 +165,19 @@ export function OrderTable({
         signal
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
-        const { hasNextPage, hasPrevPage, total, totalPages } =
-          createPaginationData(data, paginationData);
+        const { hasNextPage, hasPrevPage, total, totalPages ,page,pageSize} =
+        createPaginationData(data, paginationData);
 
-        setPagination((prev) => ({
-          ...prev,
-          total,
-          totalPages,
-          hasNextPage,
-          hasPrevPage,
-        }));
+      setPagination((prev) => ({
+        ...prev,
+        page,
+        pageSize,
+        total,
+        totalPages,
+        hasNextPage,
+        hasPrevPage,
+      }));
+
 
         return data;
       }),
@@ -192,10 +188,10 @@ export function OrderTable({
   );
 
   const { data: calendarOrders, isLoading: calendarOrdersLoading } = useQuery(
-    [queryKey, id, date.month, date.year],
+    [queryKey, id, orderMonth, orderYear],
     () =>
       OrderService.getByMonthAndYear(
-        `?month=${date.month + 1}&year=${date?.year}`
+        `?month=${orderMonth + 1}&year=${orderYear}`
       ).then((res) => {
         const data = res.data?.result;
 
@@ -212,7 +208,7 @@ export function OrderTable({
     {
       retry: 0,
       refetchOnWindowFocus: false,
-      enabled: view === "grid",
+      enabled: orderView === "grid",
     }
   );
 
@@ -256,8 +252,9 @@ export function OrderTable({
   };
 
   const handleToggleView = (view: "grid" | "list") => () => {
-    setView(view);
+    setOrderView(view);
   };
+  
   const handleNavigateToSchedule = (value: Date, event: any) => {
     const date = value?.toJSON();
     navigate(`scheduled-orders/?date=${date}`);
@@ -282,7 +279,8 @@ export function OrderTable({
       date: new Date(selectedYear, selectedMonth, 1),
       dateString: `${DATE_LIST[selectedMonth]} ${selectedYear}`,
     }));
-    setDate({ month: selectedMonth, year: selectedYear });
+    setOrderDate({ month: selectedMonth, year: selectedYear })
+
   };
 
   const handleViewMore = () => {
@@ -290,9 +288,7 @@ export function OrderTable({
   };
 
   const handleSetSearchText = (value: string) => () => {
-    // if (value) {
     setSearchText(value);
-    // }
   };
 
   const throttleChangeHandler = React.useMemo(
@@ -302,10 +298,12 @@ export function OrderTable({
 
   const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    setPagination((prev) => ({ ...prev, page:1, }));
+    resetAllNavigationQueries()
     setText(value);
     throttleChangeHandler();
   };
+
+  console.log(currentDate)
 
   return (
     <StyledPage>
@@ -383,10 +381,10 @@ export function OrderTable({
         </div>
         {showFilter && (
           <div className="action-section">
-            {view === "list" && (
+            {orderView === "list" && (
               <>
                 <StatusFilter
-                  selectedValue={filter}
+                  selectedValue={txStatus}
                   handleSetValue={handleSetFilter}
                   options={catalogueOrderStatus}
                 />
@@ -397,7 +395,7 @@ export function OrderTable({
                 />
               </>
             )}
-            {view === "grid" && (
+            {orderView === "grid" && (
               <div className="calendar-nav">
                 <MuiIconButton
                   className="nav-btn"
@@ -419,19 +417,19 @@ export function OrderTable({
               <MuiIconButton
                 className="mode-btn"
                 onClick={handleToggleView("grid")}>
-                {view === "grid" ? <IconGridActive /> : <IconGridInactive />}
+                {orderView === "grid" ? <IconGridActive /> : <IconGridInactive />}
               </MuiIconButton>
               <MuiIconButton
                 className="mode-btn"
                 onClick={handleToggleView("list")}>
-                {view === "list" ? <IconListActive /> : <IconListInactive />}
+                {orderView === "list" ? <IconListActive /> : <IconListInactive />}
               </MuiIconButton>
             </div>
           </div>
         )}
       </div>
 
-      {view == "grid" && showFilter ? (
+      {orderView == "grid" && showFilter ? (
         <>
           <Calendar
             ref={calendarRef}
@@ -447,9 +445,9 @@ export function OrderTable({
             tileContent={(v) => {
               const orderKey = constructOrderKey(v.date);
               const numberOfOrders = calendarOrders
-                ? calendarOrders?.[orderKey]
-                : 0;
-
+              ? calendarOrders?.[orderKey]
+              : 0;
+              
               if (!!numberOfOrders) {
                 return (
                   <MuiTypography

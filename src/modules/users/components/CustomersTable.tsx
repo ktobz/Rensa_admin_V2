@@ -26,7 +26,7 @@ import CustomTab from "@/components/other/CustomTab";
 import CustomTabs from "@/components/other/CustomTabs";
 import CustomerService from "@/services/customer-service";
 import { IPagination, IUserData } from "@/types/globalTypes";
-import { createPaginationData, formatDate } from "@/utils/helper-funcs";
+import { createPaginationData, formatDate, usePageNavigationParam } from "@/utils/helper-funcs";
 import throttle from "lodash.throttle";
 import { toast } from "react-toastify";
 import { DeleteUserConfirm } from "./DeleteProductConfirm";
@@ -43,15 +43,14 @@ const defaultQuery: IPagination = {
 export function CustomersTable() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const {perPage,page,resetAllNavigationQueries, customerViewType, setCustomerViewType} =usePageNavigationParam();
 
   const [pagination, setPagination] = React.useState<IPagination>(defaultQuery);
-  const [current, setCurrent] = React.useState(() => {
-    return 0;
-  });
+
 
   const handleChangeIndex = (index: number) => () => {
-    setPagination((prev) => ({ ...prev, page:1, }));
-    setCurrent(index);
+    resetAllNavigationQueries()
+    setCustomerViewType(index);
   };
 
 
@@ -63,23 +62,26 @@ export function CustomersTable() {
   const [text, setText] = React.useState("");
 
   const { data, isLoading, isError } = useQuery(
-    ["all-users", pagination.page, pagination.pageSize, text, current],
+    ["all-users", page, perPage, text, customerViewType],
     ({ signal }) =>
       CustomerService.getAll(
-        `?PageNumber=${pagination.page}&PageSize=${pagination.pageSize}&searchText=${text}&isDeleted=${current !== 0}`,
+        `?PageNumber=${page}&PageSize=${perPage}&searchText=${text}&isDeleted=${customerViewType !== 0}`,
         signal
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
-        const { hasNextPage, hasPrevPage, total, totalPages } =
-          createPaginationData(data, paginationData);
+        const { hasNextPage, hasPrevPage, total, totalPages ,page,pageSize} =
+        createPaginationData(data, paginationData);
 
-        setPagination((prev) => ({
-          ...prev,
-          total,
-          totalPages,
-          hasNextPage,
-          hasPrevPage,
-        }));
+      setPagination((prev) => ({
+        ...prev,
+        page,
+        pageSize,
+        total,
+        totalPages,
+        hasNextPage,
+        hasPrevPage,
+      }));
+
 
         return data;
       }),
@@ -161,19 +163,19 @@ export function CustomersTable() {
        <div className="top-section">
           <CustomTabs
             variant="scrollable"
-            value={current || 0}
+            value={customerViewType}
             className="tabs">
             <CustomTab
               onClick={handleChangeIndex(0)}
               value={0}
               label="Registered User"
-              current={current}
+              current={customerViewType}
             />
             <CustomTab
               onClick={handleChangeIndex(1)}
               value={1}
               label="Deleted User"
-              current={current}
+              current={customerViewType}
             />
         
           </CustomTabs>
@@ -184,7 +186,7 @@ export function CustomersTable() {
      
         <div className="top-section">
           <MuiTypography variant="body2" className="heading">
-            {current === 0 ? 'Total':'Deleted'} Users
+            {customerViewType === 0 ? 'Total':'Deleted'} Users
           </MuiTypography>
           <MuiTypography
             className="total"
@@ -241,7 +243,7 @@ export function CustomersTable() {
                   Date joined
                 </MuiTableCell>
                 {
-                  current===0 && (
+                  customerViewType===0 && (
                     <MuiTableCell className="heading" align="left">
                     Verified
                   </MuiTableCell>
@@ -277,7 +279,7 @@ export function CustomersTable() {
                       {formatDate(row?.creationTime || "")}
                     </MuiTableCell>
                     {
-                      current === 0 && (
+                      customerViewType === 0 && (
                           <MuiTableCell align="left">
                       <VerificationStatus
                         type={row?.isVerified ? "true" : "false"}
@@ -290,7 +292,7 @@ export function CustomersTable() {
                     <MuiTableCell align="left">
                       <MuiBox className="action-group">
                         {
-                          current === 0 && (
+                          customerViewType === 0 && (
                              <MuiIconButton
                           color="error"
                           onClick={handleSetDeleteData(row)}

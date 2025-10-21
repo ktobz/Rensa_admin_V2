@@ -1065,6 +1065,14 @@ export type IAddListingResponse = {
   };
 };
 
+export type IDeleteCommentResponse = {
+  result: {
+    message:string
+  };
+  message: string;
+  error: string;
+};
+
 // LOOKUPS
 
 export type ILookupGroupName =
@@ -1157,3 +1165,35 @@ export interface IApprovedLocation {
   state: string;
   userId: string;
 }
+
+export type IListingQuestionsAndAnswer = {
+  "id": number;
+  "catalogueId": string;
+    "comment": string;
+    "createdAt": string;
+    "lastModifiedAt": null;
+    "parentCommentId": null;
+    "user": {
+        "firstName": string;
+        "lastName": string;
+        "userName": string;
+        "isVerified": boolean;
+        "profilePictureUrl": null|string;
+    };
+    "isEdited": boolean;
+    "canEdit": boolean;
+    "isFlagged": boolean;
+    "flagReason": string;
+    "isAdmin": boolean;
+    "isUser": boolean;
+    "isDeleted": boolean;
+    "replyCount": number;
+    "replies": IListingQuestionsAndAnswer[]
+  }
+
+
+  export type IListingQuestionsAndAnswerResponse = {
+    result: IListingQuestionsAndAnswer[];
+    message: string;
+    error: string;
+  };

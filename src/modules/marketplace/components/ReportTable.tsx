@@ -22,7 +22,8 @@ import { IconVisibility } from "@/lib/mui.lib.icons";
 import { IPagination, IReportedListingData } from "@/types/globalTypes";
 import {
   createPaginationData,
-  getIdName
+  getIdName,
+  usePageNavigationParam
 } from "utils/helper-funcs";
 
 import CustomSearch from "@/components/input/CustomSearch";
@@ -52,6 +53,7 @@ export function ReportTable({
   showPagination = false,
 }: IProps) {
   const navigate = useNavigate();
+  const {page,perPage,setTxStatus,txStatus,resetAllNavigationQueries} = usePageNavigationParam();
   const { reportedListingStatus, reportedListingCategory, catalogueStatus } =
     useCachedDataStore((state) => state.cache?.lookup);
   const [pagination, setPagination] = React.useState<IPagination>(defaultQuery);
@@ -60,24 +62,24 @@ export function ReportTable({
     navigate(path);
   };
 
-  const [filter, setFilter] = React.useState<number[]>([]);
+
   const [searchText, setSearchText] = React.useState("");
   const [text, setText] = React.useState("");
 
   const handleSetFilter = (values: number[]) => {
-    setPagination((prev) => ({ ...prev, page:1, }));
-    setFilter(values);
+    resetAllNavigationQueries()
+    setTxStatus(values);
   };
 
   const { data, isLoading, isError } = useQuery(
-    ["reported-listing", filter, pagination.page, pagination.pageSize, text],
+    ["reported-listing", txStatus, page, perPage, text],
     ({ signal }) =>
       ListingService.getAllReportedListing(
-        `?pageNumber=${pagination.page}&pageSize=${
-          pagination?.pageSize
+        `?pageNumber=${page}&pageSize=${
+          perPage
         }&searchText=${text}${
-          filter?.length > 0
-            ? `${filter.reduce((acc, val) => {
+          txStatus?.length > 0
+            ? `${txStatus.reduce((acc, val) => {
                 acc += `&status=${val}`;
                 return acc;
               }, "")}`
@@ -86,16 +88,19 @@ export function ReportTable({
         signal
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
-        const { hasNextPage, hasPrevPage, total, totalPages } =
-          createPaginationData(data, paginationData);
+        const { hasNextPage, hasPrevPage, total, totalPages ,page,pageSize} =
+        createPaginationData(data, paginationData);
 
-        setPagination((prev) => ({
-          ...prev,
-          total,
-          totalPages,
-          hasNextPage,
-          hasPrevPage,
-        }));
+      setPagination((prev) => ({
+        ...prev,
+        page,
+        pageSize,
+        total,
+        totalPages,
+        hasNextPage,
+        hasPrevPage,
+      }));
+
 
         return data;
       }),
@@ -157,7 +162,7 @@ export function ReportTable({
         {showFilter && (
           <div className="action-section">
             <StatusFilter
-              selectedValue={filter}
+              selectedValue={txStatus}
               handleSetValue={handleSetFilter}
               options={reportedListingStatus}
             />

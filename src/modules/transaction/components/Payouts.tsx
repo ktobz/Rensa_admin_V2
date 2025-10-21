@@ -23,6 +23,7 @@ import {
   formatCurrency,
   formatDate,
   getIdName,
+  usePageNavigationParam,
 } from "utils/helper-funcs";
 
 import CustomSearch from "@/components/input/CustomSearch";
@@ -78,11 +79,12 @@ export function PayoutTableView({
   } = useCachedDataStore((state) => state.cache);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const {perPage,page,resetAllNavigationQueries,setTxStatus,txStatus} = usePageNavigationParam();
 
   const [details, setDetails] = React.useState<IUserPayout>({} as IUserPayout);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [show, setShow] = React.useState(false);
-  const [filter, setFilter] = React.useState<number[]>([]);
+
   const [searchText, setSearchText] = React.useState("");
   const [text, setText] = React.useState("");
   const [verifyId, setVerifyId] = React.useState("");
@@ -100,14 +102,14 @@ export function PayoutTableView({
   };
 
   const { data, isLoading, isError } = useQuery(
-    [queryKey, id, pagination.page, pagination.pageSize, text, filter],
+    [queryKey, id, page, perPage, text, txStatus],
     ({ signal }) =>
       apiFunc(
-        `?pageNumber=${pagination.page}&pageSize=${
-          pagination.pageSize
+        `?pageNumber=${page}&pageSize=${
+          perPage
         }&searchText=${text}${
-          filter?.length > 0
-            ? `${filter.reduce((acc, val) => {
+          txStatus?.length > 0
+            ? `${txStatus.reduce((acc, val) => {
                 acc += `&status=${val}`;
                 return acc;
               }, "")}`
@@ -116,16 +118,19 @@ export function PayoutTableView({
         signal
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
-        const { hasNextPage, hasPrevPage, total, totalPages } =
-          createPaginationData(data, paginationData);
+        const { hasNextPage, hasPrevPage, total, totalPages ,page,pageSize} =
+        createPaginationData(data, paginationData);
 
-        setPagination((prev) => ({
-          ...prev,
-          total,
-          totalPages,
-          hasNextPage,
-          hasPrevPage,
-        }));
+      setPagination((prev) => ({
+        ...prev,
+        page,
+        pageSize,
+        total,
+        totalPages,
+        hasNextPage,
+        hasPrevPage,
+      }));
+
 
         return data;
       }),
@@ -143,8 +148,8 @@ export function PayoutTableView({
   };
 
   const handleSetFilter = (values: number[]) => {
-    setPagination((prev) => ({ ...prev, page:1, }));
-    setFilter(values);
+    resetAllNavigationQueries();
+    setTxStatus(values);
   };
 
   const handleSetSearchText = (value: string) => () => {
@@ -160,7 +165,7 @@ export function PayoutTableView({
 
   const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    setPagination((prev) => ({ ...prev, page:1, }));
+    resetAllNavigationQueries();
     setText(value);
     debouncedChangeHandler();
   };
@@ -189,7 +194,7 @@ export function PayoutTableView({
         pagination.page,
         pagination.pageSize,
         searchText,
-        filter,
+        txStatus,
       ]);
       setVerifyId("");
     };
@@ -205,7 +210,7 @@ export function PayoutTableView({
           </div>
           <div className="action-section">
             <StatusFilter
-              selectedValue={filter}
+              selectedValue={txStatus}
               handleSetValue={handleSetFilter}
               options={catalogueTransactionStatus}
               className="status"

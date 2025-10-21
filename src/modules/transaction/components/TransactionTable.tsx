@@ -23,6 +23,7 @@ import {
   formatCurrency,
   formatDate,
   getIdName,
+  usePageNavigationParam,
 } from "utils/helper-funcs";
 
 import CustomSearch from "@/components/input/CustomSearch";
@@ -76,9 +77,10 @@ export function TransactionTable({
   } = useCachedDataStore((state) => state.cache);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const {page,perPage,resetAllNavigationQueries, txStatus, setTxStatus } = usePageNavigationParam();
 
   const [show, setShow] = React.useState(false);
-  const [filter, setFilter] = React.useState<number[]>([]);
+
   const [searchText, setSearchText] = React.useState("");
   const [text, setText] = React.useState("");
   const [verifyId, setVerifyId] = React.useState("");
@@ -90,14 +92,14 @@ export function TransactionTable({
   };
 
   const { data, isLoading, isError } = useQuery(
-    [queryKey, id, pagination.page, pagination.pageSize, text, filter],
+    [queryKey, id, page, perPage, text, txStatus],
     ({ signal }) =>
       apiFunc(
-        `?pageNumber=${pagination.page}&pageSize=${
-          pagination.pageSize
+        `?pageNumber=${page}&pageSize=${
+          perPage
         }&searchText=${text}${
-          filter?.length > 0
-            ? `${filter.reduce((acc, val) => {
+          txStatus?.length > 0
+            ? `${txStatus.reduce((acc, val) => {
                 acc += `&status=${val}`;
                 return acc;
               }, "")}`
@@ -106,15 +108,19 @@ export function TransactionTable({
         signal
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
-        const { hasNextPage, hasPrevPage, total, totalPages } =
-          createPaginationData(data, paginationData);
-        setPagination((prev) => ({
-          ...prev,
-          total,
-          totalPages,
-          hasNextPage,
-          hasPrevPage,
-        }));
+        const { hasNextPage, hasPrevPage, total, totalPages ,page,pageSize} =
+        createPaginationData(data, paginationData);
+
+      setPagination((prev) => ({
+        ...prev,
+        page,
+        pageSize,
+        total,
+        totalPages,
+        hasNextPage,
+        hasPrevPage,
+      }));
+
 
         return data;
       }),
@@ -132,8 +138,8 @@ export function TransactionTable({
   };
 
   const handleSetFilter = (values: number[]) => {
-    setPagination((prev) => ({ ...prev, page:1, }));
-    setFilter(values);
+    resetAllNavigationQueries();
+    setTxStatus(values);
   };
 
   const handleSetSearchText = (value: string) => () => {
@@ -149,7 +155,7 @@ export function TransactionTable({
 
   const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    setPagination((prev) => ({ ...prev, page:1, }));
+    resetAllNavigationQueries();
     setText(value);
     debouncedChangeHandler();
   };
@@ -172,7 +178,7 @@ export function TransactionTable({
       pagination.page,
       pagination.pageSize,
       searchText,
-      filter,
+      txStatus,
     ]);
     setVerifyId("");
   };
@@ -188,7 +194,7 @@ export function TransactionTable({
           </div>
           <div className="action-section">
             <StatusFilter
-              selectedValue={filter}
+              selectedValue={txStatus}
               handleSetValue={handleSetFilter}
               options={catalogueTransactionStatus}
             />

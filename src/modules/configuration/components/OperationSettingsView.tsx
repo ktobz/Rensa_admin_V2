@@ -201,7 +201,7 @@ export function OperationSettingsView() {
                 </MuiIconButton>
               </MuiBox>
             </div>
-            <div className="data-row border">
+            <div className="data-row border-b border-b-[#eeeeee]">
               <MuiTypography variant="body1" className="label">
                 Buyer service fee
               </MuiTypography>
@@ -261,7 +261,7 @@ export function OperationSettingsView() {
               </MuiBox>
             </div>
 
-            <div className="data-row border">
+            <div className="data-row border-b border-b-[#eeeeee]">
               <MuiTypography variant="body1" className="label">
                 Van Base fee
               </MuiTypography>
@@ -273,7 +273,7 @@ export function OperationSettingsView() {
                 })}
               </MuiTypography>
             </div>
-            <div className="data-row border">
+            <div className="data-row border-b border-b-[#eeeeee]">
               <MuiTypography variant="body1" className="label">
                 Van fee per km
               </MuiTypography>
@@ -307,7 +307,7 @@ export function OperationSettingsView() {
                 </MuiIconButton>
               </MuiBox>
             </div>
-            <div className="data-row border">
+            <div className="data-row border-b border-b-[#eeeeee]">
               <MuiTypography variant="body1" className="label">
                 Bike Base fee
               </MuiTypography>
@@ -363,7 +363,7 @@ export function OperationSettingsView() {
                 </MuiIconButton>
               </MuiBox>
             </div>
-            <div className="data-row border">
+            <div className="data-row border-b border-b-[#eeeeee]">
               <MuiTypography variant="body1" className="label">
               Payout: Pay Seller After
               </MuiTypography>
@@ -371,7 +371,7 @@ export function OperationSettingsView() {
                 {payoutSetting?.waitTimeInHours || 0} hours
               </MuiTypography>
             </div>
-            <div className="data-row border">
+            <div className="data-row border-b border-b-[#eeeeee]">
               <MuiTypography variant="body1" className="label">
               Pending Offer Expiration
               </MuiTypography>
@@ -379,7 +379,7 @@ export function OperationSettingsView() {
                 {offerSetting?.offerExpirationInHours || 0} hours
               </MuiTypography>
             </div>
-            <div className="data-row border">
+            <div className="data-row border-b border-b-[#eeeeee]">
               <MuiTypography variant="body1" className="label">
               Pending Offer Reminder Interval
               </MuiTypography>
@@ -387,7 +387,7 @@ export function OperationSettingsView() {
                 {offerSetting?.offerReminderIntervalInMinutes || 0} mins
               </MuiTypography>
             </div>
-            <div className="data-row border">
+            <div className="data-row border-b border-b-[#eeeeee]">
               <MuiTypography variant="body1" className="label">
               Pending Checkout Reminder
               </MuiTypography>
@@ -395,7 +395,7 @@ export function OperationSettingsView() {
                 {offerSetting?.pendingCheckoutReminderInMinutes || 0} mins
               </MuiTypography>
             </div>
-            <div className="data-row border">
+            <div className="data-row border-b border-b-[#eeeeee]">
               <MuiTypography variant="body1" className="label">
               Max. Checkout Reminder
               </MuiTypography>
@@ -408,7 +408,7 @@ export function OperationSettingsView() {
 
         <div className="settings-group">
           <IconWallet className="icon" />
-          <div className="rows border">
+          <div className="rows border-b border-b-[#eeeeee]">
             <div className="heading">
               <MuiTypography variant="h3" className="group-heading">
                 Third-party balance
@@ -430,7 +430,7 @@ export function OperationSettingsView() {
         </div>
         {/* <div className="settings-group">
           <IconWallet className="icon" />
-          <div className="rows border">
+          <div className="rows border-b border-b-[#eeeeee]">
             <div className="heading">
               <MuiTypography variant="h3" className="group-heading">
                 Approved Pickup Location

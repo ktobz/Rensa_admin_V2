@@ -83,16 +83,19 @@ export function IncomeTable() {
         signal
       ).then((res) => {
         const { data, ...paginationData } = res.data?.result;
-        const { hasNextPage, hasPrevPage, total, totalPages } =
-          createPaginationData(data, paginationData);
+        const { hasNextPage, hasPrevPage, total, totalPages ,page,pageSize} =
+        createPaginationData(data, paginationData);
 
-        setPagination((prev) => ({
-          ...prev,
-          total,
-          totalPages,
-          hasNextPage,
-          hasPrevPage,
-        }));
+      setPagination((prev) => ({
+        ...prev,
+        page,
+        pageSize,
+        total,
+        totalPages,
+        hasNextPage,
+        hasPrevPage,
+      }));
+
 
         return data;
       }),
@@ -132,7 +135,7 @@ export function IncomeTable() {
       <div className="cards">
         <TotalCard
           className="card"
-          title="Total Sales (Count)"
+          title="Sales Count"
           variant="order"
           showFilter
           filterType="minimal"
@@ -143,7 +146,7 @@ export function IncomeTable() {
         />
         <TotalCard
           className="card"
-          title="Total Sales (Amount)"
+          title="Sales Value"
           variant="sales"
           showFilter
           filterType="minimal"
@@ -161,6 +164,17 @@ export function IncomeTable() {
           defaultOptions={transformedFilter}
           queryKey="sales-revenue"
           serviceFunc={TransactionService.salesRevenue}
+          defaultOptionId={5}
+        />
+           <TotalCard
+          className="card"
+          title="GMV"
+          variant="sales"
+          showFilter
+          filterType="minimal"
+          defaultOptions={transformedFilter}
+          queryKey="sales-gmv"
+          serviceFunc={TransactionService.salesGMV}
           defaultOptionId={5}
         />
       </div>

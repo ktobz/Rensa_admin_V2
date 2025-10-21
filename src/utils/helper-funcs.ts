@@ -3,6 +3,7 @@ import {
   IPaginationResponse
 } from "@/types/globalTypes";
 import { addHours, format, parseISO } from "date-fns";
+import { useSearchParams } from "react-router-dom";
 import { REFRESH_TOKEN_NAME, TOKEN_NAME } from "types/actionTypes";
 const HR_TO_MILLISECONDS = 3600000;
 
@@ -69,6 +70,8 @@ export const createPaginationData = (
     totalPages,
     hasNextPage,
     hasPrevPage,
+    page: pagination?.pageNumber,
+    pageSize: pagination?.pageSize
   };
 };
 
@@ -188,3 +191,96 @@ export const onImageEdit = async (imgUrl:string) => {
   // );
   
 }
+
+
+
+export const usePageNavigationParam = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  
+  const today = new Date();
+
+	const page = searchParams.get('page') || 1;
+	const perPage = searchParams.get('perPage') || 10;
+	const txStatus = searchParams.get('txStatus') || '' ;
+	const orderView = searchParams.get('view') || 'grid' ;
+  const customerViewType = Number(searchParams.get('viewType')) || 0 ;
+  const month = Number(searchParams.get('orderMonth'));
+	const orderMonth = typeof month ==='number' ? month : today.getMonth() ;
+  const orderYear = searchParams.get('orderYear') || today.getFullYear();
+	// const sortBy = searchParams.get('sortBy') || '';
+	// const sortOrder = searchParams.get('order') || 'desc';
+
+	const changePage = (value: string | number) => {
+		searchParams.set('page', value.toString());
+		setSearchParams(searchParams);
+	};
+
+	const resetAllNavigationQueries = () => {
+		searchParams.delete('perPage');
+		searchParams.delete('page');
+		setSearchParams(searchParams);
+	};
+
+	const changeNumberPerPage = (value: string | number) => {
+		searchParams.set('perPage', value.toString());
+		setSearchParams(searchParams);
+	};
+
+
+	const setQueries = (data: { key: string; value: string }[]) => {
+		searchParams.set('page', '1'); 
+
+		for (let i = 0; i < data.length; i += 1) {
+			searchParams.set(data[i].key, data[i].value);
+		}
+		setSearchParams(searchParams);
+	};
+
+	const removeQuery = (key: string) => {
+
+		searchParams.set('page', '1'); 
+
+		searchParams.set(key, '');
+		setSearchParams(searchParams);
+	};
+
+	const setTxStatus = (key: number[]) => {
+    const stringifiedStatus = encodeURI(key?.join((',')));
+		searchParams.set('txStatus', stringifiedStatus); 
+		setSearchParams(searchParams);
+	};
+
+  	const setOrderView = (view: string) => {
+      searchParams.set('view', view); 
+		setSearchParams(searchParams);
+	};
+
+  const setCustomerViewType = (view: number) => {
+    searchParams.set('viewType', String(view)); 
+  setSearchParams(searchParams);
+};
+
+    	const setOrderDate = ({month,year}:{month: number;year:number}) => {
+      searchParams.set('orderMonth', String(month)); 
+      searchParams.set('orderYear', String(year)); 
+		setSearchParams(searchParams);
+	};
+
+
+	return {
+		changePage,
+		changeNumberPerPage,
+		page: +page,
+		perPage: +perPage,
+    resetAllNavigationQueries,
+    txStatus: decodeURI(txStatus)?.split(',')?.map((x)=> Number(x)),
+    setTxStatus,
+    orderView,
+    setOrderView,
+    setOrderDate,
+    orderMonth,orderYear,
+    customerViewType,
+    setCustomerViewType
+	};
+};

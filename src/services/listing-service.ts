@@ -1,6 +1,8 @@
 import {
   IAddListingResponse,
+  IDeleteCommentResponse,
   IListingDetailsResponse,
+  IListingQuestionsAndAnswerResponse,
   IListingResponse,
   IListingStatsResponse,
   IReportedListingCommentsResponse,
@@ -17,6 +19,8 @@ const PATHS = {
   period: "/admin/periods",
   listing: "/admin/reportedlisting/reported-listing",
   listingComments: "/admin/reportedlisting",
+  listingQuestion: '/admin/catalogue-comments',
+
 };
 
 const ListingService = {
@@ -58,6 +62,38 @@ const ListingService = {
       },
     });
   },
+  getListingComments(id: number | string): AxiosPromise<IListingQuestionsAndAnswerResponse> {
+    return HTTP.get(`${PATHS.listingQuestion}/${id}`, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  },
+  toggleCommentFlag(id: number | string): AxiosPromise<IListingDetailsResponse> {
+    return HTTP.put(`${PATHS.listingQuestion}/${id}/flag`, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  }, 
+
+  hideAndShowCommentFlag(id: number | string): AxiosPromise<IDeleteCommentResponse> {
+    return HTTP.delete(`${PATHS.listingQuestion}/${id}`, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  }, 
+
+
+  deleteListingComment(id: number | string): AxiosPromise<IListingDetailsResponse> {
+    return HTTP.put(`${PATHS.listingQuestion}/${id}/flag`, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  }, 
+
   toggleIsFeatured(id: number | string): AxiosPromise<IListingDetailsResponse> {
     return HTTP.put(`${PATHS.isFeatured}/${id}`, {
       headers: {
