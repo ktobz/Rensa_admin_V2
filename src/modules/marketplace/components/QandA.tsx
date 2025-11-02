@@ -109,7 +109,7 @@ export function QandASection() {
                   />
                   <section className="flex! flex-row! justify-between gap-3 w-full mt-3 ">
                     <section className="flex flex-col gap-0">
-                    <MuiTypography variant="body1" className="flex-1 !m-0 pb-0  !text-[14px]" style={{color: row?.isFlagged ? '#B1B5C3': ''}}>
+                    <MuiTypography variant="body1" className="flex-1 !m-0 pb-0  !text-[14px]" style={{color: row?.isFlagged || row?.isDeleted ? '#B1B5C3': ''}}>
                      {row?.comment||'-'}
                     </MuiTypography>
                     {
@@ -125,7 +125,12 @@ export function QandASection() {
                     <ListingCommentAction handleAction={handleHideAndShow} isDeleting={isDeleting} data={row}   isCurrent={row?.id===deleteId}   />
                     </section>
                   </section>
-                  <MuiButton onClick={handleReply(row)} size="small" variant="text" className="!p-0 !h-fit !w-fit !min-w-fit !mt-2">Reply</MuiButton>
+                  {
+                    !(row?.isDeleted|| row?.isFlagged) && (
+
+                      <MuiButton onClick={handleReply(row)} size="small" variant="text" className="!p-0 !h-fit !w-fit !min-w-fit !mt-2">Reply</MuiButton>
+                    )
+                  }
 
                   <section className=" justify-between items-center pl-3 mt-2 ml-3 border-l border-l-[#E8E8E8] flex flex-col gap-4">
                  {
@@ -139,7 +144,7 @@ export function QandASection() {
 
                       <div className="w-[5px] h-[5px] rounded-full bg-[#B1B5C3]" />
                       <MuiTypography className={cn("!text-[12px] ", {
-                        '!text-[#B1B5C3]':x?.isFlagged
+                        '!text-[#B1B5C3]':x?.isFlagged||x?.isDeleted
                       })} variant="subtitle2">
                      {formatDate(
                         x?.createdAt || "",
@@ -150,7 +155,7 @@ export function QandASection() {
                       </section>
                       <section className="flex justify-between items-center !w-full flex-nowrap">
                       <section className="flex flex-col gap-0">
-                      <MuiTypography variant="body1" className="flex-1 !m-0 pb-0" style={{color: x?.isFlagged ? '#B1B5C3': ''}}>
+                      <MuiTypography variant="body1" className="flex-1 !m-0 pb-0" style={{color: x?.isFlagged || x?.isDeleted ? '#B1B5C3': ''}}>
                      {x?.comment||'-'}
                     </MuiTypography>
                     {
