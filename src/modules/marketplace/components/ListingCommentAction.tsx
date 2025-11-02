@@ -22,7 +22,7 @@ export const ListingCommentAction=({isDeleting,handleAction,isCurrent, data}:Rea
         
       </section>
     ):( 
-        <MuiIconButton disabled={isDeleting} onClick={isDeleting ? undefined: handleAction(data?.id, data?.isDeleted)} color="primary" className={cn("!flex !justify-center !items-center !rounded-md w-[24px] h-[24px]", {
+        <MuiIconButton disabled={isDeleting} onClick={isDeleting ? undefined: handleAction(data?.id, !data?.isDeleted)} color="primary" className={cn("!flex !justify-center !items-center !rounded-md w-[24px] h-[24px]", {
            '!bg-[#E8F1F8]': data?.isDeleted,
            '!bg-[#F0F0F0]':!data?.isDeleted
         })} size="small">

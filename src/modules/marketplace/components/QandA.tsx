@@ -9,24 +9,43 @@ import { UserDetailCard } from "@/components/card/UserCard";
 import AppCustomModal from "@/components/modal/Modal";
 import { cn } from "@/lib/utils";
 import ListingService from "@/services/listing-service";
-import { IListingQuestionsAndAnswer, IListingQuestionsAndAnswerResponse } from "@/types/globalTypes";
+import { IListingQuestionsAndAnswer } from "@/types/globalTypes";
 import { formatDate } from "@/utils/helper-funcs";
 import { useIds } from "@/utils/hooks";
+import { useQuery, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
 import { ListingCommentAction } from "./ListingCommentAction";
 import { ReplyCommentForm } from "./ReplyCommentForm";
 
 type IProps = {
-  listingComments: IListingQuestionsAndAnswerResponse['result'] | undefined;
-  isLoading: boolean;
-  isError: boolean;
-  handleRefresh:()=>void;
+  // listingComments: IListingQuestionsAndAnswerResponse['result'] | undefined;
+  // isLoading: boolean;
+  // isError: boolean;
+  // handleRefresh:()=>void;
 };
 
 
-export function QandASection({ isLoading, listingComments, isError, handleRefresh }: IProps) {
+export function QandASection() {
   const { reportId } = useIds();
+  const queryClient = useQueryClient();
 
+  const { data, isLoading, isError } = useQuery(
+    ["listing-comments", reportId],
+    () =>
+      ListingService.getListingComments(reportId || "").then((res) => {
+        const data = res.data?.result;
+        return data;
+      }),
+    {
+      retry: 0,
+      refetchOnWindowFocus: false,
+      enabled: !!reportId,
+    }
+  );
+
+  const handleRefresh = () => {
+    queryClient.invalidateQueries(["listing-comments", reportId]);
+  };
 
   const [isDeleting, setIsDeleting] = React.useState(false);
   const [show, setShow] = React.useState(false);
@@ -40,7 +59,7 @@ export function QandASection({ isLoading, listingComments, isError, handleRefres
     setIsDeleting(true);
     setDeleteId(id);
     try {
-      const {data,status} = await ListingService.hideAndShowCommentFlag(id);
+      const {data,status} = await (isDelete ?  ListingService.hideComment(id) : ListingService.showComment(id));
         if(status){
           toast.success(data?.result?.message||'');
       }
@@ -71,8 +90,8 @@ export function QandASection({ isLoading, listingComments, isError, handleRefres
       
           <SimpleBar className="list-wrapper flex flex-col !gap-3">
             {
-              listingComments &&
-              listingComments?.map((row) => (
+              data &&
+              data?.map((row) => (
                 <div key={row?.id} className=" flex-col border-b border-b-[#E8E8E8] mb-5 pb-2">
 
                   <UserDetailCard
@@ -157,7 +176,7 @@ export function QandASection({ isLoading, listingComments, isError, handleRefres
                 </div>
               ))}
 
-            {!isLoading && listingComments && listingComments?.length === 0 && !isError && (
+            {!isLoading && data && data?.length === 0 && !isError && (
               <div className="no-data-cell">
                 <NoData
                   title="No comments yet"

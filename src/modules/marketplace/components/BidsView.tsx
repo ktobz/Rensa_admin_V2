@@ -9,8 +9,7 @@ import { IconNotificationInfo } from "@/lib/mui.lib.icons";
 import { UserDetailCard } from "@/components/card/UserCard";
 import CustomTab from "@/components/other/CustomTab";
 import CustomTabs from "@/components/other/CustomTabs";
-import useCachedDataStore from "@/config/store-config/lookup";
-import { IListingData, IListingQuestionsAndAnswerResponse, ISettlementStatus } from "@/types/globalTypes";
+import { IListingData, ISettlementStatus } from "@/types/globalTypes";
 import { formatCurrency, formatDate } from "@/utils/helper-funcs";
 import { BidStatus } from "./BidStatus";
 import { QandASection } from "./QandA";
@@ -19,12 +18,10 @@ type IProps = {
   listingData: IListingData | null;
   isLoading: boolean;
   isError: boolean;
-  listingComment:IListingQuestionsAndAnswerResponse['result']|undefined;
   handleRefresh:()=>void;
 };
-export function BidsView({ isLoading, listingData, isError,listingComment }: IProps) {
+export function BidsView({ isLoading, listingData, isError }: IProps) {
   const queryClient = useQueryClient();
-  const { bidType } = useCachedDataStore((state) => state.cache.lookup);
 
   const [show, setShow] = React.useState(false);
 
@@ -214,7 +211,7 @@ export function BidsView({ isLoading, listingData, isError,listingComment }: IPr
           </SimpleBar>
         )}
         {current===2 && (
-          <QandASection isError={false} isLoading={false} listingComments={listingComment} handleRefresh={handleRefresh}  />
+          <QandASection  />
         )}
       </div>
 
