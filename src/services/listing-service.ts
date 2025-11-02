@@ -77,8 +77,17 @@ const ListingService = {
     });
   }, 
 
-  hideAndShowCommentFlag(id: number | string): AxiosPromise<IDeleteCommentResponse> {
+  hideComment(id: number | string): 
+  AxiosPromise<IDeleteCommentResponse> {
     return HTTP.delete(`${PATHS.listingQuestion}/${id}`, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  }, 
+
+  showComment(id: number | string): AxiosPromise<IDeleteCommentResponse> {
+    return HTTP.put(`${PATHS.listingQuestion}/${id}/undelete`, {
       headers: {
         Authorization: getToken(),
       },
