@@ -205,8 +205,9 @@ export const usePageNavigationParam = () => {
 	const txStatus = searchParams.get('txStatus') || '' ;
 	const orderView = searchParams.get('view') || 'grid' ;
   const customerViewType = Number(searchParams.get('viewType')) || 0 ;
-  const month = Number(searchParams.get('orderMonth'));
-	const orderMonth = typeof month ==='number' ? month : today.getMonth() ;
+  const month = searchParams.get('orderMonth');
+
+  const orderMonth = month ? Number(month) : today.getMonth() ;
   const orderYear = searchParams.get('orderYear') || today.getFullYear();
 	// const sortBy = searchParams.get('sortBy') || '';
 	// const sortOrder = searchParams.get('order') || 'desc';

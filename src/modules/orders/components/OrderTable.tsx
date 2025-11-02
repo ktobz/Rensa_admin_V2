@@ -303,8 +303,6 @@ export function OrderTable({
     throttleChangeHandler();
   };
 
-  console.log(currentDate)
-
   return (
     <StyledPage>
       {showMetrics && (
