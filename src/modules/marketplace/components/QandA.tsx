@@ -75,6 +75,26 @@ export function QandASection() {
     setDeleteId(null);
 
   }
+    const handleUnflag=(id:string|number, reason:string)=>async ()=>{
+    setIsDeleting(true);
+    setDeleteId(id);
+    try {
+      const {data,status} = await ( ListingService.unflagComment(id, reason));
+        if(status){
+          toast.success(data?.result?.message||'');
+      }
+  
+        handleRefresh();
+      
+    } catch (error:any) {
+      toast.error(error?.response?.data?.message||'');
+      
+    }
+
+    setIsDeleting(false);
+    setDeleteId(null);
+
+  }
   const handleReply=(data:IListingQuestionsAndAnswer)=>()=>{
     setReplyData(data);
     setShow(true);
@@ -122,7 +142,7 @@ export function QandASection() {
                     }
                     </section>
                     <section>
-                    <ListingCommentAction handleAction={handleHideAndShow} isDeleting={isDeleting} data={row}   isCurrent={row?.id===deleteId}   />
+                    <ListingCommentAction handleAction={handleHideAndShow} isDeleting={isDeleting} data={row}   isCurrent={row?.id===deleteId}  handleUnflag={handleUnflag}  />
                     </section>
                   </section>
                   {
@@ -168,7 +188,7 @@ export function QandASection() {
                     }
                         </section>
 
-   <ListingCommentAction handleAction={handleHideAndShow} isDeleting={isDeleting} data={x} isCurrent={x?.id===deleteId}  />
+   <ListingCommentAction handleAction={handleHideAndShow} isDeleting={isDeleting} data={x} isCurrent={x?.id===deleteId}  handleUnflag={handleUnflag}  />
                   
                       </section>
 

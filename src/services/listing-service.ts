@@ -94,6 +94,14 @@ const ListingService = {
     });
   }, 
 
+  unflagComment(id: number | string, reason:string): AxiosPromise<IDeleteCommentResponse> {
+    return HTTP.put(`${PATHS.listingQuestion}/${id}/flag`,{isFlagged: false, reason}, {
+      headers: {
+        Authorization: getToken(),
+      },
+    });
+  }, 
+
 
   deleteListingComment(id: number | string): AxiosPromise<IListingDetailsResponse> {
     return HTTP.put(`${PATHS.listingQuestion}/${id}/flag`, {
