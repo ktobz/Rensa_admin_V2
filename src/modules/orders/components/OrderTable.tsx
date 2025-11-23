@@ -147,12 +147,11 @@ export function OrderTable({
   const handleSetFilter = (values: number[]) => {
     setTxStatus(values);
   };
-
   const { data, isLoading, isError } = useQuery(
-    [queryKey, id, txStatus, page||pageNumber, perPage, text],
+    [queryKey, id, txStatus, page, pageNumber, perPage, text],
     ({ signal }) =>
       apiFunc(
-        `?pageNumber=${page||pageNumber}&pageSize=${
+        `?pageNumber=${pageNumber}&pageSize=${
           perPage
         }&searchText=${text}${
           txStatus?.length > 0
