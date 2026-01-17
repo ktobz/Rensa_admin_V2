@@ -1,4 +1,9 @@
-export type ISettlementStatus = "accepted" | "pending" | "rejected" | "expired"|'declinedbybidder';
+export type ISettlementStatus =
+  | "accepted"
+  | "pending"
+  | "rejected"
+  | "expired"
+  | "declinedbybidder";
 
 export interface ILoginReq {
   username: string;
@@ -254,13 +259,12 @@ export type IDeliverySettingsData = IDeliverySettingsReq & {
   id: number;
 };
 
-export type IBankProviderData =  {
+export type IBankProviderData = {
   id: number;
-  bankProvider:number;
-  isActive:boolean;
-  transactionType:number;
+  bankProvider: number;
+  isActive: boolean;
+  transactionType: number;
 };
-
 
 export type IServiceFeeReq = {
   buyerServiceFee: number;
@@ -272,10 +276,14 @@ export type IServiceFeeReq = {
 export type IPayoutData = {
   waitTimeInHours: number;
   id?: number;
-  "offerExpirationInHours": number;
-  "offerReminderIntervalInMinutes": number;
-  "pendingCheckoutReminderInMinutes": number;
-  "maxCheckoutReminders": number;
+  offerExpirationInHours: number;
+  offerReminderIntervalInMinutes: number;
+  pendingCheckoutReminderInMinutes: number;
+  maxCheckoutReminders: number;
+  auctionPendingCheckoutReminderInMinutes: number;
+  auctionMaxCheckoutReminders: number;
+  offerPendingCheckoutReminderInMinutes: number;
+  offerMaxCheckoutReminders: number;
 };
 
 export type IApprovedLocationData = {
@@ -336,7 +344,9 @@ export type IStatus =
   | "queued"
   | "on_hold"
   | "closed"
-  | "invalid_account"|"true"|"false";
+  | "invalid_account"
+  | "true"
+  | "false";
 
 export type IVerifyStatus = "true" | "false";
 
@@ -528,7 +538,7 @@ export type IAppReleaseData = {
   devicePlatform: number;
   id?: string;
   creationTime?: string;
-  isActive?:boolean;
+  isActive?: boolean;
 };
 
 export type IAppReleaseResponse = {
@@ -537,32 +547,30 @@ export type IAppReleaseResponse = {
   };
 };
 
-
 // OTP LOG DATA
-export type IOTPLogData =   {
-  "id": number,
-  "creatorUserId": string,
-  "lastModifierUserId": string,
-  "deleterUserId": string,
-  "creationTime": Date |string,
-  "lastModificationTime": Date |string,
-  "deletionTime": Date |string,
-  "isDeleted": true,
-  "phoneNumber": string,
-  "message": string,
-  "sent": true,
-  "messageId": string,
-  "finalStatus": string,
-  "response": string,
-  "deliveryReport": string
-}
+export type IOTPLogData = {
+  id: number;
+  creatorUserId: string;
+  lastModifierUserId: string;
+  deleterUserId: string;
+  creationTime: Date | string;
+  lastModificationTime: Date | string;
+  deletionTime: Date | string;
+  isDeleted: true;
+  phoneNumber: string;
+  message: string;
+  sent: true;
+  messageId: string;
+  finalStatus: string;
+  response: string;
+  deliveryReport: string;
+};
 
 export type IOTPLogResponse = {
   result: IPaginationResponse & {
     data: IOTPLogData[];
   };
 };
-
 
 // ORDERS
 
@@ -956,15 +964,15 @@ export type IListingData = {
   listingType: number;
   isPickupEnabled: boolean;
   isPickupUsed: boolean;
-  placeId:string;
+  placeId: string;
   locationInfo: {
     location: string;
-    latitude:number;
+    latitude: number;
     longitude: number;
-    city:string;
+    city: string;
     state: string;
   };
-  isFeatured:boolean;
+  isFeatured: boolean;
 };
 
 export type IReportedListingData = {
@@ -1067,7 +1075,7 @@ export type IAddListingResponse = {
 
 export type IDeleteCommentResponse = {
   result: {
-    message:string
+    message: string;
   };
   message: string;
   error: string;
@@ -1167,33 +1175,32 @@ export interface IApprovedLocation {
 }
 
 export type IListingQuestionsAndAnswer = {
-  "id": number;
-  "catalogueId": string;
-    "comment": string;
-    "createdAt": string;
-    "lastModifiedAt": null;
-    "parentCommentId": null;
-    "user": {
-        "firstName": string;
-        "lastName": string;
-        "userName": string;
-        "isVerified": boolean;
-        "profilePictureUrl": null|string;
-    };
-    "isEdited": boolean;
-    "canEdit": boolean;
-    "isFlagged": boolean;
-    "flagReason": string;
-    "isAdmin": boolean;
-    "isUser": boolean;
-    "isDeleted": boolean;
-    "replyCount": number;
-    "replies": IListingQuestionsAndAnswer[]
-  }
-
-
-  export type IListingQuestionsAndAnswerResponse = {
-    result: IListingQuestionsAndAnswer[];
-    message: string;
-    error: string;
+  id: number;
+  catalogueId: string;
+  comment: string;
+  createdAt: string;
+  lastModifiedAt: null;
+  parentCommentId: null;
+  user: {
+    firstName: string;
+    lastName: string;
+    userName: string;
+    isVerified: boolean;
+    profilePictureUrl: null | string;
   };
+  isEdited: boolean;
+  canEdit: boolean;
+  isFlagged: boolean;
+  flagReason: string;
+  isAdmin: boolean;
+  isUser: boolean;
+  isDeleted: boolean;
+  replyCount: number;
+  replies: IListingQuestionsAndAnswer[];
+};
+
+export type IListingQuestionsAndAnswerResponse = {
+  result: IListingQuestionsAndAnswer[];
+  message: string;
+  error: string;
+};

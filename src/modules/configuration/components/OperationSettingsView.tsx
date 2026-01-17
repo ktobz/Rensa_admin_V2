@@ -10,7 +10,7 @@ import {
   IconEdit,
   IconFee,
   IconOrder,
-  IconWallet
+  IconWallet,
 } from "@/lib/mui.lib.icons";
 
 import ConfigService from "@/services/config-service";
@@ -334,8 +334,6 @@ export function OperationSettingsView() {
             </div>
           </div>
         </div>
-
-        
       </div>
 
       <div className="section">
@@ -365,7 +363,7 @@ export function OperationSettingsView() {
             </div>
             <div className="data-row border-b border-b-[#eeeeee]">
               <MuiTypography variant="body1" className="label">
-              Payout: Pay Seller After
+                Payout: Pay Seller After
               </MuiTypography>
               <MuiTypography variant="body1" className="value">
                 {payoutSetting?.waitTimeInHours || 0} hours
@@ -373,7 +371,7 @@ export function OperationSettingsView() {
             </div>
             <div className="data-row border-b border-b-[#eeeeee]">
               <MuiTypography variant="body1" className="label">
-              Pending Offer Expiration
+                Pending Offer Expiration
               </MuiTypography>
               <MuiTypography variant="body1" className="value">
                 {offerSetting?.offerExpirationInHours || 0} hours
@@ -381,7 +379,7 @@ export function OperationSettingsView() {
             </div>
             <div className="data-row border-b border-b-[#eeeeee]">
               <MuiTypography variant="body1" className="label">
-              Pending Offer Reminder Interval
+                Pending Offer Reminder Interval
               </MuiTypography>
               <MuiTypography variant="body1" className="value">
                 {offerSetting?.offerReminderIntervalInMinutes || 0} mins
@@ -389,18 +387,35 @@ export function OperationSettingsView() {
             </div>
             <div className="data-row border-b border-b-[#eeeeee]">
               <MuiTypography variant="body1" className="label">
-              Pending Checkout Reminder
+                Offer Pending Checkout Reminder
               </MuiTypography>
               <MuiTypography variant="body1" className="value">
-                {offerSetting?.pendingCheckoutReminderInMinutes || 0} mins
+                {offerSetting?.offerPendingCheckoutReminderInMinutes || 0} mins
               </MuiTypography>
             </div>
             <div className="data-row border-b border-b-[#eeeeee]">
               <MuiTypography variant="body1" className="label">
-              Max. Checkout Reminder
+                Offer Max. Checkout Reminder
               </MuiTypography>
               <MuiTypography variant="body1" className="value">
-                {offerSetting?.maxCheckoutReminders || 0} times
+                {offerSetting?.offerMaxCheckoutReminders || 0} times
+              </MuiTypography>
+            </div>
+            <div className="data-row border-b border-b-[#eeeeee]">
+              <MuiTypography variant="body1" className="label">
+                Auction Pending Checkout Reminder
+              </MuiTypography>
+              <MuiTypography variant="body1" className="value">
+                {offerSetting?.auctionPendingCheckoutReminderInMinutes || 0}{" "}
+                mins
+              </MuiTypography>
+            </div>
+            <div className="data-row border-b border-b-[#eeeeee]">
+              <MuiTypography variant="body1" className="label">
+                Auction Max. Checkout Reminder
+              </MuiTypography>
+              <MuiTypography variant="body1" className="value">
+                {offerSetting?.auctionMaxCheckoutReminders || 0} times
               </MuiTypography>
             </div>
           </div>
@@ -516,7 +531,7 @@ export function OperationSettingsView() {
         title={"Timer Config"}
         showClose>
         <PayoutSettingsForm
-          initData={{...payoutSetting, ...offerSetting}}
+          initData={{ ...payoutSetting, ...offerSetting }}
           refreshQuery={handleRefreshPayout}
           handleClose={handleCloseModal}
         />
