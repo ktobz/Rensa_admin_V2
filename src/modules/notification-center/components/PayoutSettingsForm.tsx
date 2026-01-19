@@ -12,8 +12,13 @@ const SCHEMA = Yup.object().shape({
   waitTimeInHours: Yup.number().required("required"),
   offerExpirationInHours: Yup.number().required("required"),
   offerReminderIntervalInMinutes: Yup.number().required("required"),
-  pendingCheckoutReminderInMinutes: Yup.number().required("required"),
-  maxCheckoutReminders: Yup.number().required("required"),
+  pendingCheckoutReminderInMinutes: Yup.number().optional(),
+  maxCheckoutReminders: Yup.number().optional(),
+
+  offerPendingCheckoutReminderInMinutes: Yup.number().required("required"),
+  offerMaxCheckoutReminders: Yup.number().required("required"),
+  auctionPendingCheckoutReminderInMinutes: Yup.number().required("required"),
+  auctionMaxCheckoutReminders: Yup.number().required("required"),
 });
 
 type IViewProps = {
@@ -31,9 +36,17 @@ export const PayoutSettingsForm = ({
     id: initData?.id || "",
     waitTimeInHours: initData?.waitTimeInHours || "",
     offerExpirationInHours: initData?.offerExpirationInHours || "",
-    offerReminderIntervalInMinutes: initData?.offerReminderIntervalInMinutes || "",
-    pendingCheckoutReminderInMinutes: initData?.pendingCheckoutReminderInMinutes || "",
+    offerReminderIntervalInMinutes:
+      initData?.offerReminderIntervalInMinutes || "",
+    pendingCheckoutReminderInMinutes:
+      initData?.pendingCheckoutReminderInMinutes || "",
     maxCheckoutReminders: initData?.maxCheckoutReminders || "",
+    auctionMaxCheckoutReminders: initData?.auctionMaxCheckoutReminders || "",
+    auctionPendingCheckoutReminderInMinutes:
+      initData?.auctionPendingCheckoutReminderInMinutes || "",
+    offerMaxCheckoutReminders: initData?.offerMaxCheckoutReminders || "",
+    offerPendingCheckoutReminderInMinutes:
+      initData?.offerPendingCheckoutReminderInMinutes || "",
   };
 
   const [isSaving, setIsSaving] = React.useState(false);
@@ -45,7 +58,7 @@ export const PayoutSettingsForm = ({
       ConfigService.setPayoutSettings(initData?.id || 0, formValues)
         .then((res) => {
           refreshQuery?.();
-          toast.success( "Payout config updated successfully");
+          toast.success("Payout config updated successfully");
         })
         .catch((err) => {
           toast.error(err?.response?.data?.message || "");
@@ -67,7 +80,7 @@ export const PayoutSettingsForm = ({
       ConfigService.setOfferSettings(initData?.id || 0, formValues)
         .then((res) => {
           refreshQuery?.();
-          toast.success( "Offer config updated successfully");
+          toast.success("Offer config updated successfully");
         })
         .catch((err) => {
           toast.error(err?.response?.data?.message || "");
@@ -115,7 +128,7 @@ export const PayoutSettingsForm = ({
             error={!!errors.waitTimeInHours}
             required
           />
-               <AppInput
+          <AppInput
             id="offerExpirationInHours"
             name="offerExpirationInHours"
             label="Pending Offer Expiration (hours)"
@@ -127,10 +140,10 @@ export const PayoutSettingsForm = ({
             error={!!errors.offerExpirationInHours}
             required
           />
-               <AppInput
+          <AppInput
             id="offerReminderIntervalInMinutes"
             name="offerReminderIntervalInMinutes"
-            label="Pending Offer Reminder Interval (minutes)"
+            label="Pending Offer Reminder Interval (mins)"
             placeholder=""
             type="number"
             value={values.offerReminderIntervalInMinutes}
@@ -139,30 +152,59 @@ export const PayoutSettingsForm = ({
             error={!!errors.offerReminderIntervalInMinutes}
             required
           />
-               <AppInput
-            id="pendingCheckoutReminderInMinutes"
-            name="pendingCheckoutReminderInMinutes"
-            label="Pending Checkout Reminder (minutes)"
-            placeholder=""
-            type="number"
-            value={values.pendingCheckoutReminderInMinutes}
-            onChange={handleChange}
-            helperText={errors.pendingCheckoutReminderInMinutes}
-            error={!!errors.pendingCheckoutReminderInMinutes}
-            required
-          />
-               <AppInput
-            id="maxCheckoutReminders"
-            name="maxCheckoutReminders"
-            label="Max. Checkout Reminder (times)"
-            placeholder=""
-            type="number"
-            value={values.maxCheckoutReminders}
-            onChange={handleChange}
-            helperText={errors.maxCheckoutReminders}
-            error={!!errors.maxCheckoutReminders}
-            required
-          />
+
+          <section className="flex-wrapper">
+            <AppInput
+              id="offerPendingCheckoutReminderInMinutes"
+              name="offerPendingCheckoutReminderInMinutes"
+              label="Offer Pending Checkout Reminder (mins)"
+              placeholder=""
+              type="number"
+              value={values.offerPendingCheckoutReminderInMinutes}
+              onChange={handleChange}
+              helperText={errors.offerPendingCheckoutReminderInMinutes}
+              error={!!errors.offerPendingCheckoutReminderInMinutes}
+              required
+            />
+            <AppInput
+              id="offerMaxCheckoutReminders"
+              name="offerMaxCheckoutReminders"
+              label="Offer Max. Checkout Reminder (times)"
+              placeholder=""
+              type="number"
+              value={values.offerMaxCheckoutReminders}
+              onChange={handleChange}
+              helperText={errors.offerMaxCheckoutReminders}
+              error={!!errors.offerMaxCheckoutReminders}
+              required
+            />
+          </section>
+          <section className="flex-wrapper">
+            <AppInput
+              id="auctionPendingCheckoutReminderInMinutes"
+              name="auctionPendingCheckoutReminderInMinutes"
+              label="Auction Pending Checkout Reminder (mins)"
+              placeholder=""
+              type="number"
+              value={values.auctionPendingCheckoutReminderInMinutes}
+              onChange={handleChange}
+              helperText={errors.auctionPendingCheckoutReminderInMinutes}
+              error={!!errors.auctionPendingCheckoutReminderInMinutes}
+              required
+            />
+            <AppInput
+              id="auctionMaxCheckoutReminders"
+              name="auctionMaxCheckoutReminders"
+              label="Auction Max. Checkout Reminder (times)"
+              placeholder=""
+              type="number"
+              value={values.auctionMaxCheckoutReminders}
+              onChange={handleChange}
+              helperText={errors.auctionMaxCheckoutReminders}
+              error={!!errors.auctionMaxCheckoutReminders}
+              required
+            />
+          </section>
 
           <div className="btn-group">
             <MuiButton
@@ -186,17 +228,17 @@ const StyledForm = styled.form`
   background-color: #fff;
   padding: 10px 0px 0px 0px;
   border-radius: 20px;
-  max-width: 450px;
+  max-width: 750px;
   width: calc(100vw - 80px);
 
   & .wrapper {
-    max-width: 450px;
+    // max-width: 450px;
     width: 100%;
   }
 
   & .flex-wrapper {
     display: flex;
-    gap: 30px;
+    gap: 10px;
     align-items: self-end;
   }
 
@@ -228,5 +270,11 @@ const StyledForm = styled.form`
 
   & textarea {
     padding: 0 !important;
+  }
+
+  @media screen and (max-width: 580px) {
+    & .flex-wrapper {
+      display: block;
+    }
   }
 `;
