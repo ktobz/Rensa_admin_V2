@@ -1,7 +1,7 @@
 import { AxiosPromise } from "axios";
 import * as React from "react";
 import { useQuery } from "react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { NoData } from "@/components/feedback/NoData";
 import {
@@ -16,7 +16,7 @@ import {
   MuiTableHead,
   MuiTableRow,
   MuiTypography,
-  styled
+  styled,
 } from "@/lib/index";
 
 import CustomTableSkeleton from "@/components/skeleton/CustomTableSkeleton";
@@ -33,14 +33,14 @@ import {
   formatCurrency,
   getIdName,
   getListingTimeRemaining,
-  usePageNavigationParam
+  usePageNavigationParam,
 } from "utils/helper-funcs";
 
 import { ActionTimeStatus, IActiveStatus } from "./OrderStatus";
 
 import { OrderStatus } from "@/components/feedback/OrderStatus";
 import CustomSearch from "@/components/input/CustomSearch";
-import StatusFilter from "@/components/select/StatusFillter";
+import ListingFilter from "@/components/select/ListingFilter";
 import useCachedDataStore from "@/config/store-config/lookup";
 import ListingService from "@/services/listing-service";
 import throttle from "lodash.throttle";
@@ -75,10 +75,30 @@ export function SettlementTable({
   apiFunc = ListingService.getAll,
   queryKey = "all-orders",
 }: Readonly<IProps>) {
+  const [searchParams] = useSearchParams();
+  const statusFilter =
+    searchParams
+      ?.get("Status")
+      ?.trim()
+      ?.split(",")
+      ?.filter((x) => x) || [];
+  const categoryFilter =
+    searchParams
+      ?.get("CatalogueCategoryId")
+      ?.trim()
+      ?.split(",")
+      ?.filter((x) => x) || [];
+  const listingTypeFilter =
+    searchParams
+      ?.get("ListingType")
+      ?.trim()
+      ?.split(",")
+      ?.filter((x) => x) || [];
+
   const { catalogueStatus } = useCachedDataStore(
     (state) => state.cache?.lookup
   );
-  const {changePage,page,perPage} = usePageNavigationParam();
+  const { changePage, page, perPage } = usePageNavigationParam();
 
   const navigate = useNavigate();
   const [pagination, setPagination] = React.useState<IPagination>(defaultQuery);
@@ -97,15 +117,36 @@ export function SettlementTable({
   };
 
   const { data, isLoading, isError } = useQuery(
-    [queryKey, id, filter, page, perPage, searchText],
+    [
+      queryKey,
+      id,
+      statusFilter,
+      page,
+      perPage,
+      searchText,
+      categoryFilter,
+      listingTypeFilter,
+    ],
     ({ signal }) =>
       apiFunc(
-        `?pageNumber=${page}&pageSize=${
-          perPage
-        }&searchText=${searchText}${
-          filter?.length > 0
-            ? `${filter.reduce((acc, val) => {
-                acc += `&status=${val}`;
+        `?pageNumber=${page}&pageSize=${perPage}&searchText=${searchText}${
+          statusFilter?.length > 0
+            ? `${statusFilter.reduce((acc, val) => {
+                acc += `&Status=${val}`;
+                return acc;
+              }, "")}`
+            : ""
+        }${
+          categoryFilter?.length > 0
+            ? `${categoryFilter.reduce((acc, val) => {
+                acc += `&CatalogueCategoryId=${val}`;
+                return acc;
+              }, "")}`
+            : ""
+        }${
+          listingTypeFilter?.length > 0
+            ? `${listingTypeFilter.reduce((acc, val) => {
+                acc += `&ListingType=${val}`;
                 return acc;
               }, "")}`
             : ""
@@ -113,10 +154,10 @@ export function SettlementTable({
         signal
       ).then((res) => {
         const { data, ...paginationData } = res?.data?.result;
-        const { hasNextPage, hasPrevPage, total, totalPages ,page,pageSize} =
+        const { hasNextPage, hasPrevPage, total, totalPages, page, pageSize } =
           createPaginationData(data, paginationData);
 
-          console.log()
+        console.log();
         setPagination((prev) => ({
           ...prev,
           page,
@@ -172,18 +213,17 @@ export function SettlementTable({
 
   const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    setPagination((prev) => ({ ...prev, page:1, }));
+    setPagination((prev) => ({ ...prev, page: 1 }));
     setText(value);
     debouncedChangeHandler();
   };
 
-  
   return (
     <StyledPage>
       <div className="tab-section">
         <div className="top-section">
           <MuiTypography variant="body2" className="heading">
-            Listings 
+            Listings
           </MuiTypography>
           <MuiTypography
             className="total"
@@ -195,7 +235,7 @@ export function SettlementTable({
         </div>
 
         <div className="action-section">
-          <StatusFilter
+          <ListingFilter
             selectedValue={filter}
             handleSetValue={handleSetFilter}
             options={catalogueStatus}
@@ -217,7 +257,7 @@ export function SettlementTable({
               style={{ whiteSpace: "nowrap" }}
               onClick={handleAddNew}
               className="btn">
-              Add New
+              Add Listing
             </MuiButton>
           )}
         </div>
@@ -268,14 +308,17 @@ export function SettlementTable({
                   style={{ minWidth: "250px" }}>
                   Location
                 </MuiTableCell>
-                <MuiTableCell className="heading" align="left" style={{ minWidth: "180px" }}>
+                <MuiTableCell
+                  className="heading"
+                  align="left"
+                  style={{ minWidth: "180px" }}>
                   Duration
                 </MuiTableCell>
                 <MuiTableCell
                   className="heading"
                   align="left"
                   style={{ minWidth: "120px" }}>
-                 Price
+                  Price
                 </MuiTableCell>
                 <MuiTableCell className="heading" align="left">
                   Status
@@ -372,19 +415,18 @@ export function SettlementTable({
                         />
                       </MuiTableCell>
                       <MuiTableCell align="left">
-                      <MuiBox className="action-group">
-                        <MuiIconButton
-                          onClick={handleEdit(row)}
-                          className="edit-btn">
-                          <IconEdit />
-                        </MuiIconButton>
-                        <MuiIconButton
-                          onClick={handleViewDetails(row)}
-                          className="visible-btn">
-                          <IconVisibility />
-                        </MuiIconButton>
+                        <MuiBox className="action-group">
+                          <MuiIconButton
+                            onClick={handleEdit(row)}
+                            className="edit-btn">
+                            <IconEdit />
+                          </MuiIconButton>
+                          <MuiIconButton
+                            onClick={handleViewDetails(row)}
+                            className="visible-btn">
+                            <IconVisibility />
+                          </MuiIconButton>
                         </MuiBox>
-                       
                       </MuiTableCell>
                     </MuiTableRow>
                   );
@@ -468,7 +510,7 @@ const StyledPage = styled.section`
     flex-wrap: wrap;
   }
 
-    & .action-group {
+  & .action-group {
     display: flex;
     gap: 10px;
     align-items: center;
@@ -513,16 +555,15 @@ const StyledPage = styled.section`
     }
   }
 
-   & .edit-btn {
+  & .edit-btn {
     border-radius: 10px;
     background: #ffc5021a;
     color: #d78950;
     padding: 12px;
 
-
     svg {
       color: #d78950;
-        width: 15px;
+      width: 15px;
       height: 15px;
     }
   }

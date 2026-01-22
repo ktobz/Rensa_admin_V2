@@ -1,17 +1,10 @@
-import { MenuItem, Select, SelectProps } from "@mui/material";
-import * as React from "react";
 import {
   MuiBox,
-  MuiCardMedia,
   MuiCheckbox,
-  MuiChip,
   MuiFormControl,
-  MuiHelperText,
   MuiInputLabel,
-  MuiOutlinedInput,
   MuiSelectChangeEvent,
   muiStyled,
-  MuiTypography,
 } from "@/lib/index";
 import {
   IconArrowDownIcon,
@@ -19,10 +12,10 @@ import {
   IconFunnel,
   IconUnchecked,
 } from "@/lib/mui.lib.icons";
-import { useQuery } from "react-query";
-import OtherService from "@/services/others.service";
-import { OrderStatus } from "../feedback/OrderStatus";
 import { ICategory, IStatus } from "@/types/globalTypes";
+import { MenuItem, Select, SelectProps } from "@mui/material";
+import * as React from "react";
+import { OrderStatus } from "../feedback/OrderStatus";
 
 const StyledSelect = muiStyled(Select)(({ theme }) => ({
   "& .MuiOutlinedInput-root": {
