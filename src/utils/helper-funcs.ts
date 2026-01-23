@@ -1,7 +1,4 @@
-import {
-  ICategory,
-  IPaginationResponse
-} from "@/types/globalTypes";
+import { ICategory, IPaginationResponse } from "@/types/globalTypes";
 import { addHours, format, parseISO } from "date-fns";
 import { useSearchParams } from "react-router-dom";
 import { REFRESH_TOKEN_NAME, TOKEN_NAME } from "types/actionTypes";
@@ -38,14 +35,14 @@ export const randomizer = () => {
 export const formatCurrency = (value: {
   currency?: string;
   style?: string;
-  amount: number|undefined;
+  amount: number | undefined;
 }) => {
   const formatter = new Intl.NumberFormat(undefined, {
     style: value.style || "currency",
     currency: value.currency || "NGN",
   });
 
-  return formatter.format(value?.amount||0);
+  return formatter.format(value?.amount || 0);
 };
 
 export async function copyTextToClipboard(text: string) {
@@ -71,7 +68,7 @@ export const createPaginationData = (
     hasNextPage,
     hasPrevPage,
     page: pagination?.pageNumber,
-    pageSize: pagination?.pageSize
+    pageSize: pagination?.pageSize,
   };
 };
 
@@ -97,7 +94,13 @@ export const formatDate = (
 };
 
 export const getIdName = (id: number, list: ICategory[], replaceWith = "_") => {
-  return list?.find((x) => id === x?.id)?.name?.replaceAll(" ", replaceWith) ?? "";
+  return (
+    list?.find((x) => id === x?.id)?.name?.replaceAll(" ", replaceWith) ?? ""
+  );
+};
+
+export const getNameId = (name: string, list: ICategory[]) => {
+  return list?.find((x) => name === x?.name)?.id ?? "";
 };
 
 export const convertDateToTimZone = (d: string, hours: number) => {
@@ -155,26 +158,23 @@ export const getListingTimeRemaining = (
   return timeRemaining;
 };
 
+export const getUrlExtension = (url: string) => {
+  return url?.split(/[#?]/)?.[0]?.split(".")?.pop()?.trim();
+};
 
-
-export const getUrlExtension = (url:string) => {
-    return (url?.split(/[#?]/)?.[0]?.split('.'))?.pop()?.trim();
-}
-
-export const onImageEdit = async (imgUrl:string) => {
+export const onImageEdit = async (imgUrl: string) => {
   let imgExt = getUrlExtension(imgUrl);
 
   try {
-    
     const response = await fetch(imgUrl);
     const blob = await response.blob();
     const file = new File([blob], "profileImage." + imgExt, {
       type: blob.type,
     });
 
-    return file
+    return file;
   } catch (error) {
-    return ''
+    return "";
   }
 
   // let file = await fetch(imgUrl)
@@ -189,99 +189,95 @@ export const onImageEdit = async (imgUrl:string) => {
   //       }
   //     )
   // );
-  
-}
-
-
+};
 
 export const usePageNavigationParam = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  
   const today = new Date();
 
-	const page = searchParams.get('page') || 1;
-	const perPage = searchParams.get('perPage') || 10;
-	const txStatus = searchParams.get('txStatus') || '' ;
-	const orderView = searchParams.get('view') || 'grid' ;
-  const customerViewType = Number(searchParams.get('viewType')) || 0 ;
-  const month = searchParams.get('orderMonth');
+  const page = searchParams.get("page") || 1;
+  const perPage = searchParams.get("perPage") || 10;
+  const txStatus = searchParams.get("txStatus") || "";
+  const orderView = searchParams.get("view") || "grid";
+  const customerViewType = Number(searchParams.get("viewType")) || 0;
+  const month = searchParams.get("orderMonth");
 
-  const orderMonth = month ? Number(month) : today.getMonth() ;
-  const orderYear = searchParams.get('orderYear') || today.getFullYear();
-	// const sortBy = searchParams.get('sortBy') || '';
-	// const sortOrder = searchParams.get('order') || 'desc';
+  const orderMonth = month ? Number(month) : today.getMonth();
+  const orderYear = searchParams.get("orderYear") || today.getFullYear();
+  // const sortBy = searchParams.get('sortBy') || '';
+  // const sortOrder = searchParams.get('order') || 'desc';
 
-	const changePage = (value: string | number) => {
-		searchParams.set('page', value.toString());
-		setSearchParams(searchParams);
-	};
+  const changePage = (value: string | number) => {
+    searchParams.set("page", value.toString());
+    setSearchParams(searchParams);
+  };
 
-	const resetAllNavigationQueries = () => {
-		searchParams.delete('perPage');
-		searchParams.delete('page');
-		setSearchParams(searchParams);
-	};
+  const resetAllNavigationQueries = () => {
+    searchParams.delete("perPage");
+    searchParams.delete("page");
+    setSearchParams(searchParams);
+  };
 
-	const changeNumberPerPage = (value: string | number) => {
-		searchParams.set('perPage', value.toString());
-		setSearchParams(searchParams);
-	};
+  const changeNumberPerPage = (value: string | number) => {
+    searchParams.set("perPage", value.toString());
+    setSearchParams(searchParams);
+  };
 
+  const setQueries = (data: { key: string; value: string }[]) => {
+    searchParams.set("page", "1");
 
-	const setQueries = (data: { key: string; value: string }[]) => {
-		searchParams.set('page', '1'); 
+    for (let i = 0; i < data.length; i += 1) {
+      searchParams.set(data[i].key, data[i].value);
+    }
+    setSearchParams(searchParams);
+  };
 
-		for (let i = 0; i < data.length; i += 1) {
-			searchParams.set(data[i].key, data[i].value);
-		}
-		setSearchParams(searchParams);
-	};
+  const removeQuery = (key: string) => {
+    searchParams.set("page", "1");
 
-	const removeQuery = (key: string) => {
+    searchParams.set(key, "");
+    setSearchParams(searchParams);
+  };
 
-		searchParams.set('page', '1'); 
+  const setTxStatus = (key: number[]) => {
+    const stringifiedStatus = encodeURI(key?.join(","));
+    searchParams.set("txStatus", stringifiedStatus);
+    setSearchParams(searchParams);
+  };
 
-		searchParams.set(key, '');
-		setSearchParams(searchParams);
-	};
-
-	const setTxStatus = (key: number[]) => {
-    const stringifiedStatus = encodeURI(key?.join((',')));
-		searchParams.set('txStatus', stringifiedStatus); 
-		setSearchParams(searchParams);
-	};
-
-  	const setOrderView = (view: string) => {
-      searchParams.set('view', view); 
-		setSearchParams(searchParams);
-	};
+  const setOrderView = (view: string) => {
+    searchParams.set("view", view);
+    setSearchParams(searchParams);
+  };
 
   const setCustomerViewType = (view: number) => {
-    searchParams.set('viewType', String(view)); 
-  setSearchParams(searchParams);
-};
+    searchParams.set("viewType", String(view));
+    setSearchParams(searchParams);
+  };
 
-    	const setOrderDate = ({month,year}:{month: number;year:number}) => {
-      searchParams.set('orderMonth', String(month)); 
-      searchParams.set('orderYear', String(year)); 
-		setSearchParams(searchParams);
-	};
+  const setOrderDate = ({ month, year }: { month: number; year: number }) => {
+    searchParams.set("orderMonth", String(month));
+    searchParams.set("orderYear", String(year));
+    setSearchParams(searchParams);
+  };
 
-
-	return {
-		changePage,
-		changeNumberPerPage,
-		page: +page,
-		perPage: +perPage,
+  return {
+    changePage,
+    changeNumberPerPage,
+    page: +page,
+    perPage: +perPage,
     resetAllNavigationQueries,
-    txStatus: decodeURI(txStatus)?.split(',')?.map((x)=> Number(x)),
+    txStatus: decodeURI(txStatus)
+      ?.split(",")
+      ?.map((x) => Number(x)),
     setTxStatus,
     orderView,
     setOrderView,
     setOrderDate,
-    orderMonth,orderYear,
+    orderMonth,
+    orderYear,
     customerViewType,
-    setCustomerViewType
-	};
+    setCustomerViewType,
+  };
 };
