@@ -278,7 +278,7 @@ export const MarketplaceFilter = ({
           </section>
         </section>
 
-        <MuiDivider className="my-4 w-full block" />
+        {/* <MuiDivider className="my-4 w-full block" />
 
         <section>
           <p className="font-bold p-0 m-0 mb-3 ">Others</p>
@@ -315,7 +315,7 @@ export const MarketplaceFilter = ({
               />
             ))}
           </section>
-        </section>
+        </section> */}
 
         <div className="btn-group border-t-1 border-t-[#E8E8E8] pt-4">
           <MuiButton
