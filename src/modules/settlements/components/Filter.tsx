@@ -1,5 +1,3 @@
-import * as Yup from "yup";
-
 import useCachedDataStore from "@/config/store-config/lookup";
 import {
   IconChecked,
@@ -16,19 +14,6 @@ import { useState } from "react";
 import { useQuery } from "react-query";
 import { useSearchParams } from "react-router-dom";
 
-const SCHEMA = Yup.object().shape({
-  waitTimeInHours: Yup.number().required("required"),
-  offerExpirationInHours: Yup.number().required("required"),
-  offerReminderIntervalInMinutes: Yup.number().required("required"),
-  pendingCheckoutReminderInMinutes: Yup.number().optional(),
-  maxCheckoutReminders: Yup.number().optional(),
-
-  offerPendingCheckoutReminderInMinutes: Yup.number().required("required"),
-  offerMaxCheckoutReminders: Yup.number().required("required"),
-  auctionPendingCheckoutReminderInMinutes: Yup.number().required("required"),
-  auctionMaxCheckoutReminders: Yup.number().required("required"),
-});
-
 type IViewProps = {
   initData?: any;
   refreshQuery?: () => void;
@@ -44,6 +29,11 @@ const defaultValues = {
   category: [],
   others: [],
 };
+
+const otherFilterOptions = [
+  { id: 1, name: "Featured" },
+  { id: 2, name: "Not Featured" },
+];
 
 export const MarketplaceFilter = ({
   initData,
@@ -152,6 +142,7 @@ export const MarketplaceFilter = ({
     searchParams.set("CatalogueCategoryId", selectedValues.category?.join(","));
     searchParams.set("ListingType", selectedValues.listingType?.join(","));
     searchParams.set("Status", selectedValues.listingStatus?.join(","));
+    searchParams.set("Others", selectedValues.others?.join(","));
     setSearchParams(searchParams);
 
     handleClose();
@@ -164,7 +155,8 @@ export const MarketplaceFilter = ({
 
   const checkedAllCategory =
     selectedValues?.category?.length === (catalogueCategories || [])?.length;
-  const checkedAllOthers = selectedValues?.others?.length === bidStatus?.length;
+  const checkedAllOthers =
+    selectedValues?.others?.length === otherFilterOptions?.length;
 
   return (
     <StyledSection>
@@ -278,7 +270,7 @@ export const MarketplaceFilter = ({
           </section>
         </section>
 
-        {/* <MuiDivider className="my-4 w-full block" />
+        <MuiDivider className="my-4 w-full block" />
 
         <section>
           <p className="font-bold p-0 m-0 mb-3 ">Others</p>
@@ -296,7 +288,7 @@ export const MarketplaceFilter = ({
               }
               label="All"
             />
-            {bidStatus?.map((opt) => (
+            {otherFilterOptions?.map((opt) => (
               <MuiFormControlLabel
                 onChange={handleChange("others", opt?.id)}
                 control={
@@ -315,7 +307,7 @@ export const MarketplaceFilter = ({
               />
             ))}
           </section>
-        </section> */}
+        </section>
 
         <div className="btn-group border-t-1 border-t-[#E8E8E8] pt-4">
           <MuiButton

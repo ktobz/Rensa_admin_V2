@@ -1,9 +1,4 @@
-import {
-  MuiFormControl,
-  MuiInputLabel,
-  MuiSelectChangeEvent,
-  muiStyled,
-} from "@/lib/index";
+import { MuiFormControl, MuiInputLabel, muiStyled } from "@/lib/index";
 import { IconFunnel } from "@/lib/mui.lib.icons";
 import { MarketplaceFilter } from "@/modules/settlements/components/Filter";
 import { ICategory } from "@/types/globalTypes";
@@ -82,19 +77,18 @@ export default function ListingFilter({
       ?.trim()
       ?.split(",")
       ?.filter((x) => x)?.length || 0;
+  const otherFilter =
+    searchParams
+      ?.get("Others")
+      ?.trim()
+      ?.split(",")
+      ?.filter((x) => x)?.length || 0;
 
   const filterCount =
-    statusFilterCount + categoryFilterCount + listingTypeFilterCount;
-
-  const handleChange = (event: MuiSelectChangeEvent<any>, node: any) => {
-    const {
-      target: { value },
-    } = event;
-    handleSetValue?.(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value?.split(",") : value
-    );
-  };
+    statusFilterCount +
+    categoryFilterCount +
+    listingTypeFilterCount +
+    otherFilter;
 
   const handleCloseModal = () => {
     setOpenFilter(false);

@@ -94,6 +94,12 @@ export function SettlementTable({
       ?.trim()
       ?.split(",")
       ?.filter((x) => x) || [];
+  const otherFilters =
+    searchParams
+      ?.get("Others")
+      ?.trim()
+      ?.split(",")
+      ?.filter((x) => x) || [];
 
   const { catalogueStatus } = useCachedDataStore(
     (state) => state.cache?.lookup
@@ -126,6 +132,7 @@ export function SettlementTable({
       searchText,
       categoryFilter,
       listingTypeFilter,
+      otherFilters,
     ],
     ({ signal }) =>
       apiFunc(
@@ -150,6 +157,10 @@ export function SettlementTable({
                 return acc;
               }, "")}`
             : ""
+        }${
+          otherFilters?.length > 1 || otherFilters?.length === 0
+            ? ""
+            : `&IsFeatured=${otherFilters[0] === "1" ? "true" : "false"}`
         }`,
         signal
       ).then((res) => {
