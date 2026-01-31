@@ -19,7 +19,7 @@ import TransactionsView from "@/modules/transaction";
 import { PayoutView } from "@/modules/transaction/views/PayoutView";
 import CustomersView, { CustomerDetailsView } from "@/modules/users";
 import { CustomerTransactionsView } from "@/modules/users/views/CustomerTransactionsView";
-
+import PricingModelView from "@/modules/pricing";
 export default function MergedModuleRoutes() {
   return (
     <Routes>
@@ -38,7 +38,7 @@ export default function MergedModuleRoutes() {
 
       <Route path="/reported-listing" element={<ReportedListingPageView />} />
       <Route path="/reported-listing/:rp_id" element={<ListingDetails />} />
-
+      <Route path="/pricing-model" element={<PricingModelView />} />
       <Route path="/marketplace" element={<SettlementsView />} />
       <Route
         path="/marketplace/listings"

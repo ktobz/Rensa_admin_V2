@@ -22,7 +22,8 @@ import {
   IconPayout,
   IconReport,
   IconSales,
-  IconShop
+  IconShop,
+  IconTag
 } from "lib/mui.lib.icons";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -84,6 +85,11 @@ const menuLinks = [
     icon: <IconAppRelease />,
   },
   {
+    title: "Pricing Model",
+    path: "pricing-model",
+    icon: <IconTag />,
+  },
+  {
     title: "OTP Log",
     path: "otp-log",
     icon: <IconOTP />,
@@ -125,9 +131,8 @@ export default function CustomMenu() {
                 <MuiMenuItem
                   key={link.path}
                   onClick={handleNavigate(link.path)}
-                  className={`list ${
-                    isCurrent(`${link.path}`) ? "current" : ""
-                  }`}>
+                  className={`list ${isCurrent(`${link.path}`) ? "current" : ""
+                    }`}>
                   <MuiListItemIcon className="icon">
                     {link.icon}
                   </MuiListItemIcon>

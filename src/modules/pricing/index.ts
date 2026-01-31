@@ -1,0 +1,1 @@
+export { PricingModelView as default } from "./views/PricingModelView";
