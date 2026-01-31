@@ -125,8 +125,14 @@ export const PricingModelUploadForm = ({ handleClose, onUploadSuccess }: Pricing
                     </div>
                 </div>
 
-                <div className="actions">
-                    <MuiButton variant="outlined" color="inherit" onClick={handleClose} disabled={isUploading}>
+                <div className="btn-group">
+                    <MuiButton
+                        variant="contained"
+                        color="inherit"
+                        onClick={handleClose}
+                        disabled={isUploading}
+                        className="btn cancel-btn"
+                    >
                         Cancel
                     </MuiButton>
 
@@ -136,6 +142,7 @@ export const PricingModelUploadForm = ({ handleClose, onUploadSuccess }: Pricing
                         color="primary"
                         disabled={isUploading || !fileName}
                         startIcon={isUploading ? <MuiCircularProgress size={16} /> : null}
+                        className="btn"
                     >
                         {isUploading ? `Uploading ${progress}%` : "Upload"}
                     </MuiButton>
@@ -161,6 +168,7 @@ const StyledForm = styled.form`
         display: flex;
         align-items: center;
         justify-content: space-between;
+        padding: 0 18px;
     }
 
     & .title {
@@ -179,6 +187,7 @@ const StyledForm = styled.form`
         cursor: pointer;
         min-height: 180px;
         transition: all 0.2s ease;
+        margin: 16px 18px 0;
 
         &:hover {
             background-color: #f5f5f5;
@@ -195,10 +204,19 @@ const StyledForm = styled.form`
         color: #6b7280;
     }
 
-    & .actions {
+    & .btn {
+        width: 100%;
+        margin-top: 45px;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+    }
+
+    & .btn-group {
         display: flex;
-        gap: 12px;
-        justify-content: flex-end;
-        margin-top: 6px;
+        gap: 20px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 18px;
     }
 `;
