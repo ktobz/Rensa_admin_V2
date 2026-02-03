@@ -11,6 +11,7 @@ import {
 } from "@/lib/index";
 import { toast } from "react-toastify";
 import { IconAttachment, IconDownload } from "@/lib/mui.lib.icons";
+import MarketDataService from "@/services/market-data.service";
 
 interface PricingModelUploadFormProps {
     handleClose: () => void;
@@ -21,9 +22,10 @@ const SCHEMA = Yup.object().shape({
     file: Yup.mixed()
         .test("fileType", "Only CSV files are allowed", (value) => {
             if (!value) return false;
-            return value && value.type === "text/csv" || (value && value.name?.toLowerCase().endsWith('.csv'));
+            return (value && value.type === "text/csv") || (value && value.name?.toLowerCase().endsWith(".csv"));
         })
         .required("A CSV file is required"),
+    mode: Yup.string().oneOf(["Clean", "Append"]).required("Mode is required"),
 });
 
 export const PricingModelUploadForm = ({ handleClose, onUploadSuccess }: PricingModelUploadFormProps) => {
@@ -35,26 +37,40 @@ export const PricingModelUploadForm = ({ handleClose, onUploadSuccess }: Pricing
     const formik = useFormik({
         initialValues: {
             file: null as File | null,
+            mode: "Clean",
         },
         validationSchema: SCHEMA,
-        onSubmit: async (values: { file: File | null }) => {
+        onSubmit: async (values: { file: File | null; mode: string }) => {
             if (values.file) {
-                setIsUploading(true);
-                // Simulate upload progress
-                for (let i = 0; i <= 100; i += 10) {
-                    // eslint-disable-next-line no-await-in-loop
-                    await new Promise((r) => setTimeout(r, 60));
-                    setProgress(i);
+                try {
+                    setIsUploading(true);
+                    for (let i = 0; i <= 60; i += 10) {
+                        // eslint-disable-next-line no-await-in-loop
+                        await new Promise((r) => setTimeout(r, 60));
+                        setProgress(i);
+                    }
+
+                    await MarketDataService.uploadAsync(values.file, values.mode);
+
+                    for (let i = 70; i <= 100; i += 10) {
+                        // eslint-disable-next-line no-await-in-loop
+                        await new Promise((r) => setTimeout(r, 40));
+                        setProgress(i);
+                    }
+
+                    onUploadSuccess(values.file);
+                    toast.success("File uploaded successfully");
+                    handleClose();
+                } catch (err: any) {
+                    toast.error(err?.response?.data?.message || "Upload failed");
+                } finally {
+                    setIsUploading(false);
                 }
-                onUploadSuccess(values.file);
-                setIsUploading(false);
-                toast.success("File uploaded successfully");
-                handleClose();
             }
         },
     });
 
-    const { setFieldValue, handleSubmit, errors, touched } = formik;
+    const { setFieldValue, handleSubmit, errors, touched, values, setFieldTouched } = formik;
 
     const handleFile = (file?: File) => {
         if (!file) return;
@@ -123,6 +139,29 @@ export const PricingModelUploadForm = ({ handleClose, onUploadSuccess }: Pricing
                             </MuiTypography>
                         )}
                     </div>
+                </div>
+
+                <div className="mode-row" style={{ padding: "12px 18px 0" }}>
+                    <MuiTypography variant="body2" sx={{ mb: 1 }}>
+                        Upload mode
+                    </MuiTypography>
+                    <select
+                        value={values.mode}
+                        onChange={(e) => {
+                            setFieldValue("mode", e.target.value);
+                            setFieldTouched("mode", true);
+                        }}
+                        style={{ width: "100%", padding: "8px", borderRadius: 8 }}
+                        disabled={isUploading}
+                    >
+                        <option value="Clean">Clean (replace existing)</option>
+                        <option value="Append">Append (add to existing)</option>
+                    </select>
+                    {errors.mode && touched.mode && (
+                        <MuiTypography variant="caption" color="error" display="block" sx={{ mt: 1 }}>
+                            {errors.mode}
+                        </MuiTypography>
+                    )}
                 </div>
 
                 <div className="btn-group">
